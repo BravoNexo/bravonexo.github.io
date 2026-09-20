@@ -19,7 +19,9 @@ o armazenamento ou o funcionamento dos outros aplicativos deste domínio.
 O layout prioriza o celular, com cartões inteiros como área de toque.
 Os três ícones são carregados dos endereços públicos já usados pelos
 aplicativos, sem modificar seus arquivos ou sua estrutura.
-São exibidos em 80 px no celular e 104 px no computador.
+São exibidos em 112 px no celular e 144 px no computador.
+Telas de alta definição podem carregar as versões oficiais de 512 px,
+mantendo os desenhos nítidos; as demais usam as imagens de 192 px.
 
 O portal possui marca própria no cabeçalho e ícones PNG locais para a aba
 do navegador e o atalho da tela inicial. Os arquivos em `icons/` fazem
