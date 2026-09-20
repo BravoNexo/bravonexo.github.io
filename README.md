@@ -19,6 +19,11 @@ o armazenamento ou o funcionamento dos outros aplicativos deste domínio.
 O layout prioriza o celular, com cartões inteiros como área de toque.
 Os três ícones são carregados dos endereços públicos já usados pelos
 aplicativos, sem modificar seus arquivos ou sua estrutura.
+São exibidos em 80 px no celular e 104 px no computador.
+
+O portal possui marca própria no cabeçalho e ícones PNG locais para a aba
+do navegador e o atalho da tela inicial. Os arquivos em `icons/` fazem
+parte da publicação. Nenhum service worker foi adicionado.
 
 ## Publicação
 
