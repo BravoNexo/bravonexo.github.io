@@ -2619,7 +2619,76 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000}</script><script src="./central-client.js" defer></script></head>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000}</script><script src="./central-client.js" defer></script><script data-central-ras-direct-recovery>
+(function(root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.BNXRasDirectRecovery = api;
+})(typeof globalThis === 'object' ? globalThis : this, function() {
+  'use strict';
+  const text = value => typeof value === 'string' ? value.trim() : '';
+  const rg = value => {
+    const digits = String(value == null ? '' : value).replace(/\D/g, '');
+    return digits.replace(/^0+(?=\d)/, '');
+  };
+  function date(value) {
+    const input = text(value);
+    let match = input.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) {
+      const local = input.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (local) match = [local[0], local[3], local[2], local[1]];
+    }
+    if (!match) return '';
+    const [year, month, day] = match.slice(1).map(Number);
+    const parsed = new Date(Date.UTC(year, month - 1, day));
+    return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day
+      ? match[1] + '-' + match[2] + '-' + match[3] : '';
+  }
+  function time(value) {
+    const match = text(value).match(/^(\d{2}):(\d{2})(?::00)?$/);
+    return match && Number(match[1]) < 24 && Number(match[2]) < 60 ? match[1] + ':' + match[2] : '';
+  }
+  async function expectedRecordId(email, key, dependencies) {
+    const owner = text(email).toLowerCase();
+    const businessKey = text(key);
+    const env = dependencies || (typeof globalThis === 'object' ? globalThis : {});
+    if (!owner || !businessKey || !env.crypto || !env.crypto.subtle || !env.TextEncoder) return null;
+    try {
+      const bytes = new env.TextEncoder().encode('DIRECT_GRANT|' + owner + '|' + businessKey);
+      const digest = await env.crypto.subtle.digest('SHA-256', bytes);
+      const hex = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+      return 'RAS-DIR-' + hex.slice(0, 20).toUpperCase();
+    } catch (_) { return null; }
+  }
+  function classifyResult(request, payload, expectedId) {
+    const unknown = { status: 'unconfirmed' };
+    if (!request || !payload || !Array.isArray(payload.records) || !Array.isArray(payload.opportunities) ||
+        !/^RAS-DIR-[A-F0-9]{20}$/.test(expectedId || '')) return unknown;
+    const records = payload.records.filter(item => item && text(item.id) === expectedId);
+    const opportunities = payload.opportunities.filter(item => item && text(item.id) === 'OP-DIR-' + expectedId.slice(8));
+    if (records.length !== 1 || opportunities.length !== 1) return unknown;
+    const record = records[0], opportunity = opportunities[0];
+    const requestedDate = date(request.date);
+    const requestedTime = time(request.startTime);
+    const hours = Number(request.hours);
+    const military = rg(request.rg);
+    if (!requestedDate || !requestedTime || !military || !Number.isFinite(hours) || hours <= 0 ||
+        record.serviceDetailsResolution !== 'direct' || !['scheduled', 'completed'].includes(record.situationKey) ||
+        opportunity.statusKey !== 'distributed' || !opportunity.winner || rg(opportunity.winner.rg) !== military ||
+        rg(record.rg) !== military || !text(record.cycleId) || text(record.cycleId) !== text(opportunity.cycleId) ||
+        date(record.dateIso || record.date) !== requestedDate || date(opportunity.dateIso || opportunity.date) !== requestedDate ||
+        Number(record.hours) !== hours || Number(opportunity.hours) !== hours || time(opportunity.startTime) !== requestedTime) return unknown;
+    const fields = [['origin', 'serviceUnit'], ['location', 'serviceLocation'], ['role', 'serviceRole']];
+    if (fields.some(([field, recordField]) => !text(request[field]) || text(opportunity[field]) !== text(request[field]) || text(record[recordField]) !== text(request[field]))) return unknown;
+    const justification = text(opportunity.observations).replace(/^Concessão direta(?: da oportunidade [^.]+)?\.\s*Justificativa:\s*/i, '').trim();
+    if (justification !== text(request.justification).slice(0, 500)) return unknown;
+    return { status: 'confirmed', record };
+  }
+  return Object.freeze({ expectedRecordId, classifyResult });
+});
+
+</script></head>
 <body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo</h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" value="bravonexo01gbm@gmail.com" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
@@ -6818,7 +6887,66 @@
       elements.rasDirectError.hidden = false;
     }
 
+    async function reconcileRasDirectGrantAfterReplay_(request) {
+      const generation = (state.rasDirectRecoveryId || 0) + 1;
+      state.rasDirectRecoveryId = generation;
+      const dashboardRequestId = ++state.rasRequestId;
+      const current = function() {
+        return state.rasDirectRecoveryId === generation && state.rasDirectGrantKey === request.idempotencyKey;
+      };
+      const finish = function() {
+        elements.rasDirectSave.disabled = false;
+        elements.rasDirectClose.disabled = false;
+        elements.rasDirectSave.textContent = 'Conceder RAS diretamente';
+      };
+      elements.rasDirectSave.textContent = 'Conferindo…';
+      showRasDirectError('Conferindo o resultado nos registros. A concessão não será reenviada.');
+      try {
+        const email = state.rasAdminData && state.rasAdminData.user && state.rasAdminData.user.email;
+        const expectedId = await BNXRasDirectRecovery.expectedRecordId(email, request.idempotencyKey);
+        if (!current()) return;
+        const payload = await new Promise(function(resolve, reject) {
+          BNX_rpc.run.withSuccessHandler(resolve).withFailureHandler(reject).getRasDashboard(true);
+        });
+        if (!current()) return;
+        if (!payload || !Array.isArray(payload.records) || !Array.isArray(payload.opportunities)) throw Error('INVALID_DASHBOARD');
+        if (dashboardRequestId === state.rasRequestId) {
+          state.rasData = payload;
+          state.rasLoaded = true;
+          elements.rasLoading.hidden = true;
+          elements.rasContent.hidden = false;
+          elements.rasError.hidden = true;
+          elements.rasRefresh.disabled = false;
+          elements.rasUpdated.textContent = payload.generatedAt || '';
+          renderRas();
+        }
+        const result = BNXRasDirectRecovery.classifyResult(request, payload, expectedId);
+        finish();
+        if (result.status !== 'confirmed') {
+          showRasDirectError('Histórico atualizado. Não foi possível confirmar o resultado desta concessão. Nenhum lançamento foi reenviado; confira os registros antes de tentar novamente.');
+          return;
+        }
+        state.rasDirectGrantKey = '';
+        elements.rasDirectEditor.hidden = true;
+        elements.rasDirectError.hidden = true;
+        if (state.page === 'ras') {
+          elements.rasHistorySearch.value = result.record.rg;
+          elements.rasHistoryStatus.value = 'all';
+          setRasTab('history');
+        }
+        refreshScaleRasAfterMutation_(request.date);
+        loadRasAdminData(true);
+        if (dashboardRequestId !== state.rasRequestId) loadRasData(true);
+        showToast('Concessão confirmada nos registros. Histórico atualizado; nenhum novo lançamento foi enviado.');
+      } catch (_) {
+        if (!current()) return;
+        finish();
+        showRasDirectError('Não foi possível conferir o resultado agora. A concessão não foi reenviada e os dados preenchidos foram mantidos. Atualize o Histórico antes de tentar novamente.');
+      }
+    }
+
     function saveRasDirectGrant() {
+      if (elements.rasDirectSave.disabled) return;
       const request = {
         idempotencyKey: state.rasDirectGrantKey || newRasDirectGrantKey(),
         rg: elements.rasDirectMilitary.value,
@@ -6870,6 +6998,10 @@
           loadRasData(true);
         })
         .withFailureHandler(function(error) {
+          if (error && error.code === 'CENTRAL_BROWSER_REPLAY') {
+            void reconcileRasDirectGrantAfterReplay_(request);
+            return;
+          }
           elements.rasDirectSave.disabled = false;
           elements.rasDirectClose.disabled = false;
           elements.rasDirectSave.textContent = 'Conceder RAS diretamente';
