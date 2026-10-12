@@ -217,6 +217,11 @@
     .permuta-row-decided.cancelled:hover { background: #fde5e5; }
     .permuta-row-decided.duplicate { background: #fff8e6; }
     .permuta-row-decided.duplicate:hover { background: #fbedc9; }
+    .permuta-table tbody tr.permuta-day-light { background: #fafafa; }
+    .permuta-table tbody tr.permuta-day-gray { background: #eeeeef; }
+    .permuta-table tbody tr.permuta-day-light:hover { background: #f2f2f3; }
+    .permuta-table tbody tr.permuta-day-gray:hover { background: #e5e5e7; }
+    .permuta-table tbody tr.permuta-day-start td { border-top: 2px solid #d3d3d6; }
     .decision-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 18px; background: rgba(12,31,43,.48); }
     .decision-card { width: min(520px, 100%); overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 18px 55px rgba(0,0,0,.28); }
     .decision-head { padding: 17px 19px; color: #fff; background: #173f5f; }
@@ -2611,7 +2616,7 @@
     },
     disconnect: function() { activeTransport = undefined; }
   });
-  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility"],transport:function(request){
+  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility"],transport:function(request){
     if (!activeTransport) {
       var error = new Error("A Central ainda não está conectada ao servidor autorizado. Esta operação não foi enviada.");
       error.code = "RPC_TRANSPORT_UNAVAILABLE"; request.failure(error); return;
@@ -3266,6 +3271,7 @@
                       <button id="scale-permutas-open-module" class="secondary" type="button">Abrir controle completo</button>
                     </div>
                     <div id="scale-permutas-error" class="error" hidden></div>
+                    <div id="scale-permuta-revision-review" class="vacation-help" role="status" hidden><span id="scale-permuta-revision-review-text"></span> <button id="scale-permuta-revision-reviewed" class="secondary" type="button">Conferi as alterações</button></div>
                     <div id="scale-permutas-loading" class="loading">Consultando as solicitações desta data…</div>
                     <div id="scale-permutas-table-wrap" class="table-wrap" hidden>
                       <table class="scale-permuta-table">
@@ -4040,6 +4046,7 @@
           <div class="decision-head"><strong id="permuta-decision-title">Analisar permuta</strong><span id="permuta-decision-subtitle">Confira os dados antes de confirmar.</span></div>
           <div class="decision-body">
             <div id="permuta-decision-summary" class="decision-summary"></div>
+            <div id="permuta-decision-action-field" class="field" hidden><label for="permuta-decision-action">Nova decisão</label><select id="permuta-decision-action"><option value="">Selecione a nova decisão</option></select></div>
             <div id="permuta-decision-reason-field" class="field" hidden><label id="permuta-decision-reason-label" for="permuta-decision-reason">Motivo</label><textarea id="permuta-decision-reason" maxlength="300" placeholder="Informe o motivo da decisão"></textarea></div>
             <div id="permuta-decision-error" class="decision-error" hidden></div>
           </div>
@@ -4278,6 +4285,9 @@
       permutaGeneratedAt: '',
       permutaDecisionAction: '',
       permutaDecisionKey: '',
+      permutaDecisionRevisionMode: false,
+      permutaDecisionExpectedStatus: '',
+      permutaDecisionExpectedRevision: '',
       wingsMapData: null,
       wingsMapLoaded: false,
       wingsIncludeDbm: false,
@@ -4550,6 +4560,8 @@
       permutaDecisionTitle: document.getElementById('permuta-decision-title'),
       permutaDecisionSubtitle: document.getElementById('permuta-decision-subtitle'),
       permutaDecisionSummary: document.getElementById('permuta-decision-summary'),
+      permutaDecisionActionField: document.getElementById('permuta-decision-action-field'),
+      permutaDecisionActionSelect: document.getElementById('permuta-decision-action'),
       permutaDecisionReasonField: document.getElementById('permuta-decision-reason-field'),
       permutaDecisionReasonLabel: document.getElementById('permuta-decision-reason-label'),
       permutaDecisionReason: document.getElementById('permuta-decision-reason'),
@@ -4764,6 +4776,9 @@
       scaleGuardProposalClose: document.getElementById('scale-guard-proposal-close'),
       scaleGuardProposalApply: document.getElementById('scale-guard-proposal-apply'),
       scalePermutasError: document.getElementById('scale-permutas-error'),
+      scalePermutaRevisionReview: document.getElementById('scale-permuta-revision-review'),
+      scalePermutaRevisionReviewText: document.getElementById('scale-permuta-revision-review-text'),
+      scalePermutaRevisionReviewed: document.getElementById('scale-permuta-revision-reviewed'),
       scalePermutasLoading: document.getElementById('scale-permutas-loading'),
       scalePermutasTableWrap: document.getElementById('scale-permutas-table-wrap'),
       scalePermutasRows: document.getElementById('scale-permutas-rows'),
@@ -10969,6 +10984,10 @@
 
     function startScaleOfficialWrite_(kind, dateIso) {
       if (hasScaleWriteInFlight_() || hasBusyScalePermutas_() || blockScaleWriteForQuota_()) return 0;
+      if (scalePermutaRevisionReviewItems_().length) {
+        showToast('Confira as alterações das permutas no rascunho antes de gravar ou gerar os arquivos da escala.');
+        return 0;
+      }
       const requestField = kind === 'archive' ? 'scaleArchiveRequestId' : 'scaleBuildRequestId';
       const requestId = state[requestField] + 1;
       state[requestField] = requestId;
@@ -11020,7 +11039,7 @@
       const blocked = scaleRibbonBlocked_();
       const previewReady = scaleRibbonPreviewReady_();
       const dateIso = elements.scaleDate.value;
-      const permutasReady = state.scalePermutasReadyDate === dateIso && !hasUncertainScalePermutas_();
+      const permutasReady = state.scalePermutasReadyDate === dateIso && !hasUncertainScalePermutas_() && !scalePermutaRevisionReviewItems_().length;
       const quotaBlocked = scaleQuotaWaitSeconds_() > 0;
       elements.scaleDate.disabled = blocked;
       elements.scalePreviewAction.disabled = blocked || !scaleRibbonDateValid_();
@@ -11034,6 +11053,7 @@
       if (notesAction) notesAction.disabled = blocked || !scaleRibbonDateValid_();
       elements.scaleBuildAction.disabled = quotaBlocked || Boolean(state.scaleExpediente24hStaleDates[dateIso]) || state.scaleRasReadyDate !== dateIso || blocked || !previewReady || state.scaleChecklistBlocked || !permutasReady;
       elements.scaleArchiveAction.disabled = quotaBlocked || Boolean(state.scaleExpediente24hStaleDates[dateIso]) || state.scaleRasReadyDate !== dateIso || blocked || !previewReady || !permutasReady || state.scaleBuiltDate !== dateIso;
+      renderScalePermutaRevisionReview_();
     }
 
     function findPermutaDecisionRecord_(requestKey, source) {
@@ -11060,6 +11080,10 @@
       });
       Object.keys(state.permutaUncertainKeys || {}).forEach(function(key) {
         const pending = state.permutaUncertainKeys[key];
+        // A later status read cannot prove that a revision POST was not saved.
+        // Only its correlated operation receipt (or explicit pre-admission
+        // rejection) releases this command.
+        if (pending.revisionOperationId) return;
         if (!authoritative || pending.serviceIso !== dateIso || revision < pending.revision) return;
         const fresh = (records || []).find(function(item) { return item.requestKey === key; });
         const confirmed = fresh ? Object.assign({}, fresh, { busy: false })
@@ -11819,7 +11843,9 @@
         if (appliedLabel) rowClasses.push('applied-to-scale');
         const rowClass = rowClasses.length ? ' class="' + rowClasses.map(escapeHtml).join(' ') + '"' : '';
         let action;
-        if (isBusy) {
+        if ((state.permutaRevisionPending || {})[record.requestKey]) {
+          action = permutaRevisionReceiptButton_(record.requestKey, 'scale');
+        } else if (isBusy) {
           action = '<div class="permuta-actions"><button type="button" disabled>Processando…</button></div>';
         } else if (statusKey === 'pending' && record.manageable !== false && operational) {
           action = '<div class="permuta-actions">' + [
@@ -11831,6 +11857,9 @@
               '" data-scale-permuta-key="' + escapeHtml(record.requestKey) + '"' +
               (scaleWriting ? ' disabled' : '') + '>' + choice[1] + '</button>';
           }).join('') + '</div>';
+        } else if (permutaRevisionActions_(record).length) {
+          action = '<div class="permuta-actions"><button type="button" data-scale-permuta-action="revise" data-scale-permuta-key="' + escapeHtml(record.requestKey) + '"' + (scaleWriting ? ' disabled' : '') + '>Alterar decisão</button></div>' +
+            (appliedLabel ? '<span class="scale-permuta-applied">✓ ' + escapeHtml(appliedLabel) + ' aplicada</span>' : '');
         } else if (appliedLabel) {
           action = '<span class="scale-permuta-applied">✓ ' + escapeHtml(appliedLabel) + ' aplicada</span>';
         } else {
@@ -11857,6 +11886,7 @@
         });
       });
       if (state.scalePreview) renderScaleChecklist();
+      renderScalePermutaRevisionReview_();
       updateScaleApplyPermutasAction();
     }
 
@@ -14368,11 +14398,14 @@
           record.statusKey === elements.permutaStatus.value ||
           (elements.permutaStatus.value === 'pending' && record.recentlyDecided);
       });
-      elements.permutaRows.innerHTML = filtered.map(function(record) {
+      const dayBands = permutaDayBandClasses_(filtered);
+      elements.permutaRows.innerHTML = filtered.map(function(record, index) {
         const operational = permutaParticipantsAreCurrent(record);
+        const emailStatus = String(record.emailStatus || '');
+        const emailLabel = ({ REVISAO: 'Agendado', EM_ENVIO: 'Em envio', REVISAO_EDITANDO: 'Conferência necessária' })[emailStatus.split(':')[0]] || emailStatus;
         const decisionInfo = record.cancellationReason
           ? '<span class="military-full">' + escapeHtml(record.cancellationReason) + '</span>'
-          : (record.emailStatus ? '<span class="military-full">E-mail: ' + escapeHtml(record.emailStatus) + '</span>' : '');
+          : (emailLabel ? '<span class="military-full">E-mail: ' + escapeHtml(emailLabel) + '</span>' : '');
         const observation = record.observation || '—';
         const decisionAction = record.statusKey === 'authorized'
           ? 'authorize'
@@ -14382,7 +14415,9 @@
           (record.deadlineDetail ? ' • ' + record.deadlineDetail : '');
         const recordBusy = Boolean(record.busy || state.scalePermutasBusyKeys[record.requestKey] || (state.permutaUncertainKeys || {})[record.requestKey]);
         const scaleWriting = hasScaleWriteInFlight_();
-        const actions = recordBusy
+        const actions = (state.permutaRevisionPending || {})[record.requestKey]
+          ? permutaRevisionReceiptButton_(record.requestKey, 'dashboard')
+          : recordBusy
           ? '<div class="permuta-actions"><button type="button" disabled>Processando…</button></div>'
           : (record.manageable && operational
           ? '<div class="permuta-actions">' +
@@ -14390,12 +14425,14 @@
               '<button class="cancel" type="button" data-permuta-action="cancel" data-permuta-key="' + escapeHtml(record.requestKey) + '">Cancelar</button>' +
               '<button type="button" data-permuta-action="duplicate" data-permuta-key="' + escapeHtml(record.requestKey) + '">Duplicada</button>' +
             '</div>'
+          : (permutaRevisionActions_(record).length
+            ? '<div class="permuta-actions"><button type="button" data-permuta-action="revise" data-permuta-key="' + escapeHtml(record.requestKey) + '"' + (scaleWriting ? ' disabled' : '') + '>Alterar decisão</button></div>'
           : (!operational
             ? '<span class="former-record-note">Somente consulta • vínculo fora do efetivo atual</span>'
             : (record.recentlyDecided
             ? '<div class="permuta-actions"><button class="decision-choice ' + escapeHtml(decisionAction) + '" type="button" disabled>' + escapeHtml(record.statusLabel) + '</button></div>'
-            : '<span class="military-full">Análise concluída</span>')));
-        return '<tr' + (record.recentlyDecided ? ' class="permuta-row-decided ' + escapeHtml(record.statusKey) + '"' : '') + '>' +
+            : '<span class="military-full">Análise concluída</span>'))));
+        return '<tr class="' + dayBands[index] + (record.recentlyDecided ? ' permuta-row-decided ' + escapeHtml(record.statusKey) : '') + '">' +
           '<td><span class="military-name">' + escapeHtml(record.serviceDate) + '</span></td>' +
           '<td><span class="military-name">' + escapeHtml(record.militaryIn) + '</span><span class="military-full">RG ' + escapeHtml(record.rgIn) + (record.qbmpIn ? ' • ' + escapeHtml(record.qbmpIn) : '') + '</span></td>' +
           '<td><span class="military-name">' + escapeHtml(record.militaryOut) + '</span><span class="military-full">RG ' + escapeHtml(record.rgOut) + (record.qbmpOut ? ' • ' + escapeHtml(record.qbmpOut) : '') + '</span></td>' +
@@ -14418,9 +14455,257 @@
       });
     }
 
+    function permutaDayBandClasses_(records) {
+      let previous = null;
+      let band = -1;
+      return (records || []).map(function(record, index) {
+        const day = String(record.serviceIso || record.serviceDate || ('unknown-' + index));
+        const start = day !== previous;
+        if (start) { band += 1; previous = day; }
+        return (band % 2 ? 'permuta-day-gray' : 'permuta-day-light') + (start && index ? ' permuta-day-start' : '');
+      });
+    }
+
+    function permutaDecisionStatusKey_(record) {
+      const raw = String(record && record.status || '').trim().toUpperCase();
+      if (raw === 'AUTORIZADA' || raw === 'FEITO') return 'authorized';
+      if (raw === 'CANCELADA') return 'cancelled';
+      if (raw === 'DUPLICADA') return 'duplicate';
+      if (raw) return 'other';
+      return record && ['pending', 'authorized', 'cancelled', 'duplicate'].indexOf(record.statusKey) !== -1 ? record.statusKey : 'other';
+    }
+
+    function permutaRevisionActions_(record) {
+      const status = permutaDecisionStatusKey_(record);
+      if (!record || record.revisable !== true || !/^[a-f0-9]{64}$/.test(String(record.decisionRevision || '')) ||
+          ['authorized', 'cancelled', 'duplicate'].indexOf(status) === -1 || !Array.isArray(record.allowedDecisionActions)) return [];
+      const current = status === 'authorized' ? 'authorize' : (status === 'cancelled' ? 'cancel' : 'duplicate');
+      return ['authorize', 'cancel', 'duplicate'].filter(function(action) {
+        return action !== current && record.allowedDecisionActions.indexOf(action) !== -1 &&
+          (action !== 'authorize' || permutaParticipantsAreCurrent(record));
+      });
+    }
+
+    function permutaRevisionReceiptButton_(requestKey, source) {
+      const pending = (state.permutaRevisionPending || {})[requestKey];
+      const disabled = !pending || pending.phase !== 'uncertain';
+      const prefix = source === 'scale' ? 'data-scale-permuta-' : 'data-permuta-';
+      return '<div class="permuta-actions"><button type="button" ' + prefix + 'action="receipt" ' + prefix + 'key="' + escapeHtml(requestKey) + '"' + (disabled ? ' disabled' : '') + '>' +
+        (pending && pending.phase === 'checking' ? 'Consultando resultado…' : (disabled ? 'Processando…' : 'Consultar resultado')) + '</button></div>';
+    }
+
+    function openPermutaRevision_(record, source) {
+      if (!record || !permutaRevisionActions_(record).length ||
+          record.busy || state.scalePermutasBusyKeys[record.requestKey] || (state.permutaUncertainKeys || {})[record.requestKey] ||
+          (state.permutaRevisionPending || {})[record.requestKey] || hasScaleWriteInFlight_()) return;
+      state.permutaDecisionKey = record.requestKey;
+      state.permutaDecisionSource = source;
+      state.permutaDecisionAction = '';
+      state.permutaDecisionRevisionMode = true;
+      state.permutaDecisionExpectedStatus = String(record.status || '');
+      state.permutaDecisionExpectedRevision = record.decisionRevision;
+      const labels = { authorize: 'Autorizar', cancel: 'Cancelar', duplicate: 'Marcar como duplicada' };
+      elements.permutaDecisionTitle.textContent = 'Alterar decisão da permuta';
+      elements.permutaDecisionSubtitle.textContent = 'A decisão anterior ficará no histórico. Seus ajustes da escala serão preservados.';
+      elements.permutaDecisionSummary.innerHTML = '<strong>' + escapeHtml(record.serviceDate) + '</strong><br>' +
+        escapeHtml(record.militaryIn) + ' entra no lugar de ' + escapeHtml(record.militaryOut) + '.<br>Decisão atual: ' + escapeHtml(record.statusLabel || record.status) + '.';
+      elements.permutaDecisionActionField.hidden = false;
+      elements.permutaDecisionActionSelect.innerHTML = '<option value="">Selecione a nova decisão</option>' + permutaRevisionActions_(record).map(function(action) {
+        return '<option value="' + action + '">' + labels[action] + '</option>';
+      }).join('');
+      elements.permutaDecisionActionSelect.value = '';
+      elements.permutaDecisionActionSelect.disabled = false;
+      elements.permutaDecisionReasonField.hidden = false;
+      elements.permutaDecisionReasonLabel.textContent = 'Motivo da alteração (obrigatório)';
+      elements.permutaDecisionReason.value = '';
+      elements.permutaDecisionReason.disabled = false;
+      elements.permutaDecisionError.hidden = true;
+      elements.permutaDecisionConfirm.textContent = 'Confirmar alteração';
+      elements.permutaDecisionConfirm.disabled = false;
+      elements.permutaDecisionClose.disabled = false;
+      elements.permutaDecision.hidden = false;
+      elements.permutaDecisionActionSelect.focus();
+    }
+
+    function permutaRevisionMessage_(pending, message) {
+      elements.permutaError.textContent = message;
+      elements.permutaError.hidden = false;
+      if (pending.serviceIso === elements.scaleDate.value) {
+        elements.scalePermutasError.textContent = message;
+        elements.scalePermutasError.hidden = false;
+      }
+      if (!elements.permutaDecision.hidden && state.permutaDecisionKey === pending.requestKey && state.permutaDecisionRevisionMode) {
+        elements.permutaDecisionError.textContent = message;
+        elements.permutaDecisionError.hidden = false;
+      }
+    }
+
+    function renderPermutaRevisionState_() {
+      if (state.permutaLoaded) renderPermutas();
+      renderScalePermutas();
+      updateScaleActionsForPermutaBusy_();
+    }
+
+    function finishPermutaRevision_(pending, result, fromReceipt) {
+      if ((state.permutaRevisionPending || {})[pending.requestKey] !== pending) return false;
+      const rejectedCodes = ['PERMUTA_DECISION_INVALID', 'PERMUTA_DECISION_CONFLICT', 'PERMUTA_DECISION_INELIGIBLE', 'PERMUTA_DECISION_UNAVAILABLE'];
+      const correlated = result && result.operationId === pending.payload.operationId && result.requestKey === pending.requestKey;
+      const rejected = !fromReceipt && correlated && result.ok === false && result.notAdmitted === true &&
+        rejectedCodes.indexOf(result.code) !== -1 && Object.keys(result).sort().join(',') === 'code,notAdmitted,ok,operationId,requestKey';
+      const expected = { authorize: 'authorized', cancel: 'cancelled', duplicate: 'duplicate' }[pending.payload.action];
+      const confirmed = correlated && result.ok === true && result.revised === true && result.statusKey === expected &&
+        result.previousStatus === pending.payload.expectedStatus && /^[a-f0-9]{64}$/.test(String(result.decisionRevision || '')) &&
+        result.decisionRevision !== pending.payload.decisionRevision;
+      if (!rejected && !confirmed) return false;
+      // A receipt proves this operation, not that its decision is still the
+      // newest. Preserve another authoritative snapshot already read while
+      // the operation was uncertain; never regress both panels to an old receipt.
+      const laterRead = confirmed && currentPermutaDecisionTargets_(pending.requestKey, pending.record).find(function(target) {
+        return /^[a-f0-9]{64}$/.test(String(target.decisionRevision || '')) &&
+          target.decisionRevision !== pending.payload.decisionRevision && target.decisionRevision !== result.decisionRevision;
+      });
+      const currentRecord = laterRead ? Object.assign({}, laterRead, { busy: false }) : null;
+      delete state.permutaRevisionPending[pending.requestKey];
+      delete state.scalePermutasBusyKeys[pending.requestKey];
+      delete (state.permutaUncertainKeys || {})[pending.requestKey];
+      currentPermutaDecisionTargets_(pending.requestKey, pending.record).forEach(function(target) {
+        target.busy = false;
+        if (currentRecord) Object.assign(target, currentRecord);
+        else if (confirmed) applyPermutaDecisionResult_(target, result, pending.payload.action, pending.payload.reason);
+        else target.revisable = false; // A fresh authoritative read must qualify another attempt.
+      });
+      if (confirmed) {
+        state.permutaDecisionRevision = (state.permutaDecisionRevision || 0) + 1;
+        if (!state.permutaConfirmedDecisions) state.permutaConfirmedDecisions = {};
+        state.permutaConfirmedDecisions[pending.requestKey] = currentRecord
+          ? { revision: state.permutaDecisionRevision, record: currentRecord }
+          : { revision: state.permutaDecisionRevision, result: result, action: pending.payload.action, reason: pending.payload.reason };
+        invalidateBuiltScaleForPermuta_(pending.serviceIso);
+      }
+      if (state.permutaDecisionKey === pending.requestKey && state.permutaDecisionRevisionMode) {
+        elements.permutaDecisionConfirm.disabled = false;
+        elements.permutaDecisionClose.disabled = false;
+        closePermutaDecision();
+      }
+      renderPermutaRevisionState_();
+      if (rejected) {
+        permutaRevisionMessage_(pending, 'A alteração não foi gravada. Atualize somente os dados das permutas e confira a decisão e a elegibilidade antes de tentar novamente.');
+      } else {
+        const review = scalePermutaRevisionReviewItems_().length && pending.serviceIso === state.scaleLoadedDate;
+        const message = (currentRecord ? 'A alteração foi confirmada no histórico. A tela mantém a outra decisão já consultada. ' : 'Decisão da permuta alterada. ') + (review
+          ? 'Confira os cartões da escala e confirme a revisão antes de gerar os arquivos. Nenhum militar foi movido automaticamente.'
+          : (!currentRecord && pending.payload.action === 'authorize' && pending.serviceIso === state.scaleLoadedDate ? 'Use Aplicar permutas autorizadas para atualizar a escala mantendo seus ajustes.' : 'Seus ajustes da escala foram preservados.'));
+        permutaRevisionMessage_(pending, message);
+        showToast(message);
+      }
+      return true;
+    }
+
+    function holdPermutaRevisionUncertain_(pending) {
+      if ((state.permutaRevisionPending || {})[pending.requestKey] !== pending) return;
+      pending.phase = 'uncertain';
+      delete state.scalePermutasBusyKeys[pending.requestKey];
+      currentPermutaDecisionTargets_(pending.requestKey, pending.record).forEach(function(target) { target.busy = false; });
+      if (!state.permutaUncertainKeys) state.permutaUncertainKeys = {};
+      state.permutaUncertainKeys[pending.requestKey] = { serviceIso: pending.serviceIso, revisionOperationId: pending.payload.operationId };
+      invalidateBuiltScaleForPermuta_(pending.serviceIso);
+      if (state.permutaDecisionKey === pending.requestKey && state.permutaDecisionRevisionMode) {
+        elements.permutaDecisionConfirm.disabled = false;
+        elements.permutaDecisionClose.disabled = false;
+        closePermutaDecision();
+      }
+      renderPermutaRevisionState_();
+      permutaRevisionMessage_(pending, 'A alteração ainda não foi confirmada. O rascunho está preservado. Use Consultar resultado; não envie outra decisão para esta permuta.');
+    }
+
+    function submitPermutaRevision_() {
+      const requestKey = state.permutaDecisionKey;
+      const record = findPermutaDecisionRecord_(requestKey, state.permutaDecisionSource);
+      const action = elements.permutaDecisionActionSelect.value;
+      const reason = elements.permutaDecisionReason.value.trim();
+      function error(message) { elements.permutaDecisionError.textContent = message; elements.permutaDecisionError.hidden = false; }
+      if (!record || (state.permutaRevisionPending || {})[requestKey] || record.busy || state.scalePermutasBusyKeys[requestKey] ||
+          (state.permutaUncertainKeys || {})[requestKey] || (action === 'authorize' && !permutaParticipantsAreCurrent(record)) || hasScaleWriteInFlight_() ||
+          record.decisionRevision !== state.permutaDecisionExpectedRevision || String(record.status || '') !== state.permutaDecisionExpectedStatus) {
+        error('A decisão mudou ou está indisponível. Atualize os dados das permutas antes de tentar novamente.'); return;
+      }
+      if (permutaRevisionActions_(record).indexOf(action) === -1) { error('Selecione uma nova decisão diferente da atual.'); return; }
+      if (!reason || reason.length > 300) { error('Informe o motivo da alteração, com até 300 caracteres.'); return; }
+      let operationId;
+      try { operationId = window.crypto.randomUUID(); } catch (_) { error('Não foi possível preparar uma operação segura. Nenhuma alteração foi enviada.'); return; }
+      if (!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(operationId || '')) { error('Não foi possível preparar uma operação segura. Nenhuma alteração foi enviada.'); return; }
+      const pending = { requestKey: requestKey, record: record, serviceIso: record.serviceIso || scaleDateIsoFromValue_(record.serviceDate), phase: 'sending',
+        payload: { requestKey: requestKey, sourceRow: record.sourceRow, action: action, reason: reason, revisionMode: true,
+          expectedStatus: state.permutaDecisionExpectedStatus, decisionRevision: state.permutaDecisionExpectedRevision, operationId: operationId } };
+      if (!state.permutaRevisionPending) state.permutaRevisionPending = {};
+      state.permutaRevisionPending[requestKey] = pending;
+      state.scalePermutasBusyKeys[requestKey] = true;
+      record.busy = true;
+      elements.permutaDecisionError.hidden = true;
+      elements.permutaDecisionActionSelect.disabled = true;
+      elements.permutaDecisionReason.disabled = true;
+      elements.permutaDecisionConfirm.disabled = true;
+      elements.permutaDecisionClose.disabled = true;
+      renderPermutaRevisionState_();
+      BNX_rpc.run.withSuccessHandler(function(result) {
+        if (!finishPermutaRevision_(pending, result, false)) holdPermutaRevisionUncertain_(pending);
+      }).withFailureHandler(function() { holdPermutaRevisionUncertain_(pending); }).decidePermuta(pending.payload);
+    }
+
+    function queryPermutaRevisionReceipt_(requestKey) {
+      const pending = (state.permutaRevisionPending || {})[requestKey];
+      if (!pending || pending.phase !== 'uncertain') return;
+      pending.phase = 'checking';
+      renderPermutaRevisionState_();
+      BNX_rpc.run.withSuccessHandler(function(receipt) {
+        if (receipt && receipt.found === true && finishPermutaRevision_(pending, receipt.result, true)) return;
+        holdPermutaRevisionUncertain_(pending);
+      }).withFailureHandler(function() { holdPermutaRevisionUncertain_(pending); })
+        .getPermutaDecisionReceipt({ requestKey: requestKey, operationId: pending.payload.operationId });
+    }
+
+    function scalePermutaRevisionReviewItems_() {
+      const dateIso = elements.scaleDate.value;
+      if (!state.scalePreview || state.scaleLoadedDate !== dateIso) return [];
+      const cards = (state.scalePreview.funcoes || []).concat(state.scalePreview.disponiveis || []);
+      return (state.scalePermutas || []).filter(function(record) {
+        if (record.serviceIso && record.serviceIso !== dateIso || permutaDecisionStatusKey_(record) === 'authorized') return false;
+        const key = scalePermutaRecordKey(record);
+        return Boolean((state.scaleAppliedPermutaKeys || {})[key]) || cards.some(function(card) { return card.permutaRequestKey === key; });
+      });
+    }
+
+    function renderScalePermutaRevisionReview_() {
+      const records = scalePermutaRevisionReviewItems_();
+      elements.scalePermutaRevisionReview.hidden = !records.length;
+      elements.scalePermutaRevisionReviewed.disabled = hasScaleWriteInFlight_() || hasBusyScalePermutas_() || hasUncertainScalePermutas_();
+      elements.scalePermutaRevisionReviewText.textContent = records.length
+        ? 'Há permuta antes aplicada que não está mais autorizada. Confira e ajuste os militares no rascunho. Gerar a escala e os arquivos fica bloqueado até a conferência; nenhum cartão foi substituído.' : '';
+    }
+
+    function confirmScalePermutaRevisionReview_() {
+      const records = scalePermutaRevisionReviewItems_();
+      if (!records.length || hasScaleWriteInFlight_() || hasBusyScalePermutas_() || hasUncertainScalePermutas_()) return;
+      if (!window.confirm('Você conferiu e ajustou os militares após a mudança das permutas? A confirmação remove apenas as marcas de permutas revogadas. Os cartões permanecem exatamente como estão; ninguém será substituído automaticamente.')) return;
+      pushScaleDraftHistory();
+      const keys = records.map(scalePermutaRecordKey);
+      (state.scalePreview.funcoes || []).concat(state.scalePreview.disponiveis || []).forEach(function(card) {
+        if (keys.indexOf(card.permutaRequestKey) === -1) return;
+        delete card.permutaRequestKey;
+        delete card.permutaTag;
+      });
+      keys.forEach(function(key) { delete (state.scaleAppliedPermutaKeys || {})[key]; });
+      invalidateBuiltScaleForPermuta_(elements.scaleDate.value);
+      markScaleDraftChanged('Alterações das permutas conferidas. Os militares e seus ajustes foram preservados.');
+      renderScalePermutas();
+      updateScaleActionsForPermutaBusy_();
+    }
+
     function openPermutaDecision(requestKey, action, source) {
       source = source === 'scale' ? 'scale' : 'dashboard';
+      if (action === 'receipt') { queryPermutaRevisionReceipt_(requestKey); return; }
       const record = findPermutaDecisionRecord_(requestKey, source);
+      if (action === 'revise') { openPermutaRevision_(record, source); return; }
       if (['authorize', 'cancel', 'duplicate'].indexOf(action) === -1 || !record ||
           record.statusKey !== 'pending' || record.manageable === false || record.busy || state.scalePermutasBusyKeys[requestKey] ||
           (state.permutaUncertainKeys || {})[requestKey]) return;
@@ -14439,6 +14724,9 @@
       state.permutaDecisionKey = requestKey;
       state.permutaDecisionAction = action;
       state.permutaDecisionSource = source;
+      state.permutaDecisionRevisionMode = false;
+      elements.permutaDecisionActionField.hidden = true;
+      elements.permutaDecisionReason.disabled = false;
       const labels = {
         cancel: { title: 'Cancelar permuta', subtitle: 'O motivo será informado aos militares no e-mail de resultado.', button: 'Confirmar cancelamento' },
         duplicate: { title: 'Marcar como duplicada', subtitle: 'A solicitação será encerrada sem envio de e-mail de resultado.', button: 'Confirmar duplicidade' }
@@ -14468,9 +14756,14 @@
       state.permutaDecisionAction = '';
       state.permutaDecisionKey = '';
       state.permutaDecisionSource = '';
+      state.permutaDecisionRevisionMode = false;
+      state.permutaDecisionExpectedStatus = '';
+      state.permutaDecisionExpectedRevision = '';
+      elements.permutaDecisionActionField.hidden = true;
     }
 
     function submitPermutaDecision() {
+      if (state.permutaDecisionRevisionMode) { submitPermutaRevision_(); return; }
       const action = state.permutaDecisionAction;
       const requestKey = state.permutaDecisionKey;
       const source = state.permutaDecisionSource || 'dashboard';
@@ -14513,11 +14806,14 @@
     function applyPermutaDecisionResult_(target, result, action, reason) {
       target.busy = false;
       target.manageable = false;
+      target.revisable = result.revisable === true;
+      target.decisionRevision = result.decisionRevision || '';
+      target.allowedDecisionActions = Array.isArray(result.allowedDecisionActions) ? result.allowedDecisionActions.slice() : [];
       target.status = result.status || '';
       target.statusKey = result.statusKey || (action === 'authorize' ? 'authorized' : (action === 'cancel' ? 'cancelled' : 'duplicate'));
       target.statusLabel = result.statusLabel || 'Analisada';
       target.emailStatus = result.emailStatus || '';
-      target.cancellationReason = action === 'cancel' ? reason : (action === 'duplicate' ? (reason || 'Solicitação duplicada.') : '');
+      target.cancellationReason = typeof result.cancellationReason === 'string' ? result.cancellationReason : (action === 'cancel' ? reason : (action === 'duplicate' ? (reason || 'Solicitação duplicada.') : ''));
       target.sourceRow = result.sourceRow || target.sourceRow;
       target.recentlyDecided = true;
     }
@@ -15956,6 +16252,7 @@
     });
     elements.permutaDecisionClose.addEventListener('click', closePermutaDecision);
     elements.permutaDecisionConfirm.addEventListener('click', submitPermutaDecision);
+    elements.scalePermutaRevisionReviewed.addEventListener('click', confirmScalePermutaRevisionReview_);
     elements.permutaDecision.addEventListener('click', function(event) {
       if (event.target === elements.permutaDecision) closePermutaDecision();
     });
