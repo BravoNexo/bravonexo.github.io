@@ -7408,7 +7408,7 @@
     function changeWingsMapContext() {
       const mode = elements.wingsMapMode.value === 'planning' ? 'planning' : 'current';
       const month = elements.wingsPlanningMonth.value || nextWingsPlanningMonth();
-      const blocked = state.wingsPendingMoves.length || state.wingsMapBusy || state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsReturnBusy || state.wingsAwayMoveBusy;
+      const blocked = state.wingsPendingMoves.length || state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsReturnBusy || state.wingsAwayMoveBusy || state.wingsMapBusy && !wingsPlanningMode();
       if (blocked || mode === 'planning' && !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
         elements.wingsMapMode.value = state.wingsMapMode;
         elements.wingsPlanningMonth.value = state.wingsPlanningMonth || nextWingsPlanningMonth();
@@ -7419,6 +7419,7 @@
       if (state.wingsExternalSelection) closeWingsExternalDialog(false);
       state.wingsMapMode = mode;
       state.wingsPlanningMonth = month;
+      state.wingsMapBusy = false;
       elements.wingsPlanningMonth.value = month;
       state.wingsMapLoaded = false;
       state.wingsMapData = null;
@@ -7437,9 +7438,10 @@
       const loaded = state.wingsMapLoaded && Boolean(state.wingsMapData);
       const isNew = String(planning.revision || '').indexOf('new:') === 0;
       elements.wingsMapMode.value = state.wingsMapMode;
-      elements.wingsMapMode.disabled = busy || pending;
+      const navigationBusy = state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsReturnBusy || state.wingsAwayMoveBusy || state.wingsMapBusy && !isPlanning;
+      elements.wingsMapMode.disabled = navigationBusy || pending;
       elements.wingsPlanningMonthField.hidden = !isPlanning;
-      elements.wingsPlanningMonth.disabled = busy || pending;
+      elements.wingsPlanningMonth.disabled = navigationBusy || pending;
       if (isPlanning) elements.wingsPlanningMonth.value = state.wingsPlanningMonth;
       elements.wingsPlanningApprove.hidden = !isPlanning;
       elements.wingsPlanningApprove.disabled = !loaded || busy || pending || isNew || !wingsMapCanEdit() || planning.status === 'REVIEW_REQUIRED';
@@ -7480,28 +7482,38 @@
     }
 
     function loadWingsPlanning() {
-      if (state.wingsMapBusy || state.wingsPlanningBusy || state.wingsPendingMoves.length) return;
+      if (state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsReturnBusy || state.wingsAwayMoveBusy || state.wingsPendingMoves.length) return;
       if (state.wingsExternalSelection) closeWingsExternalDialog(false);
       const month = state.wingsPlanningMonth;
       if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) { showToast('Escolha um mês válido.'); return; }
       const requestId = ++state.wingsMapRequestId;
+      const flights = state.wingsPlanningReads || (state.wingsPlanningReads = Object.create(null));
+      const previous = flights[month], flight = previous || {};
+      flight.requestId = requestId; flights[month] = flight;
+      const hasContent = state.wingsMapLoaded && state.wingsMapData && state.wingsMapData.planning && state.wingsMapData.planning.month === month;
       state.wingsMapBusy = true;
-      elements.wingsMapLoading.hidden = false;
+      elements.wingsMapLoading.hidden = Boolean(hasContent);
       elements.wingsMapLoading.textContent = 'Consultando a projeção mensal, sem alterar o mapa vigente…';
-      elements.wingsMapContent.hidden = true;
+      elements.wingsMapContent.hidden = !hasContent;
+      elements.wingsMapUpdated.textContent = hasContent ? 'Atualizando planejamento… Os dados anteriores continuam visíveis.' : 'Consultando planejamento…';
       elements.wingsMapError.hidden = true;
       updateWingsSwapUi();
-      const isCurrent = function() { return requestId === state.wingsMapRequestId && wingsPlanningMode() && month === state.wingsPlanningMonth; };
+      if (previous) return;
+      const isCurrent = function() { return state.wingsPlanningReads === flights && flight.requestId === state.wingsMapRequestId && wingsPlanningMode() && month === state.wingsPlanningMonth; };
       const fail = function(error) {
+        if (flights[month] === flight) delete flights[month];
         if (!isCurrent()) return;
         state.wingsMapBusy = false;
-        state.wingsMapLoaded = false;
+        state.wingsMapLoaded = Boolean(state.wingsMapData && state.wingsMapData.planning && state.wingsMapData.planning.month === month);
         elements.wingsMapLoading.hidden = true;
+        elements.wingsMapContent.hidden = !state.wingsMapLoaded;
+        elements.wingsMapUpdated.textContent = 'Atualização não concluída';
         elements.wingsMapError.textContent = 'Não foi possível consultar o planejamento: ' + (error && error.message ? error.message : error);
         elements.wingsMapError.hidden = false;
         updateWingsSwapUi();
       };
       BNX_rpc.run.withSuccessHandler(function(payload) {
+        if (flights[month] === flight) delete flights[month];
         if (!isCurrent()) return;
         try { acceptWingsPlanningPayload(payload, month); } catch (error) { fail(error); return; }
         state.wingsMapBusy = false;
@@ -7578,7 +7590,9 @@
         showToast('Aplique ou descarte as alterações pendentes antes de atualizar o mapa.');
         return;
       }
+      if (state.wingsPendingMoves.length) return;
       if (state.wingsExternalSelection) closeWingsExternalDialog(false);
+      const hasContent = state.wingsMapLoaded && Boolean(state.wingsMapData);
       if (forceRefresh) {
         state.wingsSwapMode = true;
         state.wingsSwapFirst = null;
@@ -7590,18 +7604,19 @@
         state.wingsAwayMoveSourceRow = 0;
         state.wingsAwayMoveSourceColumn = 0;
         state.wingsPendingMoves = [];
-        state.wingsOriginalMapData = null;
+        if (!hasContent) state.wingsOriginalMapData = null;
         elements.wingsSwapDialog.hidden = true;
         elements.wingsReturnDialog.hidden = true;
         elements.wingsAwayMoveDialog.hidden = true;
       }
       state.wingsMapBusy = true;
-      elements.wingsMapLoading.hidden = false;
+      state.wingsPlanningReads = Object.create(null);
+      elements.wingsMapLoading.hidden = hasContent;
       elements.wingsMapLoading.textContent = 'Consultando o Mapa das Alas oficial…';
-      elements.wingsMapContent.hidden = true;
+      elements.wingsMapContent.hidden = !hasContent;
       elements.wingsMapError.hidden = true;
       elements.wingsMapRefresh.disabled = true;
-      elements.wingsMapUpdated.textContent = 'Consultando o mapa oficial…';
+      elements.wingsMapUpdated.textContent = hasContent ? 'Atualizando mapa… Os dados anteriores continuam visíveis.' : 'Consultando o mapa oficial…';
       updateWingsSwapUi();
 
       BNX_rpc.run
@@ -8853,6 +8868,7 @@
       const canEdit = mapReady && wingsMapCanEdit();
       const newPlanning = planningMode && String(planning.revision || '').indexOf('new:') === 0;
       const writeBusy = state.wingsPlanningBusy || state.wingsCurrentWriteBusy;
+      if (writeBusy || state.wingsReturnBusy || state.wingsAwayMoveBusy) state.wingsPlanningReads = Object.create(null);
       const returnCandidates = mapReady ? wingsReturnCandidates() : [];
       elements.wingsSwapGuidance.hidden = false;
       elements.wingsAwayDropZone.hidden = planningMode;
@@ -9920,19 +9936,27 @@
       elements.expediente24hMonth.value = monthIso;
       const requestId = state.expediente24hRequestId + 1;
       state.expediente24hRequestId = requestId;
-      const preserveDrafts = state.expediente24hPreserveDraftsMonth === monthIso && hasExpediente24hDirty_();
+      const flights = state.expediente24hReads || (state.expediente24hReads = Object.create(null));
+      const previous = flights[monthIso], flight = previous || { replaceUncertain: Boolean(state.expediente24hPendingSave) };
+      flight.requestId = requestId; flights[monthIso] = flight;
+      const hasContent = state.expediente24hData && state.expediente24hData.monthIso === monthIso;
       state.expediente24hBusyRgs = {};
-      elements.expediente24hLoading.hidden = false;
-      elements.expediente24hContent.hidden = true;
+      elements.expediente24hLoading.hidden = Boolean(hasContent);
+      elements.expediente24hContent.hidden = !hasContent;
       elements.expediente24hError.hidden = true;
       elements.expediente24hMessage.hidden = true;
       elements.expediente24hRefresh.disabled = true;
-      elements.expediente24hUpdated.textContent = 'Consultando o mês…';
+      elements.expediente24hUpdated.textContent = hasContent ? 'Atualizando… Os dados e rascunhos continuam visíveis.' : 'Consultando o mês…';
+      if (previous) return;
+      const isCurrent = function() { return state.expediente24hReads === flights && flight.requestId === state.expediente24hRequestId && monthIso === elements.expediente24hMonth.value; };
 
       BNX_rpc.run
         .withSuccessHandler(function(payload) {
-          if (requestId !== state.expediente24hRequestId || monthIso !== elements.expediente24hMonth.value) return;
-          setExpediente24hDashboard_(payload || {}, preserveDrafts);
+          if (flights[monthIso] === flight) delete flights[monthIso];
+          if (!isCurrent()) return;
+          if (!payload || payload.monthIso !== monthIso || !payload.revision || !Array.isArray(payload.militaries)) { failRead('A consulta retornou um mês ou revisão inválidos.'); return; }
+          const preserveDrafts = !flight.replaceUncertain && state.expediente24hData && state.expediente24hData.monthIso === monthIso && hasExpediente24hDirty_();
+          setExpediente24hDashboard_(payload, preserveDrafts);
           state.expediente24hPendingSave = null;
           state.expediente24hPreserveDraftsMonth = '';
           elements.expediente24hLoading.hidden = true;
@@ -9941,19 +9965,22 @@
           renderExpediente24h();
           if (forceRefresh) showToast('Escolhas do Expediente atualizadas.');
         })
-        .withFailureHandler(function(error) {
-          if (requestId !== state.expediente24hRequestId) return;
+        .withFailureHandler(failRead)
+        .getExpediente24hAdmin(monthIso, Boolean(forceRefresh));
+      function failRead(error) {
+          if (flights[monthIso] === flight) delete flights[monthIso];
+          if (!isCurrent()) return;
           elements.expediente24hLoading.hidden = true;
-          elements.expediente24hContent.hidden = state.expediente24hLoadedMonth !== monthIso;
+          elements.expediente24hContent.hidden = !state.expediente24hData || state.expediente24hData.monthIso !== monthIso;
           elements.expediente24hRefresh.disabled = false;
           elements.expediente24hUpdated.textContent = 'Falha na consulta';
           elements.expediente24hError.textContent = 'Não foi possível consultar os serviços do Expediente: ' + (error && error.message ? error.message : error);
           elements.expediente24hError.hidden = false;
-        })
-        .getExpediente24hAdmin(monthIso, Boolean(forceRefresh));
+      }
     }
 
     function invalidateExpediente24hRoster_() {
+      state.expediente24hReads = Object.create(null);
       if (hasExpediente24hDirty_()) {
         state.expediente24hPreserveDraftsMonth = state.expediente24hLoadedMonth || elements.expediente24hMonth.value || currentMonthIso();
       }
@@ -10124,6 +10151,7 @@
         : '';
       elements.expediente24hResultCount.textContent = filtered.length + (filtered.length === 1 ? ' militar' : ' militares');
       const anySaveBusy = Boolean(state.expediente24hSaving || state.expediente24hPendingSave);
+      const reading = Boolean((state.expediente24hReads || {})[elements.expediente24hMonth.value]);
       const dirtyCount = Object.keys(state.expediente24hDirtyRgs || {}).length;
       elements.expediente24hDistribution.classList.toggle('is-dirty', dirtyCount > 0);
       elements.expediente24hDraftStatus.textContent = state.expediente24hSaving ? 'Salvando distribuição…' :
@@ -10132,7 +10160,7 @@
       elements.expediente24hSave.textContent = state.expediente24hSaving ? 'Salvando…' : (state.expediente24hPendingSave ? 'Tentar salvar novamente' : 'Salvar distribuição');
       elements.expediente24hSave.disabled = state.expediente24hSaving || !dirtyCount;
       elements.expediente24hDiscard.disabled = state.expediente24hSaving || !dirtyCount || Boolean(state.expediente24hPendingSave);
-      elements.expediente24hRefresh.disabled = state.expediente24hSaving;
+      elements.expediente24hRefresh.disabled = state.expediente24hSaving || reading;
       elements.expediente24hMonth.disabled = state.expediente24hSaving || Boolean(state.expediente24hPendingSave);
       elements.expediente24hSetup.disabled = anySaveBusy;
       elements.expediente24hExport.disabled = state.expediente24hSaving;
@@ -10330,6 +10358,7 @@
       }
       const submitted = state.expediente24hPendingSave;
       const requestId = ++state.expediente24hRequestId;
+      state.expediente24hReads = Object.create(null);
       state.expediente24hSaving = true;
       markScaleExpediente24hStale_(Object.keys(affectedScaleDates));
       elements.expediente24hError.hidden = true;
@@ -16048,7 +16077,7 @@
       if (state.expediente24hSaving) return;
       if (state.expediente24hPendingSave) {
         if (!window.confirm('O salvamento anterior não foi confirmado. Atualizar consultará os registros atuais e substituirá o rascunho pelo que estiver salvo. Isso não desfaz registros que já tenham sido gravados. Continuar?')) return;
-      } else if (hasExpediente24hDirty_() && !window.confirm('Há escolhas ainda não salvas. Deseja atualizar e descartá-las?')) return;
+      }
       state.expediente24hPreserveDraftsMonth = '';
       loadExpediente24h(true);
     });
@@ -18174,7 +18203,8 @@ installCallPlanOptions();
   function focusedDay() { const date = splitKey(state.focus).dateIso; return ((state.payload || {}).days || []).find(function(day) { return day.dateIso === date; }); }
   function updateControls() {
     const busy = state.loading || state.saving;
-    ['month', 'prev', 'next', 'reload'].forEach(function(name) { nodes[name].disabled = busy; });
+    ['month', 'prev', 'next'].forEach(function(name) { nodes[name].disabled = state.saving; });
+    nodes.reload.disabled = busy;
     nodes.save.disabled = busy || !dirtyCount(); nodes.revert.disabled = busy || !dirtyCount();
     nodes.export.disabled = busy || !state.payload;
     nodes.save.textContent = state.saving ? 'Salvando…' : (dirtyCount() ? 'Salvar ' + dirtyCount() + (dirtyCount() === 1 ? ' alteração' : ' alterações') : 'Salvar alterações');
@@ -18258,9 +18288,13 @@ installCallPlanOptions();
     if (!nodes.source.hidden) nodes.source.href = url;
     renderGrid(); renderSummary(); renderQueue(); renderAudit(); updateControls();
   }
-  function applyPayload(payload) {
+  function applyPayload(payload, preserveDraft) {
     if (!payload || payload.monthIso !== state.month || !Array.isArray(payload.days) || !Array.isArray(payload.roster) || !Array.isArray(payload.assignments) || payload.revision === undefined || payload.revision === null) throw new Error('A consulta retornou dados incompletos. Tente atualizar.');
-    state.payload = payload; state.base = buildBase(payload.assignments); state.draft = Object.create(null); state.errors = Object.create(null); state.pendingSave = null; state.focus = '';
+    const draft = preserveDraft ? state.draft : Object.create(null);
+    state.payload = payload; state.base = buildBase(payload.assignments); state.draft = Object.create(null); state.errors = Object.create(null); state.pendingSave = null;
+    Object.keys(draft).forEach(function(key) { const value = slotValue(draft[key]); state.draft = editDraft(state.base, state.draft, key, value.rg, value.status); });
+    state.errors = validateChanges(payload, state.base, state.draft);
+    if (!preserveDraft) state.focus = '';
     nodes.content.hidden = false; render();
   }
   function askDiscard(action, message, acceptLabel, cancelLabel) {
@@ -18272,20 +18306,30 @@ installCallPlanOptions();
   }
   function fetchMonth(force) {
     const sequence = ++state.sequence, month = state.month;
-    state.loading = true; state.payload = null; state.focus = ''; nodes.loading.hidden = false; nodes.content.hidden = true; showError(''); nodes.confirm.hidden = true; setStatus('Consultando ' + month.split('-').reverse().join('/') + '…'); updateControls();
+    const reads = state.reads || (state.reads = Object.create(null)), previous = reads[month];
+    const flight = previous || {}; flight.sequence = sequence; reads[month] = flight;
+    const hasContent = state.payload && state.payload.monthIso === month;
+    state.loading = true;
+    if (!hasContent) { state.payload = null; state.focus = ''; }
+    nodes.loading.hidden = Boolean(hasContent); nodes.content.hidden = !hasContent; showError(''); nodes.confirm.hidden = true;
+    setStatus(hasContent ? 'Atualizando… Seus dados e rascunhos continuam visíveis.' : 'Consultando ' + month.split('-').reverse().join('/') + '…'); updateControls();
+    if (previous) return;
+    const isCurrent = function() { return state.reads === reads && flight.sequence === state.sequence && month === state.month; };
     BNX_rpc.run.withSuccessHandler(function(payload) {
-      if (sequence !== state.sequence || month !== state.month) return;
+      if (reads[month] === flight) delete reads[month];
+      if (!isCurrent()) return;
       state.loading = false; nodes.loading.hidden = true;
-      try { applyPayload(payload); setStatus('Consulta atualizada. As alterações só são gravadas ao salvar.'); }
-      catch (error) { showError(error.message); nodes.content.hidden = true; setStatus('Falha na consulta.'); }
+      try { applyPayload(payload, Boolean(state.payload && state.payload.monthIso === month)); setStatus(dirtyCount() ? 'Consulta atualizada. Seu rascunho foi mantido; confira antes de salvar.' : 'Consulta atualizada. As alterações só são gravadas ao salvar.'); }
+      catch (error) { showError(error.message); nodes.content.hidden = !state.payload || state.payload.monthIso !== month; setStatus('Falha na consulta.'); }
       updateControls();
     }).withFailureHandler(function(error) {
-      if (sequence !== state.sequence || month !== state.month) return;
-      state.loading = false; nodes.loading.hidden = true; nodes.content.hidden = true; showError('Não foi possível consultar os sobreavisos: ' + text(error && error.message || error)); setStatus('Falha na consulta. Tente Atualizar.'); updateControls();
+      if (reads[month] === flight) delete reads[month];
+      if (!isCurrent()) return;
+      state.loading = false; nodes.loading.hidden = true; nodes.content.hidden = !state.payload || state.payload.monthIso !== month; showError('Não foi possível consultar os sobreavisos: ' + text(error && error.message || error)); setStatus('Falha na consulta. Tente Atualizar.'); updateControls();
     }).getOnCallMonth(month, Boolean(force));
   }
   function navigateMonth(month) {
-    if (state.saving || state.loading || !shiftMonth(month, 0)) { nodes.month.value = state.month; return; }
+    if (state.saving || !shiftMonth(month, 0)) { nodes.month.value = state.month; return; }
     if (month === state.month) return;
     nodes.month.value = state.month;
     discardAnd(function() { state.month = month; nodes.month.value = month; state.draft = Object.create(null); state.pendingSave = null; fetchMonth(false); });
@@ -18332,6 +18376,7 @@ installCallPlanOptions();
     if (!state.pendingSave || state.pendingSave.signature !== signature) state.pendingSave = { signature: signature, requestId: uuid() };
     const request = { monthIso: state.month, revision: state.payload.revision, requestId: state.pendingSave.requestId, changes: changesFrom(state.draft) };
     const sequence = ++state.sequence, month = state.month;
+    state.reads = Object.create(null);
     state.saving = true; showError(''); nodes.confirm.hidden = true; setStatus('Salvando e conferindo as alterações…'); updateControls(); renderQueue();
     BNX_rpc.run.withSuccessHandler(function(result) {
       if (sequence !== state.sequence || month !== state.month) return;
@@ -18358,7 +18403,7 @@ installCallPlanOptions();
     state.initialized = true; state.month = monthNow(); nodes.month.value = state.month;
     nodes.month.addEventListener('change', function() { navigateMonth(nodes.month.value); });
     nodes.prev.addEventListener('click', function() { navigateMonth(shiftMonth(state.month, -1)); }); nodes.next.addEventListener('click', function() { navigateMonth(shiftMonth(state.month, 1)); });
-    nodes.reload.addEventListener('click', function() { if (state.saving || state.loading) return; discardAnd(function() { state.draft = Object.create(null); state.pendingSave = null; fetchMonth(true); }); });
+    nodes.reload.addEventListener('click', function() { loadOnCall(true); });
     nodes.revert.addEventListener('click', function() { if (state.saving || state.loading) return; discardAnd(function() { state.draft = Object.create(null); state.pendingSave = null; state.errors = Object.create(null); showError(''); render(); setStatus('Alterações descartadas. Os registros salvos foram mantidos.'); }); });
     nodes.confirmNo.addEventListener('click', function() { nodes.confirm.hidden = true; state.confirmation = null; nodes.month.value = state.month; });
     nodes.confirmYes.addEventListener('click', function() { if (state.saving || state.loading) return; const action = state.confirmation; state.confirmation = null; nodes.confirm.hidden = true; if (action) action(); });
@@ -18376,9 +18421,9 @@ installCallPlanOptions();
   }
   function loadOnCall(force) {
     if (!initialize() || state.saving) return;
-    if (state.loading && !force) return;
+    if (state.loading) return;
     if (state.payload && state.payload.monthIso === state.month && !force) { render(); return; }
-    if (dirtyCount()) { discardAnd(function() { state.draft = Object.create(null); state.pendingSave = null; fetchMonth(Boolean(force)); }); return; }
+    if (state.pendingSave) { discardAnd(function() { state.draft = Object.create(null); state.pendingSave = null; fetchMonth(Boolean(force)); }); return; }
     fetchMonth(Boolean(force));
   }
   global.BNXOnCall = { loadOnCall: loadOnCall, helpers: { rgKey:rgKey, wingKey:wingKey, monthNow:monthNow, shiftMonth:shiftMonth, keyOf:keyOf, slotValue:slotValue, buildBase:buildBase, effective:effective, editDraft:editDraft, changesFrom:changesFrom, countsFor:countsFor, summaryFor:summaryFor, queueFor:queueFor, excludedFor:excludedFor, validateChanges:validateChanges, requestSignature:requestSignature, exportData:exportData, escape:escape } };
@@ -18953,9 +18998,9 @@ installCallPlanOptions();
     message(''); formChanged(); el['sn-text'].focus();
   }
   function load(keepEditor, initialMode) {
-    if (!S.open || S.busy || S.uncertain || inWrite()) return;
+    if (!S.open || S.busy || S.reading || S.uncertain || inWrite()) return;
     const date = S.date, session = S.session, request = ++S.read;
-    S.reading = true; message('Consultando as programações salvas…'); renderList(); controls();
+    S.reading = true; message(S.snapshot ? 'Atualizando programações… A lista e seu texto continuam visíveis.' : 'Consultando as programações salvas…'); renderList(); controls();
     BNX_rpc.run.withSuccessHandler(function(snapshot) {
       if (!S.open || session !== S.session || request !== S.read || date !== currentDate()) return;
       S.reading = false;
@@ -18964,7 +19009,7 @@ installCallPlanOptions();
       if (keepEditor && S.editing) S.expectedRevision = snapshot.revision;
       message(keepEditor && S.editing ? 'Programações atualizadas. Seu texto foi mantido; confira antes de salvar.' : '');
       renderList(); controls();
-      if (initialMode) edit(null, initialMode);
+      if (initialMode && !S.editing && !S.dirty) edit(null, initialMode);
     }).withFailureHandler(function(error) {
       if (!S.open || session !== S.session || request !== S.read || date !== currentDate()) return;
       S.reading = false; message('Não foi possível consultar as observações: ' + String(error && error.message || error || 'falha de comunicação'), true); controls();
