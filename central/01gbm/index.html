@@ -2831,9 +2831,9 @@
       for (const key of ['received', 'used', 'balance']) nodes[key].textContent = data && !state.loading ? String(data[key]) : '—';
       nodes.warning.hidden = !data || state.loading || data.entries.length > 0 && data.balance >= 0;
       nodes.warning.textContent = data && !state.loading && !data.entries.length
-        ? 'Cadastre as vagas recebidas deste mês para apurar o saldo. Os RAS já agendados ou realizados estão contabilizados em Utilizadas.'
+        ? 'Cadastre as vagas recebidas deste mês para apurar o saldo. As oportunidades já publicadas estão contabilizadas em Disponibilizadas.'
         : data && !state.loading && data.balance < 0
-          ? 'Há ' + Math.abs(data.balance) + ' RAS utilizados além dos recebimentos registrados neste mês. Confira os repasses do CBA; nenhum lançamento de RAS foi bloqueado.' : '';
+          ? 'Há ' + Math.abs(data.balance) + ' vagas disponibilizadas além dos recebimentos registrados neste mês. Confira os repasses do CBA; nenhum lançamento de RAS foi bloqueado.' : '';
       nodes['message-text'].textContent = state.message;
       nodes.message.className = 'ras-admin-message' + (state.message ? state.error ? ' failure' : ' success' : '');
       // The receipt-recovery button may be appended by the existing transport.
@@ -3913,9 +3913,9 @@
 
             <section class="ras-cycle-config ras-monthly-budget" aria-labelledby="ras-monthly-budget-title">
               <div class="ras-monthly-budget-heading"><h3 id="ras-monthly-budget-title">Vagas recebidas do CBA</h3><div class="ras-monthly-budget-period"><label for="ras-monthly-budget-month">Mês de utilização</label><input id="ras-monthly-budget-month" type="month" required aria-label="Mês de utilização das vagas"><button id="ras-monthly-budget-refresh" type="button">Atualizar saldo</button></div></div>
-              <p class="ras-cycle-config-help">Controle mensal independente do ciclo interno. Cada recebimento soma ao total do mês. Cada RAS agendado ou realizado utiliza 1 vaga no mês do serviço. Cancelamentos devolvem a vaga ao mesmo mês; o saldo não é transferido para outro mês.</p>
-              <div class="ras-monthly-budget-stats"><div class="stat"><span>Recebidas</span><strong id="ras-monthly-budget-received">—</strong></div><div class="stat"><span>Utilizadas</span><strong id="ras-monthly-budget-used">—</strong></div><div class="stat"><span>Saldo do mês</span><strong id="ras-monthly-budget-balance">—</strong></div></div>
-              <div id="ras-monthly-budget-loading" class="ras-admin-loading" role="status" hidden>Consultando os recebimentos e RAS deste mês…</div>
+              <p class="ras-cycle-config-help">Controle mensal independente do ciclo interno. Cada recebimento soma ao total do mês. O saldo diminui ao disponibilizar uma vaga no mês do serviço, incluindo concessões diretas, sem novo desconto quando ela é concedida. Vagas canceladas não consomem o saldo. O saldo não é transferido para outro mês.</p>
+              <div class="ras-monthly-budget-stats"><div class="stat"><span>Recebidas</span><strong id="ras-monthly-budget-received">—</strong></div><div class="stat"><span>Disponibilizadas</span><strong id="ras-monthly-budget-used">—</strong></div><div class="stat"><span>Saldo do mês</span><strong id="ras-monthly-budget-balance">—</strong></div></div>
+              <div id="ras-monthly-budget-loading" class="ras-admin-loading" role="status" hidden>Consultando os recebimentos e oportunidades deste mês…</div>
               <div id="ras-monthly-budget-warning" class="ras-admin-warning" role="status" hidden></div>
               <form id="ras-monthly-budget-form" class="ras-monthly-budget-form"><div class="field"><label for="ras-monthly-budget-quantity">Quantidade recebida neste lançamento</label><input id="ras-monthly-budget-quantity" type="number" min="1" max="100000" step="1" inputmode="numeric" autocomplete="off" required></div><div class="field"><label for="ras-monthly-budget-reason">Motivo / referência do recebimento</label><textarea id="ras-monthly-budget-reason" maxlength="2000" required placeholder="Ex.: distribuição mensal do CBA ou repasse complementar"></textarea></div><button id="ras-monthly-budget-save" class="primary" type="submit">Registrar recebimento</button></form>
               <div id="ras-monthly-budget-message" class="ras-admin-message" role="status" aria-live="polite" hidden><span id="ras-monthly-budget-message-text"></span></div>
