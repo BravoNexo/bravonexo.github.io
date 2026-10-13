@@ -2616,7 +2616,7 @@
     },
     disconnect: function() { activeTransport = undefined; }
   });
-  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin"],transport:function(request){
+  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin","updateRasMonthlyReceiptAdmin"],transport:function(request){
     if (!activeTransport) {
       var error = new Error("A Central ainda não está conectada ao servidor autorizado. Esta operação não foi enviada.");
       error.code = "RPC_TRANSPORT_UNAVAILABLE"; request.failure(error); return;
@@ -2624,7 +2624,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true}</script><script src="./central-client.js?v=5f3eb0fe0148f62d84d4" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true}</script><script src="./central-client.js?v=49062352174deb58a068" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -2707,7 +2707,11 @@
     .ras-monthly-budget-form textarea { width:100%; min-height:64px; resize:vertical; }
     .ras-monthly-budget-form button { min-height:38px; }
     .ras-monthly-budget .table-wrap { margin-top:12px; max-height:260px; overflow:auto; }
-    .ras-monthly-budget td:last-child { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .ras-monthly-budget td:nth-child(3) { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .ras-monthly-budget-edit-period { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .ras-monthly-budget-edit-period input { width:150px; min-height:36px; }
+    .ras-monthly-budget-edit-period[hidden] { display:none; }
+    .ras-monthly-budget-actions { display:flex; gap:8px; flex-wrap:wrap; }
     @media(max-width:700px) { .ras-monthly-budget-form { grid-template-columns:1fr; } .ras-monthly-budget-stats { gap:6px; } .ras-monthly-budget-stats .stat { padding:10px; } .ras-monthly-budget-stats .stat span { font-size:11px; } }
   </style>
 <script data-ras-monthly-budget-ui>
@@ -2720,6 +2724,7 @@
   'use strict';
   const READ = 'getRasMonthlyBudgetAdmin';
   const WRITE = 'saveRasMonthlyReceiptAdmin';
+  const UPDATE = 'updateRasMonthlyReceiptAdmin';
   const MONTH = /^[0-9]{4}-(?:0[1-9]|1[0-2])(?![\s\S])/;
   const plain = value => value && typeof value === 'object' && !Array.isArray(value);
   const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -2748,14 +2753,31 @@
   }
   function createController({ invoke, now = () => new Date(), onState = () => {} }) {
     if (typeof invoke !== 'function' || typeof onState !== 'function' || typeof now !== 'function') throw invalid('Configuração mensal indisponível.');
-    let state = { month: currentMonth(now()), data: null, loading: false, saving: false, reviewRequired: false, quantity: '', reason: '', message: '', error: false };
-    let generation = 0, pendingRead = null;
+    let state = { month: currentMonth(now()), data: null, loading: false, readReady: false, saving: false, reviewRequired: false, quantity: '', reason: '', edit: null, editMonth: '', editStale: false, message: '', error: false };
+    let generation = 0, pendingRead = null, previousDraft = null;
     function publish() { onState(clone(state)); }
     function setMessage(message, error = false) { state.message = message; state.error = error; }
     function getState() { return clone(state); }
     function setDraft(quantity, reason) {
       if (state.saving || state.reviewRequired) return;
       state.quantity = String(quantity); state.reason = String(reason); publish();
+    }
+    function startEdit(id) {
+      if (state.saving || state.reviewRequired || state.loading || !state.readReady || !state.data || state.edit) return false;
+      const item = state.data.entries.find(value => value.id === id);
+      if (!item) return false;
+      previousDraft = { quantity: state.quantity, reason: state.reason };
+      state.edit = { ...clone(item), month: state.month }; state.editMonth = state.month; state.editStale = false;
+      state.quantity = String(item.quantity); state.reason = item.reason; setMessage(''); publish(); return true;
+    }
+    function setEditMonth(month) {
+      if (!state.edit || state.saving || state.reviewRequired) return false;
+      state.editMonth = String(month); publish(); return true;
+    }
+    function cancelEdit() {
+      if (!state.edit || state.saving || state.reviewRequired) return false;
+      state.quantity = previousDraft && previousDraft.quantity || ''; state.reason = previousDraft && previousDraft.reason || '';
+      state.edit = null; state.editMonth = ''; state.editStale = false; previousDraft = null; setMessage(''); publish(); return true;
     }
     function refresh(force = false) {
       if (pendingRead && pendingRead.month === state.month) {
@@ -2765,10 +2787,18 @@
         return pendingRead.promise;
       }
       const month = state.month, requestGeneration = ++generation;
-      state.loading = true; publish();
+      state.loading = true; state.readReady = false; publish();
       const promise = Promise.resolve().then(() => invoke(READ, [{ month }])).then(value => {
         if (requestGeneration !== generation || month !== state.month) return null;
-        state.data = budget(value, month); state.loading = false; publish(); return clone(state.data);
+        state.data = budget(value, month); state.loading = false; state.readReady = true;
+        if (state.edit && !state.saving) {
+          const item = state.data.entries.find(value => value.id === state.edit.id);
+          if (!item || item.quantity !== state.edit.quantity || item.reason !== state.edit.reason) {
+            state.editStale = true;
+            setMessage('Este recebimento foi alterado ou deixou de pertencer a este mês. Cancele a edição e selecione o registro atualizado. Os campos foram preservados.', true);
+          }
+        }
+        publish(); return clone(state.data);
       }).catch(error => {
         if (requestGeneration !== generation || month !== state.month) return null;
         state.loading = false;
@@ -2783,48 +2813,64 @@
       pendingRead = { month, promise }; return promise;
     }
     function selectMonth(month) {
-      if (state.saving || state.reviewRequired || !MONTH.test(month || '')) return false;
+      if (state.saving || state.reviewRequired || state.edit || !MONTH.test(month || '')) return false;
       if (month === state.month) return true;
-      ++generation; state.month = month; state.data = null; state.loading = false; setMessage(''); publish(); void refresh(); return true;
+      ++generation; state.month = month; state.data = null; state.loading = false; state.readReady = false; setMessage(''); publish(); void refresh(); return true;
     }
     async function save() {
       if (state.saving || state.reviewRequired) return false;
-      const raw = state.quantity.trim(), quantity = Number(raw), reason = state.reason.trim(), month = state.month;
+      const editing = state.edit && clone(state.edit);
+      if (editing && (state.editStale || !state.readReady || state.loading)) {
+        setMessage(state.editStale ? 'O registro usado nesta edição está desatualizado. Cancele a edição e selecione o recebimento atualizado. Os campos foram preservados.' : 'Aguarde uma consulta confirmada do saldo antes de salvar esta edição. Os campos foram preservados.', true);
+        publish(); return false;
+      }
+      const raw = state.quantity.trim(), quantity = Number(raw), reason = state.reason.trim(), month = editing ? state.editMonth : state.month;
+      if (!MONTH.test(month || '')) { setMessage('Informe um mês de utilização válido para o recebimento.', true); publish(); return false; }
       if (!/^\d+$/.test(raw) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 100000) {
         setMessage('Informe uma quantidade inteira de 1 a 100.000 vagas.', true); publish(); return false;
       }
       if (!reason || reason.length > 2000) { setMessage('Informe o motivo do recebimento, com até 2.000 caracteres.', true); publish(); return false; }
-      state.saving = true; setMessage('Registrando o recebimento. Aguarde a confirmação…'); publish();
+      state.saving = true; setMessage(editing ? 'Salvando as alterações. Aguarde a confirmação…' : 'Registrando o recebimento. Aguarde a confirmação…'); publish();
       try {
-        const result = await invoke(WRITE, [{ month, quantity, reason }]);
+        const request = editing ? { id: editing.id, month, quantity, reason, expected: { month: editing.month, quantity: editing.quantity, reason: editing.reason } } : { month, quantity, reason };
+        const result = await invoke(editing ? UPDATE : WRITE, [request]);
         const receipt = entry(result && result.receipt, true);
-        if (result.ok !== true || receipt.month !== month || receipt.quantity !== quantity || receipt.reason !== reason) {
+        if (result.ok !== true || receipt.month !== month || receipt.quantity !== quantity || receipt.reason !== reason || editing && (receipt.id !== editing.id || receipt.createdAt !== editing.createdAt)) {
           throw invalid('O recebimento enviado não foi confirmado com os mesmos dados. Confira o histórico antes de repetir.');
         }
-        state.saving = false; state.quantity = ''; state.reason = ''; state.data = null;
+        state.saving = false; state.quantity = ''; state.reason = ''; state.edit = null; state.editMonth = ''; state.editStale = false; previousDraft = null; state.data = null; state.readReady = false;
         ++generation; pendingRead = null;
-        setMessage(typeof result.message === 'string' && result.message ? result.message : 'Recebimento registrado com sucesso.'); publish();
+        setMessage(typeof result.message === 'string' && result.message ? result.message : editing ? 'Recebimento de vagas atualizado.' : 'Recebimento registrado com sucesso.'); publish();
         await refresh(); return true;
       } catch (error) {
         state.saving = false;
         state.reviewRequired = error && error.code === 'RAS_MONTHLY_INVALID';
+        if (editing && error && ['RAS_MONTHLY_EDIT_CONFLICT', 'RAS_MONTHLY_RECEIPT_NOT_FOUND'].includes(error.code)) {
+          state.editStale = true; state.readReady = false;
+        }
         setMessage((error && error.message || 'Não foi possível confirmar o recebimento.') + ' Os campos foram preservados.', true); publish(); return false;
       }
     }
     publish();
-    return Object.freeze({ getState, setDraft, selectMonth, refresh, save });
+    return Object.freeze({ getState, setDraft, startEdit, setEditMonth, cancelEdit, selectMonth, refresh, save });
   }
   function mount({ document, runner, now }) {
     const el = id => document.getElementById('ras-monthly-budget-' + id);
-    const nodes = Object.fromEntries(['month', 'received', 'used', 'balance', 'warning', 'quantity', 'reason', 'form', 'save', 'refresh', 'loading', 'rows', 'empty', 'message', 'message-text'].map(id => [id, el(id)]));
+    const nodes = Object.fromEntries(['month', 'received', 'used', 'balance', 'warning', 'quantity', 'reason', 'edit-heading', 'edit-month-wrap', 'edit-month', 'cancel', 'form', 'save', 'refresh', 'loading', 'rows', 'empty', 'message', 'message-text'].map(id => [id, el(id)]));
     if (Object.values(nodes).some(value => !value)) throw invalid('O painel mensal não está disponível.');
     const invoke = (method, args) => new Promise((resolve, reject) => runner.withSuccessHandler(resolve).withFailureHandler(reject)[method](...args));
     function render(state) {
       nodes.month.value = state.month;
-      nodes.month.disabled = state.saving || state.reviewRequired;
-      nodes.quantity.disabled = nodes.reason.disabled = nodes.save.disabled = state.saving || state.reviewRequired;
+      const locked = state.saving || state.reviewRequired;
+      nodes.month.disabled = locked || !!state.edit;
+      nodes.quantity.disabled = nodes.reason.disabled = locked;
+      nodes.save.disabled = locked || !!state.edit && (state.editStale || !state.readReady || state.loading);
+      nodes['edit-heading'].hidden = nodes['edit-month-wrap'].hidden = nodes.cancel.hidden = !state.edit;
+      nodes['edit-heading'].textContent = state.edit ? 'Editar recebimento do mês ' + state.edit.month : 'Editar recebimento';
+      nodes['edit-month'].value = state.editMonth; nodes['edit-month'].required = !!state.edit; nodes['edit-month'].disabled = locked || !state.edit;
+      nodes.cancel.disabled = locked;
       nodes.refresh.disabled = state.loading || state.saving;
-      nodes.save.textContent = state.saving ? 'Aguardando confirmação…' : 'Registrar recebimento';
+      nodes.save.textContent = state.saving ? 'Aguardando confirmação…' : state.edit ? 'Salvar alterações' : 'Registrar recebimento';
       nodes.quantity.value = state.quantity; nodes.reason.value = state.reason;
       nodes.loading.hidden = !state.loading;
       const data = state.data;
@@ -2846,6 +2892,10 @@
         for (const value of [date, String(item.quantity), item.reason]) {
           const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
         }
+        const actions = document.createElement('td'), editButton = document.createElement('button');
+        editButton.type = 'button'; editButton.textContent = state.edit && state.edit.id === item.id ? 'Em edição' : 'Editar';
+        editButton.disabled = locked || !!state.edit || !state.readReady;
+        editButton.addEventListener('click', () => { controller.startEdit(item.id); }); actions.appendChild(editButton); row.appendChild(actions);
         nodes.rows.appendChild(row);
       }
       nodes.empty.hidden = state.loading || !data || data.entries.length > 0;
@@ -2853,11 +2903,13 @@
     const controller = createController({ invoke, ...(now ? { now } : {}), onState: render });
     nodes.form.addEventListener('submit', event => { event.preventDefault(); controller.setDraft(nodes.quantity.value, nodes.reason.value); void controller.save(); });
     for (const id of ['quantity', 'reason']) nodes[id].addEventListener('input', () => controller.setDraft(nodes.quantity.value, nodes.reason.value));
+    nodes['edit-month'].addEventListener('input', () => { controller.setEditMonth(nodes['edit-month'].value); });
+    nodes.cancel.addEventListener('click', () => { controller.cancelEdit(); });
     nodes.month.addEventListener('change', () => { if (!controller.selectMonth(nodes.month.value)) nodes.month.value = controller.getState().month; });
     nodes.refresh.addEventListener('click', () => { void controller.refresh(); });
     return controller;
   }
-  return Object.freeze({ READ, WRITE, MONTH, currentMonth, budget, createController, mount });
+  return Object.freeze({ READ, WRITE, UPDATE, MONTH, currentMonth, budget, createController, mount });
 });
 
 </script>
@@ -3917,9 +3969,11 @@
               <div class="ras-monthly-budget-stats"><div class="stat"><span>Recebidas</span><strong id="ras-monthly-budget-received">—</strong></div><div class="stat"><span>Disponibilizadas</span><strong id="ras-monthly-budget-used">—</strong></div><div class="stat"><span>Saldo do mês</span><strong id="ras-monthly-budget-balance">—</strong></div></div>
               <div id="ras-monthly-budget-loading" class="ras-admin-loading" role="status" hidden>Consultando os recebimentos e oportunidades deste mês…</div>
               <div id="ras-monthly-budget-warning" class="ras-admin-warning" role="status" hidden></div>
-              <form id="ras-monthly-budget-form" class="ras-monthly-budget-form"><div class="field"><label for="ras-monthly-budget-quantity">Quantidade recebida neste lançamento</label><input id="ras-monthly-budget-quantity" type="number" min="1" max="100000" step="1" inputmode="numeric" autocomplete="off" required></div><div class="field"><label for="ras-monthly-budget-reason">Motivo / referência do recebimento</label><textarea id="ras-monthly-budget-reason" maxlength="2000" required placeholder="Ex.: distribuição mensal do CBA ou repasse complementar"></textarea></div><button id="ras-monthly-budget-save" class="primary" type="submit">Registrar recebimento</button></form>
+              <h4 id="ras-monthly-budget-edit-heading" hidden>Editar recebimento</h4>
+              <div id="ras-monthly-budget-edit-month-wrap" class="ras-monthly-budget-edit-period" hidden><label for="ras-monthly-budget-edit-month">Mês de utilização do recebimento</label><input id="ras-monthly-budget-edit-month" type="month" form="ras-monthly-budget-form" aria-label="Mês de utilização do recebimento em edição" disabled></div>
+              <form id="ras-monthly-budget-form" class="ras-monthly-budget-form"><div class="field"><label for="ras-monthly-budget-quantity">Quantidade recebida neste lançamento</label><input id="ras-monthly-budget-quantity" type="number" min="1" max="100000" step="1" inputmode="numeric" autocomplete="off" required></div><div class="field"><label for="ras-monthly-budget-reason">Motivo / referência do recebimento</label><textarea id="ras-monthly-budget-reason" maxlength="2000" required placeholder="Ex.: distribuição mensal do CBA ou repasse complementar"></textarea></div><div class="ras-monthly-budget-actions"><button id="ras-monthly-budget-save" class="primary" type="submit">Registrar recebimento</button><button id="ras-monthly-budget-cancel" type="button" hidden>Cancelar edição</button></div></form>
               <div id="ras-monthly-budget-message" class="ras-admin-message" role="status" aria-live="polite" hidden><span id="ras-monthly-budget-message-text"></span></div>
-              <div class="table-wrap"><table><thead><tr><th>Registrado em</th><th>Vagas</th><th>Motivo / referência</th></tr></thead><tbody id="ras-monthly-budget-rows"></tbody></table></div>
+              <div class="table-wrap"><table><thead><tr><th>Registrado em</th><th>Vagas</th><th>Motivo / referência</th><th>Ações</th></tr></thead><tbody id="ras-monthly-budget-rows"></tbody></table></div>
               <div id="ras-monthly-budget-empty" class="empty" hidden>Nenhum recebimento registrado para este mês.</div>
             </section>
             <section class="ras-cycle-config" aria-labelledby="ras-cycle-config-title">
