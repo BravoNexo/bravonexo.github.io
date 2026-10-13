@@ -2616,7 +2616,7 @@
     },
     disconnect: function() { activeTransport = undefined; }
   });
-  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility"],transport:function(request){
+  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin"],transport:function(request){
     if (!activeTransport) {
       var error = new Error("A Central ainda não está conectada ao servidor autorizado. Esta operação não foi enviada.");
       error.code = "RPC_TRANSPORT_UNAVAILABLE"; request.failure(error); return;
@@ -2624,7 +2624,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true}</script><script src="./central-client.js?v=343e6b0c00a2a173a651" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true}</script><script src="./central-client.js?v=1f976b7ca7ba889e867c" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -2693,7 +2693,175 @@
   return Object.freeze({ expectedRecordId, classifyResult });
 });
 
-</script></head>
+</script><style data-ras-monthly-budget-style>
+    .ras-monthly-budget-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+    .ras-monthly-budget-heading h3 { margin:0; }
+    .ras-monthly-budget-period { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .ras-monthly-budget-period label { font-size:12px; color:#345667; }
+    .ras-monthly-budget-period input { width:150px; min-height:36px; }
+    .ras-monthly-budget-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:12px 0; }
+    .ras-monthly-budget-stats .stat { min-width:0; background:#fff; }
+    .ras-monthly-budget-stats .stat strong { font-size:25px; }
+    .ras-monthly-budget-form { display:grid; grid-template-columns:140px minmax(180px,1fr) auto; align-items:end; gap:10px; margin:12px 0; }
+    .ras-monthly-budget-form .field { margin:0; min-width:0; }
+    .ras-monthly-budget-form textarea { width:100%; min-height:64px; resize:vertical; }
+    .ras-monthly-budget-form button { min-height:38px; }
+    .ras-monthly-budget .table-wrap { margin-top:12px; max-height:260px; overflow:auto; }
+    .ras-monthly-budget td:last-child { white-space:pre-wrap; overflow-wrap:anywhere; }
+    @media(max-width:700px) { .ras-monthly-budget-form { grid-template-columns:1fr; } .ras-monthly-budget-stats { gap:6px; } .ras-monthly-budget-stats .stat { padding:10px; } .ras-monthly-budget-stats .stat span { font-size:11px; } }
+  </style>
+<script data-ras-monthly-budget-ui>
+(function(root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.BNXRasMonthlyBudgetUi = api;
+})(typeof globalThis === 'object' ? globalThis : this, function() {
+  'use strict';
+  const READ = 'getRasMonthlyBudgetAdmin';
+  const WRITE = 'saveRasMonthlyReceiptAdmin';
+  const MONTH = /^[0-9]{4}-(?:0[1-9]|1[0-2])(?![\s\S])/;
+  const plain = value => value && typeof value === 'object' && !Array.isArray(value);
+  const integer = value => Number.isSafeInteger(value) && value >= 0;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  function invalid(message) { const e = new Error(message); e.code = 'RAS_MONTHLY_INVALID'; return e; }
+  function currentMonth(now = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit' }).formatToParts(now);
+    return parts.find(p => p.type === 'year').value + '-' + parts.find(p => p.type === 'month').value;
+  }
+  function entry(value, requireMonth = false) {
+    if (!plain(value) || typeof value.id !== 'string' || !value.id || value.id.length > 200 ||
+        !integer(value.quantity) || value.quantity < 1 || value.quantity > 100000 ||
+        typeof value.reason !== 'string' || !value.reason.trim() || value.reason.length > 2000 ||
+        typeof value.createdAt !== 'string' || value.createdAt.length > 100 || !Number.isFinite(Date.parse(value.createdAt)) ||
+        requireMonth && !MONTH.test(value.month || '')) throw invalid('O servidor não devolveu um recebimento mensal válido.');
+    return { id: value.id, quantity: value.quantity, reason: value.reason, createdAt: value.createdAt, ...(requireMonth ? { month: value.month } : {}) };
+  }
+  function budget(value, month) {
+    if (!plain(value) || value.month !== month || !MONTH.test(month || '') || !integer(value.received) || !integer(value.used) ||
+        !Number.isSafeInteger(value.balance) || value.balance !== value.received - value.used || !Array.isArray(value.entries) || value.entries.length > 10000) {
+      throw invalid('O servidor não devolveu a contagem mensal confirmada.');
+    }
+    const entries = value.entries.map(v => entry(v));
+    if (new Set(entries.map(v => v.id)).size !== entries.length) throw invalid('A relação de recebimentos contém registros repetidos.');
+    return { month, received: value.received, used: value.used, balance: value.balance, entries };
+  }
+  function createController({ invoke, now = () => new Date(), onState = () => {} }) {
+    if (typeof invoke !== 'function' || typeof onState !== 'function' || typeof now !== 'function') throw invalid('Configuração mensal indisponível.');
+    let state = { month: currentMonth(now()), data: null, loading: false, saving: false, reviewRequired: false, quantity: '', reason: '', message: '', error: false };
+    let generation = 0, pendingRead = null;
+    function publish() { onState(clone(state)); }
+    function setMessage(message, error = false) { state.message = message; state.error = error; }
+    function getState() { return clone(state); }
+    function setDraft(quantity, reason) {
+      if (state.saving || state.reviewRequired) return;
+      state.quantity = String(quantity); state.reason = String(reason); publish();
+    }
+    function refresh(force = false) {
+      if (pendingRead && pendingRead.month === state.month) {
+        // A post-mutation refresh must not disappear behind a pre-write read.
+        // Queue one fresh consultation after that read; never replay a write.
+        if (force) pendingRead.refreshAfter = true;
+        return pendingRead.promise;
+      }
+      const month = state.month, requestGeneration = ++generation;
+      state.loading = true; publish();
+      const promise = Promise.resolve().then(() => invoke(READ, [{ month }])).then(value => {
+        if (requestGeneration !== generation || month !== state.month) return null;
+        state.data = budget(value, month); state.loading = false; publish(); return clone(state.data);
+      }).catch(error => {
+        if (requestGeneration !== generation || month !== state.month) return null;
+        state.loading = false;
+        setMessage(error && error.message || 'Não foi possível consultar as vagas deste mês.', true); publish(); return null;
+      }).finally(() => {
+        if (pendingRead && pendingRead.promise === promise) {
+          const refreshAfter = pendingRead.refreshAfter;
+          pendingRead = null;
+          if (refreshAfter && month === state.month) void refresh();
+        }
+      });
+      pendingRead = { month, promise }; return promise;
+    }
+    function selectMonth(month) {
+      if (state.saving || state.reviewRequired || !MONTH.test(month || '')) return false;
+      if (month === state.month) return true;
+      ++generation; state.month = month; state.data = null; state.loading = false; setMessage(''); publish(); void refresh(); return true;
+    }
+    async function save() {
+      if (state.saving || state.reviewRequired) return false;
+      const raw = state.quantity.trim(), quantity = Number(raw), reason = state.reason.trim(), month = state.month;
+      if (!/^\d+$/.test(raw) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 100000) {
+        setMessage('Informe uma quantidade inteira de 1 a 100.000 vagas.', true); publish(); return false;
+      }
+      if (!reason || reason.length > 2000) { setMessage('Informe o motivo do recebimento, com até 2.000 caracteres.', true); publish(); return false; }
+      state.saving = true; setMessage('Registrando o recebimento. Aguarde a confirmação…'); publish();
+      try {
+        const result = await invoke(WRITE, [{ month, quantity, reason }]);
+        const receipt = entry(result && result.receipt, true);
+        if (result.ok !== true || receipt.month !== month || receipt.quantity !== quantity || receipt.reason !== reason) {
+          throw invalid('O recebimento enviado não foi confirmado com os mesmos dados. Confira o histórico antes de repetir.');
+        }
+        state.saving = false; state.quantity = ''; state.reason = ''; state.data = null;
+        ++generation; pendingRead = null;
+        setMessage(typeof result.message === 'string' && result.message ? result.message : 'Recebimento registrado com sucesso.'); publish();
+        await refresh(); return true;
+      } catch (error) {
+        state.saving = false;
+        state.reviewRequired = error && error.code === 'RAS_MONTHLY_INVALID';
+        setMessage((error && error.message || 'Não foi possível confirmar o recebimento.') + ' Os campos foram preservados.', true); publish(); return false;
+      }
+    }
+    publish();
+    return Object.freeze({ getState, setDraft, selectMonth, refresh, save });
+  }
+  function mount({ document, runner, now }) {
+    const el = id => document.getElementById('ras-monthly-budget-' + id);
+    const nodes = Object.fromEntries(['month', 'received', 'used', 'balance', 'warning', 'quantity', 'reason', 'form', 'save', 'refresh', 'loading', 'rows', 'empty', 'message', 'message-text'].map(id => [id, el(id)]));
+    if (Object.values(nodes).some(value => !value)) throw invalid('O painel mensal não está disponível.');
+    const invoke = (method, args) => new Promise((resolve, reject) => runner.withSuccessHandler(resolve).withFailureHandler(reject)[method](...args));
+    function render(state) {
+      nodes.month.value = state.month;
+      nodes.month.disabled = state.saving || state.reviewRequired;
+      nodes.quantity.disabled = nodes.reason.disabled = nodes.save.disabled = state.saving || state.reviewRequired;
+      nodes.refresh.disabled = state.loading || state.saving;
+      nodes.save.textContent = state.saving ? 'Aguardando confirmação…' : 'Registrar recebimento';
+      nodes.quantity.value = state.quantity; nodes.reason.value = state.reason;
+      nodes.loading.hidden = !state.loading;
+      const data = state.data;
+      for (const key of ['received', 'used', 'balance']) nodes[key].textContent = data && !state.loading ? String(data[key]) : '—';
+      nodes.warning.hidden = !data || state.loading || data.entries.length > 0 && data.balance >= 0;
+      nodes.warning.textContent = data && !state.loading && !data.entries.length
+        ? 'Cadastre as vagas recebidas deste mês para apurar o saldo. Os RAS já agendados ou realizados estão contabilizados em Utilizadas.'
+        : data && !state.loading && data.balance < 0
+          ? 'Há ' + Math.abs(data.balance) + ' RAS utilizados além dos recebimentos registrados neste mês. Confira os repasses do CBA; nenhum lançamento de RAS foi bloqueado.' : '';
+      nodes['message-text'].textContent = state.message;
+      nodes.message.className = 'ras-admin-message' + (state.message ? state.error ? ' failure' : ' success' : '');
+      // The receipt-recovery button may be appended by the existing transport.
+      // Never replace this container's children while a sent write is uncertain.
+      nodes.message.hidden = !state.message && nodes.message.children.length < 2;
+      nodes.rows.replaceChildren();
+      for (const item of data && !state.loading ? data.entries : []) {
+        const row = document.createElement('tr');
+        const date = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }).format(new Date(item.createdAt));
+        for (const value of [date, String(item.quantity), item.reason]) {
+          const cell = document.createElement('td'); cell.textContent = value; row.appendChild(cell);
+        }
+        nodes.rows.appendChild(row);
+      }
+      nodes.empty.hidden = state.loading || !data || data.entries.length > 0;
+    }
+    const controller = createController({ invoke, ...(now ? { now } : {}), onState: render });
+    nodes.form.addEventListener('submit', event => { event.preventDefault(); controller.setDraft(nodes.quantity.value, nodes.reason.value); void controller.save(); });
+    for (const id of ['quantity', 'reason']) nodes[id].addEventListener('input', () => controller.setDraft(nodes.quantity.value, nodes.reason.value));
+    nodes.month.addEventListener('change', () => { if (!controller.selectMonth(nodes.month.value)) nodes.month.value = controller.getState().month; });
+    nodes.refresh.addEventListener('click', () => { void controller.refresh(); });
+    return controller;
+  }
+  return Object.freeze({ READ, WRITE, MONTH, currentMonth, budget, createController, mount });
+});
+
+</script>
+</head>
 <body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo</h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" value="bravonexo01gbm@gmail.com" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
@@ -3743,6 +3911,17 @@
               <div id="ras-cancellation-empty" class="empty" hidden>Nenhuma solicitação aguardando decisão.</div>
             </section>
 
+            <section class="ras-cycle-config ras-monthly-budget" aria-labelledby="ras-monthly-budget-title">
+              <div class="ras-monthly-budget-heading"><h3 id="ras-monthly-budget-title">Vagas recebidas do CBA</h3><div class="ras-monthly-budget-period"><label for="ras-monthly-budget-month">Mês de utilização</label><input id="ras-monthly-budget-month" type="month" required aria-label="Mês de utilização das vagas"><button id="ras-monthly-budget-refresh" type="button">Atualizar saldo</button></div></div>
+              <p class="ras-cycle-config-help">Controle mensal independente do ciclo interno. Cada recebimento soma ao total do mês. Cada RAS agendado ou realizado utiliza 1 vaga no mês do serviço. Cancelamentos devolvem a vaga ao mesmo mês; o saldo não é transferido para outro mês.</p>
+              <div class="ras-monthly-budget-stats"><div class="stat"><span>Recebidas</span><strong id="ras-monthly-budget-received">—</strong></div><div class="stat"><span>Utilizadas</span><strong id="ras-monthly-budget-used">—</strong></div><div class="stat"><span>Saldo do mês</span><strong id="ras-monthly-budget-balance">—</strong></div></div>
+              <div id="ras-monthly-budget-loading" class="ras-admin-loading" role="status" hidden>Consultando os recebimentos e RAS deste mês…</div>
+              <div id="ras-monthly-budget-warning" class="ras-admin-warning" role="status" hidden></div>
+              <form id="ras-monthly-budget-form" class="ras-monthly-budget-form"><div class="field"><label for="ras-monthly-budget-quantity">Quantidade recebida neste lançamento</label><input id="ras-monthly-budget-quantity" type="number" min="1" max="100000" step="1" inputmode="numeric" autocomplete="off" required></div><div class="field"><label for="ras-monthly-budget-reason">Motivo / referência do recebimento</label><textarea id="ras-monthly-budget-reason" maxlength="2000" required placeholder="Ex.: distribuição mensal do CBA ou repasse complementar"></textarea></div><button id="ras-monthly-budget-save" class="primary" type="submit">Registrar recebimento</button></form>
+              <div id="ras-monthly-budget-message" class="ras-admin-message" role="status" aria-live="polite" hidden><span id="ras-monthly-budget-message-text"></span></div>
+              <div class="table-wrap"><table><thead><tr><th>Registrado em</th><th>Vagas</th><th>Motivo / referência</th></tr></thead><tbody id="ras-monthly-budget-rows"></tbody></table></div>
+              <div id="ras-monthly-budget-empty" class="empty" hidden>Nenhum recebimento registrado para este mês.</div>
+            </section>
             <section class="ras-cycle-config" aria-labelledby="ras-cycle-config-title">
               <h3 id="ras-cycle-config-title">Configuração do ciclo</h3>
               <p id="ras-cycle-config-summary" class="ras-cycle-config-summary">Carregando a quantidade do ciclo…</p>
@@ -5926,6 +6105,7 @@
 
     function loadRasAdminData(forceRefresh) {
       if (state.rasCycleConfig.saving) return;
+      if (window.BNXRasMonthlyBudgetPanel) void window.BNXRasMonthlyBudgetPanel.refresh(true);
       loadRasCancellationRequests_();
       const requestId = ++state.rasAdminRequestId;
       state.rasAdminLoading = true;
@@ -16211,6 +16391,7 @@
     elements.scaleGuardProposalDialog.addEventListener('click', function(event) {
       if (event.target === elements.scaleGuardProposalDialog) closeScaleGuardProposal();
     });
+    window.BNXRasMonthlyBudgetPanel = window.BNXRasMonthlyBudgetUi.mount({ document: document, runner: BNX_rpc.run });
     initializeRasCancellation_();
     elements.rasAddServiceAction.addEventListener('click', openRasBatchEditor);
     elements.rasAddSingleAction.addEventListener('click', openRasOpportunityEditor);
