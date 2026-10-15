@@ -5743,23 +5743,48 @@
       elements.rasQueueEmpty.hidden = rows.length > 0;
     }
 
+    function rasOpportunityDateParts_(value) {
+      const text = String(value == null ? '' : value).trim();
+      const suffix = '(?:[ T](?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d{1,9})?)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)?)?';
+      const iso = text.match(new RegExp('^(\\d{4})-(\\d{2})-(\\d{2})' + suffix + '$'));
+      const brazilian = !iso && text.match(new RegExp('^(\\d{1,2})/(\\d{1,2})/(\\d{4})' + suffix + '$'));
+      if (!iso && !brazilian) return null;
+      const year = Number(iso ? iso[1] : brazilian[3]), month = Number(iso ? iso[2] : brazilian[2]), day = Number(iso ? iso[3] : brazilian[1]);
+      const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+      const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      if (year < 1 || month < 1 || month > 12 || day < 1 || day > days[month - 1]) return null;
+      const yyyy = String(year).padStart(4, '0'), mm = String(month).padStart(2, '0'), dd = String(day).padStart(2, '0');
+      // Service dates are civil calendar days; never shift them through the device's timezone.
+      return { iso: yyyy + '-' + mm + '-' + dd, label: dd + '/' + mm + '/' + yyyy, sortDate: year * 10000 + month * 100 + day };
+    }
+
+    function formatRasOpportunityDate_(value) {
+      const parsed = rasOpportunityDateParts_(value);
+      return parsed ? parsed.label : String(value == null ? '' : value).trim();
+    }
+
+    function compareRasOpportunityDates_(a, b) {
+      const first = rasOpportunityDateParts_(a.date), second = rasOpportunityDateParts_(b.date);
+      if (first && second) return second.sortDate - first.sortDate;
+      if (first || second) return first ? -1 : 1;
+      return Number(b.sortDate || 0) - Number(a.sortDate || 0);
+    }
+
     function renderRasOpportunities() {
       const query = normalize(elements.rasOpportunitiesSearch.value).trim();
       const status = elements.rasOpportunitiesStatus.value;
       const rows = ((state.rasData && state.rasData.opportunities) || []).filter(function(item) {
         const winner = item.winner || {};
-        const searchable = normalize([item.id, item.date, item.origin, item.location, item.role, item.observations, winner.rank, winner.name, winner.rg].join(' '));
+        const searchable = normalize([item.id, item.date, formatRasOpportunityDate_(item.date), item.origin, item.location, item.role, item.observations, winner.rank, winner.name, winner.rg].join(' '));
         return (!query || searchable.indexOf(query) !== -1) && (status === 'all' || item.statusKey === status);
-      }).sort(function(a, b) {
-        return Number(b.sortDate || 0) - Number(a.sortDate || 0);
-      });
+      }).sort(compareRasOpportunityDates_);
       elements.rasOpportunitiesCount.textContent = rows.length + (rows.length === 1 ? ' oportunidade' : ' oportunidades');
       elements.rasOpportunitiesRows.innerHTML = rows.map(function(item) {
         const winner = item.winner ? rasPersonHtml(item.winner) : '—';
         const origin = [item.origin, item.location, item.role].filter(Boolean).join(' • ') || '—';
-        const date = [item.date, item.startTime].filter(Boolean).join(' • ');
+        const date = [formatRasOpportunityDate_(item.date), item.startTime].filter(Boolean).join(' • ');
         return '<tr><td><strong>' + escapeHtml(date || '—') + '</strong></td><td>' + escapeHtml(origin) + '</td><td>' +
-          rasHours(item.hours) + '</td><td>' + escapeHtml(item.deadline || '—') + '</td><td><strong>' + escapeHtml(item.preferenceCount || 0) + '</strong></td><td>' +
+          rasHours(item.hours) + '</td><td>' + escapeHtml(formatRasOpportunityDate_(item.deadline) || '—') + '</td><td><strong>' + escapeHtml(item.preferenceCount || 0) + '</strong></td><td>' +
           rasStatusHtml(item.statusKey, item.status) + '</td><td>' + winner + '</td></tr>';
       }).join('');
       elements.rasOpportunitiesEmpty.hidden = rows.length > 0;
