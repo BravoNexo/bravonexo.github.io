@@ -909,6 +909,10 @@
     .scale-person-card.ras-person { border-color: #d6a514; color: #4f3b00; background: #fff4bf; box-shadow: inset 4px 0 #c58b00; }
     .scale-person-card.ras-person:hover { border-color: #c58b00; background: #ffe995; box-shadow: inset 4px 0 #b77d00, 0 3px 8px rgba(158,113,0,.16); }
     .scale-person-card.ras-person .map-person-meta { color: #735a12; }
+
+    /* Local extra inclusion: bottom stripe, distinct from RAS/Expediente/Permuta. */
+    #scale-page .scale-person-card.manual-extra-person, #scale-page .scale-available-card.manual-extra-person { box-shadow: inset 0 -4px #8750b2; }
+    #scale-page .scale-person-card.manual-extra-person:hover, #scale-page .scale-available-card.manual-extra-person:hover { box-shadow: inset 0 -4px #75409f, 0 2px 7px rgba(117,64,159,.15); }
     .scale-available-empty { padding: 13px 9px; color: #6f847c; text-align: center; font-size: 9.5px; line-height: 1.4; }
     .scale-document-sheet .map-person-state { border-radius: 999px; padding: 2px 6px; font-size: 7px; line-height: 1.25; }
     .scale-success { margin-top: 12px; padding: 11px 12px; border: 1px solid #b9dfd2; border-radius: 9px; color: #17614f; background: #e7f5f0; font-size: 11px; line-height: 1.45; }
@@ -13214,6 +13218,10 @@
       return name + (rgText && !nameAlreadyHasRg ? ' - ' + rgText : '') + marker;
     }
 
+    function scaleManualExtraVisible_(item) {
+      return Boolean(item && item.manualExtra === true && item.situacao === 'DISPONÍVEL' && String(item.militar || '').trim() && !/^VAGO$/i.test(String(item.militar).trim()) && !item.isRas && !item.isExpediente24h && !item.permutaTag && !item.permutaRequestKey);
+    }
+
     function renderScalePersonButton(item) {
       item = item || scaleVacantAssignment('FUNÇÃO');
       const isAway = item.situacao === 'AFASTADO';
@@ -13230,6 +13238,8 @@
       const expediente24hTag = item.isExpediente24h ? ' (EXP 24H)' : '';
       const displayPerson = scalePermutaCardIdentity(person, item.rg, item.permutaTag) + rasTag + expediente24hTag + (item.manualExternal ? ' (APOIO)' : '');
       const colorClass = scaleCrewColorClass(item);
+      const manualExtra = scaleManualExtraVisible_(item);
+      const manualExtraClass = manualExtra ? ' manual-extra-person' : '';
       const destination = hasDestination ? ' data-scale-destination="' + escapeHtml(item.destino) + '"' : '';
       const draggable = sortable ? ' data-scale-draggable="true" draggable="true"' : '';
       const vacantClass = isVacant ? ' vacant' : '';
@@ -13239,8 +13249,8 @@
       const precariousClass = militaryIsPrecariousDriver(item) ? ' precario-person' : '';
       const selectedClass = sortable && state.scaleSelectedDestination === item.destino ? ' swap-selected-person' : '';
       const secondary = item.secundaria ? ' data-scale-secondary="true"' : '';
-      return '<button type="button" class="scale-person-card ' + colorClass + vacantClass + rasClass + expediente24hClass + permutaClass + precariousClass + selectedClass + '"' + destination + draggable + secondary + ' title="' + escapeHtml(displayPerson + ' • ' + status) + '">' +
-        '<span class="map-person-name">' + escapeHtml(displayPerson) + '</span>' + (isVacant && sortable ? '<span class="scale-vacancy-hint">Digite o RG e Enter</span>' : '') + '</button>' +
+      return '<button type="button" class="scale-person-card ' + colorClass + vacantClass + rasClass + expediente24hClass + permutaClass + precariousClass + selectedClass + manualExtraClass + '"' + destination + draggable + secondary + ' title="' + escapeHtml(displayPerson + ' • ' + status + (manualExtra ? ' • Inclusão manual extra' : '')) + '">' +
+        '<span class="map-person-name">' + escapeHtml(displayPerson) + '</span>' + (isVacant && sortable ? '<span class="scale-vacancy-hint">Clique para inserir militar</span>' : '') + '</button>' +
         (sortable && item.manualExternal && item.manualExternal.pendingIdentification ? '<button type="button" class="sv-complete" data-sv-complete="' + escapeHtml(item.destino) + '">Completar identificação</button>' : '');
     }
 
@@ -13328,7 +13338,7 @@
       if (message) showToast(message);
     }
 
-    const SCALE_OCCUPANT_FIELDS = ['militar', 'rg', 'situacao', 'motivo', 'permutaTag', 'permutaRequestKey', 'isRas', 'rasInjected', 'rasRecordId', 'rasSituationKey', 'rasStatus', 'rasHours', 'rasChance', 'isExpediente24h', 'expediente24hInjected', 'expediente24hSector', 'expediente24hSelected', 'expediente24hDate', 'expediente24hReason', 'origem', 'vacancyEntry', 'manualExternal'];
+    const SCALE_OCCUPANT_FIELDS = ['militar', 'rg', 'situacao', 'motivo', 'permutaTag', 'permutaRequestKey', 'isRas', 'rasInjected', 'rasRecordId', 'rasSituationKey', 'rasStatus', 'rasHours', 'rasChance', 'isExpediente24h', 'expediente24hInjected', 'expediente24hSector', 'expediente24hSelected', 'expediente24hDate', 'expediente24hReason', 'origem', 'vacancyEntry', 'manualExternal', 'manualExtra'];
 
     function readScaleOccupant(item) {
       const occupant = {};
@@ -13381,6 +13391,7 @@
       });
       if (existing) {
         if (person.vacancyEntry) existing.vacancyEntry = true;
+        if (person.manualExtra) existing.manualExtra = true;
         if (person.manualExternal) existing.manualExternal = Object.assign({}, person.manualExternal);
         if (person.permutaTag) existing.permutaTag = person.permutaTag;
         if (person.permutaRequestKey) existing.permutaRequestKey = person.permutaRequestKey;
@@ -13422,6 +13433,7 @@
         expediente24hReason: person.expediente24hReason || '',
         origem: person.origem || '',
         vacancyEntry: Boolean(person.vacancyEntry),
+        manualExtra: Boolean(person.manualExtra),
         manualExternal: person.manualExternal ? Object.assign({}, person.manualExternal) : null
       });
       pool.sort(function(first, second) {
@@ -13451,15 +13463,18 @@
         const expediente24hClass = item.isExpediente24h ? ' expediente24h' : '';
         const permutaClass = item.permutaTag ? ' permuta' : '';
         const precariousClass = militaryIsPrecariousDriver(item) ? ' precario-person' : '';
+        const manualExtra = scaleManualExtraVisible_(item);
+        const manualExtraClass = manualExtra ? ' manual-extra-person' : '';
         const displayName = scalePermutaCardIdentity(item.militar, item.rg, item.permutaTag);
         const rasHours = item.isRas && Number(item.rasHours || 0) > 0
           ? ' • ' + String(Number(item.rasHours)).replace('.', ',') + 'h'
           : '';
         const cardDetails = [];
+        if (manualExtra) cardDetails.push('Inclusão manual extra');
         if (item.isRas) cardDetails.push('RAS • ' + (item.rasStatus || 'Agendado') + rasHours);
         if (item.isExpediente24h) cardDetails.push('Expediente 24h • ' + (item.expediente24hSector || 'Expediente'));
         const cardDetail = cardDetails.join(' | ') || 'Disponível para receber uma função';
-        return '<button type="button" class="scale-available-card' + rasClass + expediente24hClass + permutaClass + precariousClass + selected + '" data-scale-available-rg="' + escapeHtml(item.rg) + '" draggable="true" title="Clique ou arraste para uma função">' +
+        return '<button type="button" class="scale-available-card' + rasClass + expediente24hClass + permutaClass + precariousClass + manualExtraClass + selected + '" data-scale-available-rg="' + escapeHtml(item.rg) + '" draggable="true" title="Clique ou arraste para uma função">' +
           '<strong>' + escapeHtml(displayName) + '</strong>' +
           '<small>' + escapeHtml(cardDetail) + '</small></button>';
       }).join('');
@@ -18810,7 +18825,7 @@ installCallPlanOptions();
   }
   function SV_target(destination) { return ((state.scalePreview && state.scalePreview.funcoes)||[]).find(item=>item && item.destino===destination)||null; }
   function SV_editable(item) { return Boolean(item && item.destino && !item.automatico && !item.grdAutomatico && !item.oficialAssociado && !item.guardaSugerida && item.situacao!=='AFASTADO'); }
-  function SV_vacant(item) { return SV_editable(item) && !SV_text(item.militar).trim(); }
+  function SV_vacant(item) { const label=SV_text(item && item.militar).trim(),rg=SV_rg(item && item.rg);return SV_editable(item) && !rg && (!label || /^VAGO$/i.test(label) && item.situacao==='VAGO'); }
   function SV_isVacantDestination(destination) { return SV_vacant(SV_target(destination)); }
   function SV_isGrdDestination(destination) { return ['AE16','AE17','AE18'].indexOf(SV_text(destination).toUpperCase())!==-1; }
   function SV_snapshot() {
@@ -18850,14 +18865,14 @@ installCallPlanOptions();
     form.className='sv-inline';row.className='sv-inline-row';
     input.type='text';input.maxLength=100;input.autocomplete='off';input.enterKeyHint='done';input.spellcheck=false;
     input.setAttribute('aria-label',completing?'Graduação, nome de guerra e RG':'RG ou identificação do militar');
-    input.placeholder=completing?'CB NOME - '+target.rg:'RG e Enter';
+    input.placeholder=completing?'CB NOME - '+target.rg:'RG ou SD NOME - RG';
     submit.type='submit';submit.textContent='↵';submit.setAttribute('aria-label','Confirmar identificação');submit.title='Confirmar com Enter';
     cancel.type='button';cancel.textContent='×';cancel.setAttribute('aria-label','Cancelar digitação');cancel.title='Cancelar (Esc)';
     row.appendChild(input);row.appendChild(submit);row.appendChild(cancel);form.appendChild(row);form.appendChild(status);
     const session={mode:completing?'complete':'insert',preview:state.scalePreview,dateIso:elements.scaleDate.value,destination:destination,rg:completing?SV_rg(target.rg):'',signature:SV_snapshot(),form:form,card:card,cardWasHidden:card.hidden,input:input,submit:submit,cancel:cancel,status:status,busy:false,sequence:++SV_sequence};
     SV_session=session;
     input.value=SV_buffers[SV_key(session)] || (completing?(target.manualExternal.pendingIdentification?'':target.manualExternal.rank+' '+target.manualExternal.warName+' - '+target.rg):'');
-    SV_status(session,completing?'Digite graduação e nome, terminando com o RG '+target.rg+'. Enter confirma.':'Enter inclui • Esc cancela',false);
+    SV_status(session,completing?'Digite graduação e nome, terminando com o RG '+target.rg+'. Enter confirma.':'Digite o RG ou SD NOME - RG • Enter inclui • Esc cancela',false);
     form.addEventListener('submit',function(event){event.preventDefault();event.stopPropagation();SV_request(session);});
     form.addEventListener('click',function(event){event.stopPropagation();});
     form.addEventListener('keydown',function(event){event.stopPropagation();if(event.key==='Escape'){event.preventDefault();SV_end(false,true);}else if(event.key==='Enter' && event.target===input){event.preventDefault();if(!event.isComposing)SV_request(session);}});
@@ -18920,6 +18935,10 @@ installCallPlanOptions();
     if(session.mode==='complete' && SV_rg(candidate.rg)!==session.rg)throw new Error('Mantenha o RG '+session.rg+' ao completar a identificação.');
     const sources=SV_sources(SV_rg(candidate.rg)),conflict=SV_conflict(candidate,session,sources);if(conflict)throw new Error(conflict);
     const validated=Object.assign({},candidate,{manualExternal:candidate.manualExternal?Object.assign({},candidate.manualExternal):null});
+    // Local provenance only: a fresh RG inclusion outside the map/pool.
+    // Completion and later moves keep that provenance; special cards retain their own presentation.
+    const extraExp=state.scalePreview && state.scalePreview.expediente24h,extraExpRows=Array.isArray(extraExp)?extraExp:(extraExp && extraExp.records || []);
+    validated.manualExtra=Boolean(sources.source?sources.source.manualExtra:session.mode!=='complete' && !validated.isRas && !validated.isExpediente24h && !validated.permutaTag && !validated.permutaRequestKey && !SV_rasRecords(SV_rg(candidate.rg)).length && !extraExpRows.some(function(item){return SV_rg(item.rg)===SV_rg(candidate.rg) && item.available!==false;}));
     // If an RG-only support already exists in a secondary slot/pool, keep its
     // more complete identity. Never replace or mutate a prior history object.
     if(validated.manualExternal && validated.manualExternal.pendingIdentification && sources.source && sources.source.manualExternal && !sources.source.manualExternal.pendingIdentification){
