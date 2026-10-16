@@ -14830,7 +14830,7 @@
       elements.permutaDecisionActionSelect.value = selectedAction || '';
       if (selectedAction) elements.permutaDecisionSummary.innerHTML += '<br>Nova situação: <strong>' + ({ authorize: 'Autorizada', cancel: 'Cancelada', duplicate: 'Duplicada' })[selectedAction] + '</strong>.';
       elements.permutaDecisionActionSelect.disabled = Boolean(selectedAction);
-      elements.permutaDecisionReasonField.hidden = false;
+      elements.permutaDecisionReasonField.hidden = selectedAction === 'authorize';
       elements.permutaDecisionReasonLabel.textContent = 'Motivo da alteração (obrigatório)';
       elements.permutaDecisionReason.value = '';
       elements.permutaDecisionReason.disabled = false;
@@ -14839,7 +14839,8 @@
       elements.permutaDecisionConfirm.disabled = false;
       elements.permutaDecisionClose.disabled = false;
       elements.permutaDecision.hidden = false;
-      if (selectedAction) elements.permutaDecisionReason.focus();
+      if (selectedAction === 'authorize') elements.permutaDecisionConfirm.focus();
+      else if (selectedAction) elements.permutaDecisionReason.focus();
       else elements.permutaDecisionActionSelect.focus();
     }
 
@@ -14938,7 +14939,9 @@
       const requestKey = state.permutaDecisionKey;
       const record = findPermutaDecisionRecord_(requestKey, state.permutaDecisionSource);
       const action = elements.permutaDecisionActionSelect.value;
-      const reason = elements.permutaDecisionReason.value.trim();
+      // The audit contract requires an entry when revising a final decision.
+      // Approval has no manual observation; do not reuse a cancellation reason.
+      const reason = action === 'authorize' ? 'Autorização revista pela administração.' : elements.permutaDecisionReason.value.trim();
       function error(message) { elements.permutaDecisionError.textContent = message; elements.permutaDecisionError.hidden = false; }
       if (!record || (state.permutaRevisionPending || {})[requestKey] || record.busy || state.scalePermutasBusyKeys[requestKey] ||
           (state.permutaUncertainKeys || {})[requestKey] || (action === 'authorize' && !permutaParticipantsAreCurrent(record)) || hasScaleWriteInFlight_() ||
@@ -15057,14 +15060,15 @@
       elements.permutaDecisionSummary.innerHTML = '<strong>' + escapeHtml(record.serviceDate) + '</strong><br>' +
         escapeHtml(record.militaryIn) + ' entra no lugar de ' + escapeHtml(record.militaryOut) + '.<br>' +
         'Prazo: ' + escapeHtml(deadlineSummary) + '.';
-      elements.permutaDecisionReasonField.hidden = false;
+      elements.permutaDecisionReasonField.hidden = action === 'authorize';
       elements.permutaDecisionReasonLabel.textContent = action === 'cancel' ? 'Motivo do cancelamento' : 'Observação (opcional)';
       elements.permutaDecisionReason.value = '';
       elements.permutaDecisionError.hidden = true;
       elements.permutaDecisionConfirm.disabled = false;
       elements.permutaDecisionClose.disabled = false;
       elements.permutaDecision.hidden = false;
-      elements.permutaDecisionReason.focus();
+      if (action === 'authorize') elements.permutaDecisionConfirm.focus();
+      else elements.permutaDecisionReason.focus();
     }
 
     function closePermutaDecision() {
@@ -15084,7 +15088,7 @@
       const action = state.permutaDecisionAction;
       const requestKey = state.permutaDecisionKey;
       const source = state.permutaDecisionSource || 'dashboard';
-      const reason = elements.permutaDecisionReason.value.trim();
+      const reason = action === 'authorize' ? '' : elements.permutaDecisionReason.value.trim();
       if (!action || !requestKey) return;
       if (action === 'cancel' && !reason) {
         elements.permutaDecisionError.textContent = 'Informe o motivo do cancelamento.';
