@@ -14739,7 +14739,7 @@
       const uncertain = Boolean((state.permutaUncertainKeys || {})[record.requestKey]);
       const label = (source === 'scale' ? 'Situação da permuta da escala de ' : 'Situação da permuta de ') + String(record.serviceDate || '') + ': ' + String(record.militaryIn || '') + ' / ' + String(record.militaryOut || '');
       let html = '<div class="permuta-status-control"><select class="permuta-status-select ' + status + '" data-permuta-key="' + escapeHtml(record.requestKey) +
-        '" data-permuta-source="' + source + '" aria-label="' + escapeHtml(label) + '" title="Escolha a nova situação e confirme a alteração. Pendente é apenas a situação inicial."' + (actions.length ? '' : ' disabled') + '>';
+        '" data-permuta-source="' + source + '" aria-label="' + escapeHtml(label) + '" title="Autorizada e Duplicada são salvas ao selecionar. Para cancelar, informe o motivo. Pendente é apenas a situação inicial."' + (actions.length ? '' : ' disabled') + '>';
       if (current === 'other') html += '<option value="other" selected>' + escapeHtml(record.statusLabel || record.status || 'Outra situação') + '</option>';
       ['pending', 'authorize', 'cancel', 'duplicate'].forEach(function(value) {
         html += '<option value="' + value + '"' + (value === current ? ' selected' : '') +
@@ -14760,10 +14760,15 @@
       const record = findPermutaDecisionRecord_(key, source);
       if (!record) { if (source === 'scale') renderScalePermutas(); else renderPermutas(); return; }
       const current = permutaStatusSelectValue_(record);
-      // Display the committed value while the user reviews the confirmation.
-      // Choosing an option alone must never change a row or submit an RPC.
+      // Keep the committed status visible until the one-shot write is confirmed.
+      // Authorize/duplicate save directly; only cancellation needs a reason.
       select.value = current;
       if (select.disabled || action === current || permutaStatusActions_(record).indexOf(action) === -1) return;
+      if (action === 'authorize' || action === 'duplicate') {
+        if (current === 'pending') sendPermutaDecision(record, action, '', false, source);
+        else openPermutaRevision_(record, source, action, true);
+        return;
+      }
       if (current === 'pending') openPermutaDecision(key, action, source, true);
       else openPermutaRevision_(record, source, action);
     }
@@ -14807,7 +14812,7 @@
         (pending && pending.phase === 'checking' ? 'Consultando resultado…' : (disabled ? 'Processando…' : 'Consultar resultado')) + '</button></div>';
     }
 
-    function openPermutaRevision_(record, source, selectedAction) {
+    function openPermutaRevision_(record, source, selectedAction, immediate) {
       if (!record || !permutaRevisionActions_(record).length ||
           record.busy || state.scalePermutasBusyKeys[record.requestKey] || (state.permutaUncertainKeys || {})[record.requestKey] ||
           (state.permutaRevisionPending || {})[record.requestKey] || hasScaleWriteInFlight_()) return;
@@ -14818,6 +14823,14 @@
       state.permutaDecisionRevisionMode = true;
       state.permutaDecisionExpectedStatus = String(record.status || '');
       state.permutaDecisionExpectedRevision = record.decisionRevision;
+      if (immediate === true && (selectedAction === 'authorize' || selectedAction === 'duplicate')) {
+        elements.permutaDecisionActionSelect.innerHTML = '<option value="' + selectedAction + '"></option>';
+        elements.permutaDecisionActionSelect.value = selectedAction;
+        elements.permutaDecisionReason.value = '';
+        elements.permutaDecision.hidden = true;
+        submitPermutaRevision_(true);
+        return;
+      }
       const labels = { authorize: 'Autorizar', cancel: 'Cancelar', duplicate: 'Marcar como duplicada' };
       elements.permutaDecisionTitle.textContent = 'Alterar decisão da permuta';
       elements.permutaDecisionSubtitle.textContent = 'A decisão anterior ficará no histórico. Seus ajustes da escala serão preservados.';
@@ -14935,7 +14948,7 @@
       permutaRevisionMessage_(pending, 'A alteração ainda não foi confirmada. O rascunho está preservado. Use Consultar resultado; não envie outra decisão para esta permuta.');
     }
 
-    function submitPermutaRevision_() {
+    function submitPermutaRevision_(immediate) {
       const requestKey = state.permutaDecisionKey;
       const record = findPermutaDecisionRecord_(requestKey, state.permutaDecisionSource);
       const action = elements.permutaDecisionActionSelect.value;
@@ -14943,7 +14956,15 @@
       // Approval and duplicate have no manual observation; never reuse a cancellation reason.
       const reason = action === 'authorize' ? 'Autorização revista pela administração.' :
         action === 'duplicate' ? 'Permuta marcada como duplicada pela administração.' : elements.permutaDecisionReason.value.trim();
-      function error(message) { elements.permutaDecisionError.textContent = message; elements.permutaDecisionError.hidden = false; }
+      function error(message) {
+        if (immediate === true) {
+          permutaRevisionMessage_({ serviceIso: record && (record.serviceIso || scaleDateIsoFromValue_(record.serviceDate)) }, message);
+          showToast(message);
+        } else {
+          elements.permutaDecisionError.textContent = message;
+          elements.permutaDecisionError.hidden = false;
+        }
+      }
       if (!record || (state.permutaRevisionPending || {})[requestKey] || record.busy || state.scalePermutasBusyKeys[requestKey] ||
           (state.permutaUncertainKeys || {})[requestKey] || (action === 'authorize' && !permutaParticipantsAreCurrent(record)) || hasScaleWriteInFlight_() ||
           record.decisionRevision !== state.permutaDecisionExpectedRevision || String(record.status || '') !== state.permutaDecisionExpectedStatus) {
