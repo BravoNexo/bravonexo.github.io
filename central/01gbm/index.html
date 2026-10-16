@@ -17332,7 +17332,7 @@ installCallPlanOptions();
     const {controllerFactory,transport,state,elements:e,helpers:h}=options;
     const fields=['milRank','milQbmp','milFullname','milWarname','milRg','milFunctional','milPromotion',
       'milActivity','milSituation','milUnit','milAdministrativeUnit','milBol','milPhone','milEmail','milPrecariousDriver'];
-    let controller,baseMilitary=null,submitted=null,completedForm=null,recoveryChecked=false,recoveryPromise=null;
+    let controller,baseMilitary=null,submitted=null,completedForm=null,recoveryChecked=false,recoveryPromise=null,openPromise=null,openBusy=null;
     const message=error=>error==='SAVE_REJECTED_NO_WRITE'?'Nenhuma alteração foi gravada. Feche e reabra o cadastro para conferir os dados atualizados antes de salvar novamente.':
       error==='EDITOR_UNAVAILABLE'?'Não foi possível carregar o cadastro atualizado. Feche e tente novamente.':
       error&&error.message?error.message:String(error||'Tente novamente.');
@@ -17440,17 +17440,42 @@ installCallPlanOptions();
         .catch(cause=>{error(message(cause));return controller.snapshot();}).finally(()=>{recoveryPromise=null;});
       return recoveryPromise;
     }
-    async function open(mode){
+    function restoreOpenBusy(){
+      const previous=openBusy;openBusy=null;
+      if(previous){previous.button.disabled=previous.disabled;previous.button.textContent=previous.text;}
+    }
+    function open(mode){
+      if(openPromise)return openPromise;
       const selection=mode==='edit'?{mode:'UPDATE',originalRg:String(state.selectedRg||'').trim()}:{mode:'CREATE',originalRg:''};
       if(selection.mode==='UPDATE'&&!/^\d{3,12}$/.test(selection.originalRg)){h.showToast('Selecione um militar para editar.');return Promise.resolve(null);}
-      if(typeof transport.recoverPending==='function'&&!recoveryChecked){
-        const recoveredView=await recover();if(recoveredView.phase!=='closed')return recoveredView;
-      }
-      try{return Promise.resolve(controller.open(selection)).catch(cause=>{error(message(cause));return null;});}
-      catch(cause){h.showToast(message(cause));return Promise.resolve(null);}
+      const button=e.addMilitaryAction;
+      if(button){openBusy={button,disabled:button.disabled,text:button.textContent};button.disabled=true;button.textContent='Conferindo cadastro…';}
+      const pendingNotice='Confira o resultado do salvamento pendente antes de abrir outro cadastro.';
+      const unavailableNotice='Não foi possível abrir o cadastro agora. Confira as pendências e tente novamente.';
+      const work=(async function(){
+        try{
+          if(typeof transport.recoverPending==='function'&&!recoveryChecked){
+            const recoveredView=await recover();
+            if(recoveredView.phase!=='closed'){
+              h.showToast(recoveredView.phase==='uncertain'?pendingNotice:unavailableNotice);return recoveredView;
+            }
+          }
+          const view=await controller.open(selection);
+          if(view.phase==='error')h.showToast('Não foi possível carregar o cadastro atualizado. Feche e tente novamente.');
+          return view;
+        }catch(_){
+          const view=controller.snapshot(),notice=view.recoveryBlocked||['sealing','saving','uncertain','recovering'].includes(view.phase)?pendingNotice:unavailableNotice;
+          error(notice);h.showToast(notice);return null;
+        }
+      })();
+      const tracked=work.finally(function(){
+        if(openPromise===tracked){openPromise=null;restoreOpenBusy();}
+      });
+      openPromise=tracked;
+      return tracked;
     }
     function close(){
-      try{return controller.close();}catch(cause){h.showToast('Confira o resultado do salvamento antes de fechar.');return null;}
+      try{const view=controller.close();openPromise=null;restoreOpenBusy();return view;}catch(cause){h.showToast('Confira o resultado do salvamento antes de fechar.');return null;}
     }
     function save(){
       const phase=controller.snapshot().phase;
