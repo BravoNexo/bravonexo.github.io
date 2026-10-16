@@ -930,7 +930,7 @@
     .scale-permuta-panel { margin-top: 14px; }
     .scale-permuta-panel .panel-head button { min-height: 31px; padding: 5px 9px; font-size: 10px; }
     .scale-permuta-panel .error { margin: 12px 15px; }
-    .scale-permuta-table { min-width: 900px; }
+    .scale-permuta-table { min-width: 760px; }
     .scale-permuta-table th, .scale-permuta-table td { padding: 8px 10px; font-size: 11px; vertical-align: top; }
     .scale-permuta-table tbody tr { cursor: default; }
     .scale-permuta-person strong, .scale-permuta-person span { display: block; }
@@ -3508,7 +3508,7 @@
                     <div id="scale-permutas-loading" class="loading">Consultando as solicitações desta data…</div>
                     <div id="scale-permutas-table-wrap" class="table-wrap" hidden>
                       <table class="scale-permuta-table">
-                        <thead><tr><th>Prazo</th><th>Entra</th><th>Sai</th><th>Responsável / observação</th><th>Situação</th><th>Ação</th></tr></thead>
+                        <thead><tr><th>Prazo</th><th>Entra</th><th>Sai</th><th>Responsável / observação</th><th>Situação</th></tr></thead>
                         <tbody id="scale-permutas-rows"></tbody>
                       </table>
                     </div>
@@ -12131,45 +12131,20 @@
     function renderScalePermutas() {
       const records = state.scalePermutas || [];
       elements.scalePermutasRows.innerHTML = records.map(function(record) {
-        const operational = permutaParticipantsAreCurrent(record);
         const statusKey = ['pending', 'authorized', 'cancelled', 'duplicate'].indexOf(record.statusKey) !== -1 ? record.statusKey : 'other';
         const deadlineKey = ['late', 'ontime'].indexOf(record.deadlineKey) !== -1 ? record.deadlineKey : 'unknown';
         const deadlineText = (record.deadlineLabel || 'Prazo não identificado') +
           (record.deadlineDetail ? ' • ' + record.deadlineDetail : '');
         const appliedLabel = state.scaleAppliedPermutaKeys[scalePermutaRecordKey(record)] || '';
         const isDecided = ['authorized', 'cancelled', 'duplicate'].indexOf(statusKey) !== -1;
-        const isBusy = Boolean(record.busy || state.scalePermutasBusyKeys[record.requestKey] ||
-          (state.permutaUncertainKeys || {})[record.requestKey]);
-        const scaleWriting = hasScaleWriteInFlight_();
         const rowClasses = [];
         if (isDecided) rowClasses.push('permuta-row-decided', statusKey);
         if (appliedLabel) rowClasses.push('applied-to-scale');
         const rowClass = rowClasses.length ? ' class="' + rowClasses.map(escapeHtml).join(' ') + '"' : '';
-        let action;
-        if ((state.permutaRevisionPending || {})[record.requestKey]) {
-          action = permutaRevisionReceiptButton_(record.requestKey, 'scale');
-        } else if (isBusy) {
-          action = '<div class="permuta-actions"><button type="button" disabled>Processando…</button></div>';
-        } else if (statusKey === 'pending' && record.manageable !== false && operational) {
-          action = '<div class="permuta-actions">' + [
-            ['authorize', 'Autorizar', 'authorize'],
-            ['cancel', 'Cancelar', 'cancel'],
-            ['duplicate', 'Duplicada', '']
-          ].map(function(choice) {
-            return '<button type="button" class="' + choice[2] + '" data-scale-permuta-action="' + choice[0] +
-              '" data-scale-permuta-key="' + escapeHtml(record.requestKey) + '"' +
-              (scaleWriting ? ' disabled' : '') + '>' + choice[1] + '</button>';
-          }).join('') + '</div>';
-        } else if (permutaRevisionActions_(record).length) {
-          action = '<div class="permuta-actions"><button type="button" data-scale-permuta-action="revise" data-scale-permuta-key="' + escapeHtml(record.requestKey) + '"' + (scaleWriting ? ' disabled' : '') + '>Alterar decisão</button></div>' +
-            (appliedLabel ? '<span class="scale-permuta-applied">✓ ' + escapeHtml(appliedLabel) + ' aplicada</span>' : '');
-        } else if (appliedLabel) {
-          action = '<span class="scale-permuta-applied">✓ ' + escapeHtml(appliedLabel) + ' aplicada</span>';
-        } else {
-          action = '<span class="scale-permuta-no-action">' + (!operational
-            ? 'Somente consulta • fora do efetivo'
-            : (statusKey === 'authorized' ? 'Autorizada • use Aplicar permutas autorizadas' : 'Análise concluída')) + '</span>';
-        }
+        const statusControl = permutaStatusControlHtml_(record, 'scale');
+        const appliedInfo = appliedLabel
+          ? '<span class="scale-permuta-applied">✓ ' + escapeHtml(appliedLabel) + ' aplicada</span>'
+          : (statusKey === 'authorized' ? '<span class="scale-permuta-no-action">Use Aplicar permutas autorizadas</span>' : '');
         const decisionDetail = record.cancellationReason
           ? '<span class="military-full">' + escapeHtml(record.cancellationReason) + '</span>' : '';
         return '<tr' + rowClass + '>' +
@@ -12177,12 +12152,14 @@
           '<td><span class="scale-permuta-person"><strong>' + escapeHtml(record.militaryIn || '—') + '</strong><span>' + (record.rgIn ? 'RG ' + escapeHtml(record.rgIn) : '') + (record.qbmpIn ? ' • ' + escapeHtml(record.qbmpIn) : '') + '</span></span></td>' +
           '<td><span class="scale-permuta-person"><strong>' + escapeHtml(record.militaryOut || '—') + '</strong><span>' + (record.rgOut ? 'RG ' + escapeHtml(record.rgOut) : '') + (record.qbmpOut ? ' • ' + escapeHtml(record.qbmpOut) : '') + '</span></span></td>' +
           '<td><span class="scale-permuta-responsible"><strong>' + escapeHtml(record.responsible || 'Não informado') + '</strong><span>' + escapeHtml(record.observation || 'Sem observação') + '</span></span></td>' +
-          '<td><span class="permuta-status ' + escapeHtml(statusKey) + '">' + escapeHtml(record.statusLabel || 'Não analisada') + '</span>' + decisionDetail + '</td>' +
-          '<td>' + action + '</td></tr>';
+          '<td class="permuta-status-cell">' + statusControl + appliedInfo + decisionDetail + '</td></tr>';
       }).join('');
       elements.scalePermutasTableWrap.hidden = records.length === 0;
       elements.scalePermutasEmpty.hidden = records.length !== 0;
       elements.scalePermutasCount.textContent = records.length + (records.length === 1 ? ' solicitação' : ' solicitações');
+      elements.scalePermutasRows.querySelectorAll('select[data-permuta-source="scale"]').forEach(function(select) {
+        select.addEventListener('change', function() { onPermutaStatusSelect_(select); });
+      });
       elements.scalePermutasRows.querySelectorAll('[data-scale-permuta-action]').forEach(function(button) {
         button.addEventListener('click', function() {
           openPermutaDecision(button.dataset.scalePermutaKey, button.dataset.scalePermutaAction, 'scale');
@@ -14753,22 +14730,23 @@
       return permutaRevisionActions_(record);
     }
 
-    function permutaStatusControlHtml_(record) {
+    function permutaStatusControlHtml_(record, source) {
+      source = source === 'scale' ? 'scale' : 'dashboard';
       const current = permutaStatusSelectValue_(record), status = permutaDecisionStatusKey_(record);
       const actions = permutaStatusActions_(record), labels = { pending: 'Pendente', authorize: 'Autorizada', cancel: 'Cancelada', duplicate: 'Duplicada' };
       const busy = Boolean(record.busy || state.scalePermutasBusyKeys[record.requestKey]);
       const pending = (state.permutaRevisionPending || {})[record.requestKey];
       const uncertain = Boolean((state.permutaUncertainKeys || {})[record.requestKey]);
-      const label = 'Situação da permuta de ' + String(record.serviceDate || '') + ': ' + String(record.militaryIn || '') + ' / ' + String(record.militaryOut || '');
+      const label = (source === 'scale' ? 'Situação da permuta da escala de ' : 'Situação da permuta de ') + String(record.serviceDate || '') + ': ' + String(record.militaryIn || '') + ' / ' + String(record.militaryOut || '');
       let html = '<div class="permuta-status-control"><select class="permuta-status-select ' + status + '" data-permuta-key="' + escapeHtml(record.requestKey) +
-        '" aria-label="' + escapeHtml(label) + '" title="Escolha a nova situação e confirme a alteração. Pendente é apenas a situação inicial."' + (actions.length ? '' : ' disabled') + '>';
+        '" data-permuta-source="' + source + '" aria-label="' + escapeHtml(label) + '" title="Escolha a nova situação e confirme a alteração. Pendente é apenas a situação inicial."' + (actions.length ? '' : ' disabled') + '>';
       if (current === 'other') html += '<option value="other" selected>' + escapeHtml(record.statusLabel || record.status || 'Outra situação') + '</option>';
       ['pending', 'authorize', 'cancel', 'duplicate'].forEach(function(value) {
         html += '<option value="' + value + '"' + (value === current ? ' selected' : '') +
           (value === 'pending' || value !== current && actions.indexOf(value) === -1 ? ' disabled' : '') + '>' + labels[value] + '</option>';
       });
       html += '</select>';
-      if (pending) html += permutaRevisionReceiptButton_(record.requestKey, 'dashboard');
+      if (pending) html += permutaRevisionReceiptButton_(record.requestKey, source);
       else if (busy) html += '<span class="military-full" role="status">Processando…</span>';
       else if (uncertain || /^EM_ENVIO(?::|$)/.test(String(record.emailStatus || ''))) html += '<span class="military-full">Conferência necessária</span>';
       else if (!actions.length && !permutaParticipantsAreCurrent(record)) html += '<span class="former-record-note">Somente consulta • vínculo fora do efetivo atual</span>';
@@ -14778,15 +14756,16 @@
 
     function onPermutaStatusSelect_(select) {
       const key = select.dataset.permutaKey, action = select.value;
-      const record = findPermutaDecisionRecord_(key, 'dashboard');
-      if (!record) { renderPermutas(); return; }
+      const source = select.dataset.permutaSource === 'scale' ? 'scale' : 'dashboard';
+      const record = findPermutaDecisionRecord_(key, source);
+      if (!record) { if (source === 'scale') renderScalePermutas(); else renderPermutas(); return; }
       const current = permutaStatusSelectValue_(record);
       // Display the committed value while the user reviews the confirmation.
       // Choosing an option alone must never change a row or submit an RPC.
       select.value = current;
       if (select.disabled || action === current || permutaStatusActions_(record).indexOf(action) === -1) return;
-      if (current === 'pending') openPermutaDecision(key, action, 'dashboard', true);
-      else openPermutaRevision_(record, 'dashboard', action);
+      if (current === 'pending') openPermutaDecision(key, action, source, true);
+      else openPermutaRevision_(record, source, action);
     }
 
     function permutaDayBandClasses_(records) {
