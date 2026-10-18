@@ -177,7 +177,57 @@
     .error { margin-bottom: 14px; padding: 11px 13px; border-radius: 8px; color: #842f2f; background: #f9dddd; font-size: 13px; }
     .toast { position: fixed; right: 18px; bottom: 18px; z-index: 140; display: none; max-width: 330px; padding: 11px 14px; border-radius: 9px; color: #fff; background: #173f5f; box-shadow: 0 10px 28px rgba(0,0,0,.2); font-size: 13px; }
     .toast.show { display: block; }
+
+    /* Férias only: the same grouped presentation as the Efetivo ribbon. */
+    #vacation-page .vacation-command-ribbon { display: flex; align-items: stretch; gap: 0; min-width: 0; max-width: 100%; min-height: 104px; margin: 0 0 14px; padding: 4px 6px 0; overflow-x: auto; overflow-y: hidden; border: 1px solid #d5dee5; border-radius: 8px; background: linear-gradient(180deg, #fff, #f8fafb); box-shadow: 0 4px 12px #12344312; scrollbar-width: thin; }
+    #vacation-page .vacation-command-group { display: flex; flex: 0 0 auto; flex-direction: column; justify-content: space-between; min-height: 96px; padding: 3px 8px 0; }
+    #vacation-page .vacation-command-group + .vacation-command-group { border-left: 1px solid #d8e0e6; }
+    #vacation-page .vacation-command-search { flex: 1 0 200px; min-width: 200px; }
+    #vacation-page .vacation-command-search > .field { display: flex; flex-direction: column; justify-content: center; gap: 7px; min-width: 0; height: 76px; padding: 8px 10px; border: 1px solid #d6e1e7; border-radius: 5px; background: #f4f8fa; }
+    #vacation-page .vacation-command-search > .field > label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: .04em; }
+    #vacation-page .vacation-command-search #vac-search { width: 100%; min-width: 0; min-height: 30px; height: 30px; margin: 0; padding: 3px 0; border: 0; border-radius: 2px; background: transparent; color: #244f69; font: inherit; font-size: 13px; }
+    #vacation-page .vacation-command-fields { display: grid; grid-template-columns: 156px; gap: 4px; height: 76px; }
+    #vacation-page .vacation-command-fields .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    #vacation-page .vacation-command-fields .field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
+    #vacation-page .vacation-command-fields select { width: 100%; min-width: 0; min-height: 24px; height: 24px; margin: 0; padding: 2px 5px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 11px; }
+    #vacation-page .vacation-command-buttons { display: flex; align-items: stretch; justify-content: center; min-height: 76px; }
+    #vacation-page .vacation-command-button { display: inline-flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; width: 78px; min-width: 78px; min-height: 76px; margin: 0; padding: 5px 5px 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #263f50; font-size: 10.5px; font-weight: 700; line-height: 1.15; text-align: center; white-space: normal; }
+    #vacation-page .vacation-command-button > span { display: flex; align-items: center; justify-content: center; min-height: 27px; text-align: center; }
+    #vacation-page .vacation-command-icon { width: 30px; height: 30px; flex: 0 0 30px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; color: #385b70; }
+    #vacation-page .vacation-command-button:not(:disabled):hover { border-color: #c4d5e0; background: #edf4f8; }
+    #vacation-page .vacation-command-button:focus-visible, #vacation-page .vacation-command-ribbon input:focus-visible, #vacation-page .vacation-command-ribbon select:focus-visible { outline: 2px solid #2477a7; outline-offset: 2px; }
+    #vacation-page .vacation-command-button:disabled { border-color: #e2e7ea; background: #f4f6f7; color: #98a2aa; opacity: 1; cursor: default; }
+    #vacation-page .vacation-command-button:disabled .vacation-command-icon { color: #a5aeb5; }
+    #vacation-page .vacation-command-group-label { display: flex; align-items: center; justify-content: center; min-height: 17px; color: #687984; font-size: 9.5px; font-weight: 700; line-height: 1; }
+    @media (max-width: 700px), (pointer: coarse) { #vacation-page .vacation-command-ribbon { min-height: 138px; } #vacation-page .vacation-command-group { min-height: 130px; } #vacation-page .vacation-command-search > .field { height: 110px; } #vacation-page .vacation-command-search #vac-search { min-height: 40px; height: 40px; } #vacation-page .vacation-command-fields { height: 110px; gap: 6px; } #vacation-page .vacation-command-fields select { min-height: 40px; height: 40px; } #vacation-page .vacation-command-buttons { min-height: 110px; } #vacation-page .vacation-command-button { min-height: 110px; justify-content: center; } }
+    @media print { #vacation-page .vacation-command-ribbon { display: none !important; } }
+
     .vacation-toolbar { display: grid; grid-template-columns: minmax(220px,1fr) 130px 145px 160px 160px auto; gap: 10px; align-items: end; margin-bottom: 14px; }
+
+    /* Licenças e Outros only: same grouped visual language as Efetivo. */
+    #leave-page .leave-command-ribbon { display: flex; align-items: stretch; gap: 0; min-width: 0; max-width: 100%; min-height: 104px; margin: 0 0 14px; padding: 4px 6px 0; overflow-x: auto; overflow-y: hidden; border: 1px solid #d5dee5; border-radius: 8px; background: linear-gradient(180deg, #fff, #f8fafb); box-shadow: 0 4px 12px #12344312; scrollbar-width: thin; }
+    #leave-page .leave-command-group { display: flex; flex: 0 0 auto; flex-direction: column; justify-content: space-between; min-height: 96px; padding: 3px 8px 0; }
+    #leave-page .leave-command-group + .leave-command-group { border-left: 1px solid #d8e0e6; }
+    #leave-page .leave-command-search { flex: 1 0 200px; min-width: 200px; }
+    #leave-page .leave-command-search > .field { display: flex; flex-direction: column; justify-content: center; gap: 7px; min-width: 0; height: 76px; padding: 8px 10px; border: 1px solid #d6e1e7; border-radius: 5px; background: #f4f8fa; }
+    #leave-page .leave-command-search > .field > label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: .04em; }
+    #leave-page .leave-command-search #leave-search { width: 100%; min-width: 0; min-height: 30px; height: 30px; margin: 0; padding: 3px 0; border: 0; border-radius: 2px; background: transparent; color: #244f69; font: inherit; font-size: 13px; }
+    #leave-page .leave-command-filter-grid { display: grid; grid-template-columns: repeat(2, 136px); gap: 4px 8px; height: 76px; }
+    #leave-page .leave-command-filter-grid .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    #leave-page .leave-command-filter-grid .field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
+    #leave-page .leave-command-filter-grid select { width: 100%; min-width: 0; min-height: 24px; height: 24px; margin: 0; padding: 2px 5px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 11px; }
+    #leave-page .leave-command-buttons { display: flex; align-items: stretch; justify-content: center; gap: 4px; min-height: 76px; }
+    #leave-page .leave-command-button { display: inline-flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; width: 88px; min-width: 88px; min-height: 76px; margin: 0; padding: 5px 5px 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #263f50; font-size: 10.5px; font-weight: 700; line-height: 1.15; text-align: center; white-space: normal; }
+    #leave-page .leave-command-button > span { display: flex; align-items: center; justify-content: center; min-height: 27px; text-align: center; }
+    #leave-page .leave-command-icon { width: 30px; height: 30px; flex: 0 0 30px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; color: #385b70; }
+    #leave-page .leave-command-button:not(:disabled):hover { border-color: #c4d5e0; background: #edf4f8; }
+    #leave-page .leave-command-button:focus-visible, #leave-page .leave-command-ribbon input:focus-visible, #leave-page .leave-command-ribbon select:focus-visible { outline: 2px solid #2477a7; outline-offset: 2px; }
+    #leave-page .leave-command-button:disabled { border-color: #e2e7ea; background: #f4f6f7; color: #98a2aa; opacity: 1; cursor: default; }
+    #leave-page .leave-command-button:disabled .leave-command-icon { color: #a5aeb5; }
+    #leave-page .leave-command-group-label { display: flex; align-items: center; justify-content: center; min-height: 17px; color: #687984; font-size: 9.5px; font-weight: 700; line-height: 1; }
+    @media (max-width: 700px), (pointer: coarse) { #leave-page .leave-command-ribbon { min-height: 138px; } #leave-page .leave-command-group { min-height: 130px; } #leave-page .leave-command-search > .field { height: 110px; } #leave-page .leave-command-search #leave-search { min-height: 40px; height: 40px; } #leave-page .leave-command-filter-grid { height: 110px; gap: 6px 8px; } #leave-page .leave-command-filter-grid select { min-height: 40px; height: 40px; } #leave-page .leave-command-buttons { min-height: 110px; } #leave-page .leave-command-button { min-height: 110px; justify-content: center; } }
+    @media print { #leave-page .leave-command-ribbon { display: none !important; } }
+
     .leave-toolbar { display: grid; grid-template-columns: minmax(220px,1fr) 120px 155px 150px 160px auto; gap: 10px; align-items: end; margin-bottom: 14px; }
     .permuta-toolbar { display: grid; grid-template-columns: minmax(220px,1fr) 170px 120px 150px 160px auto; gap: 10px; align-items: end; margin-bottom: 14px; }
     .permuta-toolbar.is-upcoming { grid-template-columns: minmax(240px,1fr) 170px 150px 160px auto; }
@@ -3207,6 +3257,31 @@
 
         <div id="vacation-error" class="error" hidden></div>
 
+        <section id="vacation-command-ribbon" class="vacation-command-ribbon" role="group" aria-label="Faixa de opções de Férias">
+          <div class="vacation-command-group vacation-command-search">
+            <div class="field"><label for="vac-search">Localizar militar</label><input id="vac-search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
+            <span class="vacation-command-group-label">Localizar</span>
+          </div>
+          <div class="vacation-command-group">
+            <div class="vacation-command-fields">
+              <div class="field"><label for="vac-year">Ano de referência</label><select id="vac-year"></select></div>
+              <div class="field"><label for="vac-month">Mês de planejamento</label><select id="vac-month"><option value="all">Todos os meses</option><option value="none">Nenhum (sem divisão)</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+            </div>
+            <span class="vacation-command-group-label">Período</span>
+          </div>
+          <div class="vacation-command-group">
+            <div class="vacation-command-fields">
+              <div class="field"><label for="vac-group">Efetivo</label><select id="vac-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
+              <div class="field"><label for="vac-status">Situação do período</label><select id="vac-status"><option value="all">Todas</option><option value="missing">Sem lançamento</option><option value="current">Em férias</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
+            </div>
+            <span class="vacation-command-group-label">Filtros</span>
+          </div>
+          <div class="vacation-command-group">
+            <div class="vacation-command-buttons"><button id="vac-refresh" class="secondary vacation-command-button" type="button"><svg class="vacation-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M25 10V5l-3 3a10 10 0 1 0 2.2 11.5"/><path d="M25 5h-5"/></svg><span>Atualizar dados</span></button></div>
+            <span class="vacation-command-group-label">Consulta</span>
+          </div>
+        </section>
+
         <section class="stats" aria-label="Resumo das férias">
           <div class="stat"><span>Militares planejados</span><strong id="vac-stat-periods">—</strong><small>no filtro selecionado</small></div>
           <div class="stat"><span>Em férias hoje</span><strong id="vac-stat-current">—</strong><small>períodos vigentes</small></div>
@@ -3215,15 +3290,6 @@
         </section>
 
         <div class="vacation-help">No planejamento mensal, cada período pertence a um único mês: aquele que concentra mais dias de férias. Em caso de empate, prevalece o mês de início. Assim, o militar nunca é contado duas vezes. O filtro “Sem lançamento” identifica quem não possui nenhum registro no ano selecionado. Use “Editar período” para corrigir um registro sem sair desta aba. Para novos lançamentos ou cancelamentos permitidos, abra a ficha do militar.</div>
-
-        <section class="vacation-toolbar" aria-label="Filtros de férias">
-          <div class="field"><label for="vac-search">Localizar militar</label><input id="vac-search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
-          <div class="field"><label for="vac-year">Ano de referência</label><select id="vac-year"></select></div>
-          <div class="field"><label for="vac-month">Mês de planejamento</label><select id="vac-month"><option value="all">Todos os meses</option><option value="none">Nenhum (sem divisão)</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
-          <div class="field"><label for="vac-group">Efetivo</label><select id="vac-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
-          <div class="field"><label for="vac-status">Situação do período</label><select id="vac-status"><option value="all">Todas</option><option value="missing">Sem lançamento</option><option value="current">Em férias</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
-          <button id="vac-refresh" class="secondary" type="button">Atualizar dados</button>
-        </section>
 
         <section class="panel">
           <div class="panel-head"><strong>Programação de férias</strong><span id="vac-result-count">Carregando…</span></div>
@@ -3246,6 +3312,28 @@
 
         <div id="leave-error" class="error" hidden></div>
 
+        <section id="leave-command-ribbon" class="leave-command-ribbon" role="group" aria-label="Faixa de opções de Licenças e Outros">
+          <div class="leave-command-group leave-command-search">
+            <div class="field"><label for="leave-search">Localizar militar</label><input id="leave-search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
+            <span class="leave-command-group-label">Localizar</span>
+          </div>
+          <div class="leave-command-group">
+            <div class="leave-command-filter-grid">
+              <div class="field"><label for="leave-year">Ano</label><select id="leave-year"></select></div>
+              <div class="field"><label for="leave-type">Tipo</label><select id="leave-type"><option value="all">Todos os tipos</option></select></div>
+              <div class="field"><label for="leave-group">Efetivo</label><select id="leave-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
+              <div class="field"><label for="leave-status">Situação do período</label><select id="leave-status"><option value="all">Todas</option><option value="current">Vigente</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
+            </div>
+            <span class="leave-command-group-label">Filtros</span>
+          </div>
+          <div class="leave-command-group">
+            <div class="leave-command-buttons">
+              <button id="leave-refresh" class="secondary leave-command-button" type="button" title="Consultar novamente as licenças e outros afastamentos"><svg class="leave-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M25 10V5l-3 3a10 10 0 1 0 2.2 11.5"/><path d="M25 5h-5"/></svg><span>Atualizar dados</span></button>
+            </div>
+            <span class="leave-command-group-label">Consulta</span>
+          </div>
+        </section>
+
         <section class="stats" aria-label="Resumo das licenças e outros afastamentos">
           <div class="stat"><span>Registros</span><strong id="leave-stat-records">—</strong><small>no filtro selecionado</small></div>
           <div class="stat"><span>Afastados hoje</span><strong id="leave-stat-current">—</strong><small>DTS conforme a modalidade</small></div>
@@ -3255,14 +3343,7 @@
 
         <div class="vacation-help">Esta visão reúne todos os afastamentos que não são férias. Na DTS, a opção “com restrição ao serviço de 24h” retira o militar da escala; “sem restrição ao serviço de 24h” mantém o militar no serviço, com as demais restrições médicas. Uma nova LTS ou DTS encerra na véspera qualquer LTS, DTS ou Dispensa vigente iniciada antes dela; somente o novo afastamento permanece vigente.</div>
 
-        <section class="leave-toolbar" aria-label="Filtros de licenças e outros afastamentos">
-          <div class="field"><label for="leave-search">Localizar militar</label><input id="leave-search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
-          <div class="field"><label for="leave-year">Ano</label><select id="leave-year"></select></div>
-          <div class="field"><label for="leave-type">Tipo</label><select id="leave-type"><option value="all">Todos os tipos</option></select></div>
-          <div class="field"><label for="leave-group">Efetivo</label><select id="leave-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
-          <div class="field"><label for="leave-status">Situação do período</label><select id="leave-status"><option value="all">Todas</option><option value="current">Vigente</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
-          <button id="leave-refresh" class="secondary" type="button">Atualizar dados</button>
-        </section>
+
 
         <section class="panel">
           <div class="panel-head"><strong>Licenças e outros afastamentos</strong><span id="leave-result-count">Carregando…</span></div>
