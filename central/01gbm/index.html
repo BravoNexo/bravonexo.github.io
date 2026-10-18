@@ -989,6 +989,14 @@
     .ras-history-help { margin: 0; padding: 9px 15px; color: #637583; font-size: 11px; border-bottom: 1px solid #e1e8ec; }
     .ras-history-observation-dialog { width: min(560px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: 14px; color: #243e51; background: #fff; box-shadow: 0 16px 50px #102b4555; overflow: auto; }
     .ras-history-observation-dialog::backdrop { background: #102b4580; }
+    .ras-admin-applicant-count { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 40px; padding: 6px 12px; border: 1px solid #bad2df; border-radius: 8px; background: #edf6fb; color: #174f74; font: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .ras-admin-applicant-count:hover { background: #dceef8; border-color: #78a9c4; }
+    .ras-admin-applicant-count:focus-visible { outline: 3px solid #2477a7; outline-offset: 2px; }
+    .ras-admin-applicants-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .ras-admin-applicants-list li { display: grid; gap: 3px; padding: 11px 12px; border: 1px solid #d6e0e5; border-radius: 8px; background: #f8fafb; overflow-wrap: anywhere; }
+    .ras-admin-applicants-list li span { color: #58717f; font-size: 12px; }
+    #ras-admin-applicants-summary { margin: 0 0 12px; color: #365464; }
+
     .ras-history-observation-dialog .decision-head span { display: block; margin-top: 6px; line-height: 1.5; }
     .ras-history-observation-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
     @media (pointer: coarse) { .ras-history-origin { min-height: 44px; min-width: 44px; } }
@@ -4195,6 +4203,12 @@
         </div>
       </div>
 
+      <dialog id="ras-admin-applicants-dialog" class="ras-history-observation-dialog" aria-labelledby="ras-admin-applicants-title" aria-describedby="ras-admin-applicants-service">
+        <div class="decision-head"><strong id="ras-admin-applicants-title">Inscritos na oportunidade</strong><span id="ras-admin-applicants-service"></span></div>
+        <div class="decision-body"><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
+        <div class="decision-footer"><button id="ras-admin-applicants-close" class="secondary" type="button" autofocus>Fechar</button></div>
+      </dialog>
+
       <dialog id="ras-history-observation-dialog" class="ras-history-observation-dialog" aria-labelledby="ras-history-observation-title" aria-describedby="ras-history-observation-text">
         <div class="decision-head"><strong id="ras-history-observation-title">Observação do lançamento</strong><span id="ras-history-observation-identity"></span></div>
         <div class="decision-body"><p id="ras-history-observation-text" class="ras-history-observation-text"></p></div>
@@ -6418,6 +6432,74 @@
       renderRasAdmin();
     }
 
+    // Read-only identities come only from getRasAdminDashboard, not a new RPC.
+    let rasAdminApplicantsReturnFocus_ = null;
+
+    function rasAdminApplicantCount_(item) {
+      const count = Number(item && item.preferenceCount || 0);
+      return Number.isSafeInteger(count) && count >= 0 ? count : 0;
+    }
+
+    function rasAdminApplicantsButton_(item) {
+      const count = rasAdminApplicantCount_(item);
+      const service = [item.date, item.startTime, item.origin, item.location, item.role].filter(Boolean).join(' • ');
+      const label = 'Ver ' + count + (count === 1 ? ' inscrito' : ' inscritos') + (service ? ' — ' + service : '');
+      return '<button class="ras-admin-applicant-count" type="button" data-ras-admin-applicants="' + escapeHtml(item.id || '') +
+        '" aria-haspopup="dialog" aria-controls="ras-admin-applicants-dialog" aria-label="' + escapeHtml(label) + '">' + escapeHtml(count) + '</button>';
+    }
+
+    function rasAdminApplicantsAllowed_() {
+      const workspace = document.getElementById('central-workspace');
+      const admin = document.getElementById('ras-view-admin');
+      return Boolean(workspace && !workspace.hidden && !workspace.hasAttribute('inert') &&
+        admin && !admin.hidden && state.rasAdminLoaded && !state.rasAdminLoading);
+    }
+
+    function openRasAdminApplicants_(opportunityId, trigger) {
+      if (!rasAdminApplicantsAllowed_()) return;
+      const id = String(opportunityId || '');
+      const item = rasAdminOpenOpportunities().find(function(entry) { return String(entry.id || '') === id; });
+      if (!item) return;
+      const dialog = document.getElementById('ras-admin-applicants-dialog');
+      const count = rasAdminApplicantCount_(item);
+      const applicants = Array.isArray(item.applicants) ? item.applicants : [];
+      const list = document.getElementById('ras-admin-applicants-list');
+      const complete = Array.isArray(item.applicants) && applicants.length === count;
+      document.getElementById('ras-admin-applicants-service').textContent =
+        [item.date, item.startTime, item.origin, item.location, item.role].filter(Boolean).join(' • ') || 'Serviço não informado';
+      document.getElementById('ras-admin-applicants-summary').textContent = count === 0 ? 'Nenhum inscrito nesta oportunidade.' :
+        complete ? count + (count === 1 ? ' inscrito nesta oportunidade.' : ' inscritos nesta oportunidade.') :
+        'A lista de inscritos não está disponível nesta consulta. Atualize a Administração para conferir.';
+      list.innerHTML = complete ? applicants.map(function(person) {
+        const rank = callPlanRank(person && person.rank);
+        const name = String(person && person.name || '').trim();
+        const rg = String(person && person.rg || '').trim();
+        const identity = [rank, name].filter(Boolean).join(' ') || 'Militar não identificado';
+        return '<li><strong>' + escapeHtml(identity) + '</strong><span>RG ' + escapeHtml(rg || 'não informado') + '</span></li>';
+      }).join('') : '';
+      rasAdminApplicantsReturnFocus_ = trigger || document.activeElement;
+      if (!dialog.open) dialog.showModal();
+    }
+
+    function initializeRasAdminApplicants_() {
+      const dialog = document.getElementById('ras-admin-applicants-dialog');
+      elements.rasAdminOpportunities.addEventListener('click', function(event) {
+        const button = event.target.closest('[data-ras-admin-applicants]');
+        if (!button || !elements.rasAdminOpportunities.contains(button) || button.disabled) return;
+        event.preventDefault();
+        event.stopPropagation();
+        openRasAdminApplicants_(button.getAttribute('data-ras-admin-applicants'), button);
+      });
+      document.getElementById('ras-admin-applicants-close').addEventListener('click', function() { dialog.close(); });
+      dialog.addEventListener('click', function(event) { if (event.target === dialog) dialog.close(); });
+      dialog.addEventListener('close', function() {
+        document.getElementById('ras-admin-applicants-list').innerHTML = '';
+        const target = rasAdminApplicantsReturnFocus_;
+        rasAdminApplicantsReturnFocus_ = null;
+        if (target && target.isConnected && rasAdminApplicantsAllowed_()) target.focus();
+      });
+    }
+
     function renderRasAdmin() {
       renderRasCancellationRequests_();
       renderRasCycleConfiguration_();
@@ -6443,7 +6525,7 @@
         return '<tr><td class="ras-admin-check"><input type="checkbox" data-ras-admin-select="' + escapeHtml(item.id) + '" aria-label="Selecionar ' + escapeHtml(item.id) + '"' +
           (selected ? ' checked' : '') + (state.rasAdminBusy ? ' disabled' : '') + '></td><td><strong>' + escapeHtml(date || '—') + '</strong><br><small>' +
           escapeHtml(item.id || '') + '</small></td><td>' + escapeHtml(origin) + '</td><td>' + rasHours(item.hours) + '</td><td>' +
-          escapeHtml(item.deadline || '—') + '</td><td><strong>' + escapeHtml(item.preferenceCount || 0) + '</strong></td><td>' +
+          escapeHtml(item.deadline || '—') + '</td><td>' + rasAdminApplicantsButton_(item) + '</td><td>' +
           rasStatusHtml(statusKey, item.status) + '</td></tr>';
       }).join('');
       elements.rasAdminEmpty.hidden = rows.length > 0;
@@ -16542,6 +16624,7 @@
     });
     window.BNXRasMonthlyBudgetPanel = window.BNXRasMonthlyBudgetUi.mount({ document: document, runner: BNX_rpc.run });
     initializeRasCancellation_();
+    initializeRasAdminApplicants_();
     elements.rasAddServiceAction.addEventListener('click', openRasBatchEditor);
     elements.rasAddSingleAction.addEventListener('click', openRasOpportunityEditor);
     elements.rasDirectAction.addEventListener('click', openRasDirectGrant);
