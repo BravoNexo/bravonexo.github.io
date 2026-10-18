@@ -60,6 +60,14 @@
     table { width: 100%; min-width: 760px; border-collapse: collapse; }
     th, td { padding: 11px 13px; border-bottom: 1px solid #e7ecef; text-align: left; font-size: 12px; }
     th { color: #657480; background: #f7f9fa; font-weight: 600; }
+    #military-page #table-wrap th[data-effective-sort] { padding: 0; }
+    #military-page #table-wrap .effective-sort-button { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 42px; padding: 11px 13px; border: 0; border-radius: 0; color: inherit; background: transparent; font: inherit; text-align: left; }
+    #military-page #table-wrap .effective-sort-button:hover { color: #173f5f; background: #eaf2f6; }
+    #military-page #table-wrap .effective-sort-button:focus-visible { outline: 2px solid #176ca1; outline-offset: -3px; }
+    #military-page #table-wrap th[aria-sort="ascending"] .effective-sort-button,
+    #military-page #table-wrap th[aria-sort="descending"] .effective-sort-button { color: #173f5f; background: #e6f0f5; font-weight: 700; }
+    #military-page #table-wrap .effective-sort-arrow { flex: 0 0 auto; font-size: 13px; line-height: 1; }
+
     tbody tr { cursor: pointer; }
     tbody tr:hover, tbody tr.selected { background: #edf5f8; }
     tbody tr:last-child td { border-bottom: 0; }
@@ -2270,6 +2278,37 @@
   font-weight: 600;
 }
       /* Independent administrative/physical affiliation filters, including small screens. */
+
+    /* Efetivo only: grouped ribbon, independent from vacation/leave controls. */
+    #military-page .military-command-ribbon { display: flex; align-items: stretch; gap: 0; min-width: 0; max-width: 100%; min-height: 104px; margin: 0 0 14px; padding: 4px 6px 0; overflow-x: auto; overflow-y: hidden; border: 1px solid #d5dee5; border-radius: 8px; background: linear-gradient(180deg, #fff, #f8fafb); box-shadow: 0 4px 12px #12344312; scrollbar-width: thin; }
+    #military-page .military-command-group { display: flex; flex: 0 0 auto; flex-direction: column; justify-content: space-between; min-height: 96px; padding: 3px 8px 0; }
+    #military-page .military-command-group + .military-command-group { border-left: 1px solid #d8e0e6; }
+    #military-page .military-command-search { flex: 1 0 200px; min-width: 200px; }
+    #military-page .military-command-search > .field { display: flex; flex-direction: column; justify-content: center; gap: 7px; min-width: 0; height: 76px; padding: 8px 10px; border: 1px solid #d6e1e7; border-radius: 5px; background: #f4f8fa; }
+    #military-page .military-command-search > .field > label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: .04em; }
+    #military-page .military-command-search #search { width: 100%; min-width: 0; min-height: 30px; height: 30px; margin: 0; padding: 3px 0; border: 0; border-radius: 2px; background: transparent; color: #244f69; font: inherit; font-size: 13px; }
+    #military-page .military-command-filter-grid { display: grid; grid-template-columns: repeat(2, 136px); gap: 4px 8px; height: 76px; }
+    #military-page .military-command-filter-grid .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    #military-page .military-command-filter-grid .field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
+    #military-page .military-command-filter-grid select { width: 100%; min-width: 0; min-height: 24px; height: 24px; margin: 0; padding: 2px 5px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 11px; }
+    #military-page .military-command-buttons { display: flex; align-items: stretch; justify-content: center; gap: 4px; min-height: 76px; }
+    #military-page .military-command-button { display: inline-flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; width: 78px; min-width: 78px; min-height: 76px; margin: 0; padding: 5px 5px 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #263f50; font-size: 10.5px; font-weight: 700; line-height: 1.15; text-align: center; white-space: normal; }
+    #military-page .military-command-button > span { display: flex; align-items: center; justify-content: center; min-height: 27px; text-align: center; }
+    #military-page .military-command-icon { width: 30px; height: 30px; flex: 0 0 30px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; color: #385b70; }
+    #military-page .military-command-button:not(:disabled):hover { border-color: #c4d5e0; background: #edf4f8; }
+    #military-page .military-command-button:focus-visible, #military-page .military-command-ribbon input:focus-visible, #military-page .military-command-ribbon select:focus-visible { outline: 2px solid #2477a7; outline-offset: 2px; }
+    #military-page .military-command-button:disabled { border-color: #e2e7ea; background: #f4f6f7; color: #98a2aa; opacity: 1; cursor: default; }
+    #military-page .military-command-button:disabled .military-command-icon { color: #a5aeb5; }
+    #military-page .military-command-primary:not(:disabled) { border-color: #acd5c6; background: #eaf7f2; color: #155c49; }
+    #military-page .military-command-primary:not(:disabled) .military-command-icon { color: #247a5c; }
+    #military-page #sort-seniority { width: 88px; min-width: 88px; }
+    #military-page #sort-seniority[aria-pressed="true"]:not(:disabled) { border-color: #adc9dc; background: #eaf3fa; color: #174f74; }
+    #military-page #sort-seniority[aria-pressed="true"]:not(:disabled) .military-command-icon { color: #276f9d; }
+    #military-page #print-call-plan { width: 106px; min-width: 106px; }
+    #military-page .military-command-group-label { display: flex; align-items: center; justify-content: center; min-height: 17px; color: #687984; font-size: 9.5px; font-weight: 700; line-height: 1; }
+    @media (max-width: 700px), (pointer: coarse) { #military-page .military-command-ribbon { min-height: 138px; } #military-page .military-command-group { min-height: 130px; } #military-page .military-command-search > .field { height: 110px; } #military-page .military-command-search #search { min-height: 40px; height: 40px; } #military-page .military-command-filter-grid { height: 110px; gap: 6px 8px; } #military-page .military-command-filter-grid select { min-height: 40px; height: 40px; } #military-page .military-command-buttons { min-height: 110px; } #military-page .military-command-button { min-height: 110px; justify-content: center; } }
+    @media print { #military-page .military-command-ribbon { display: none !important; } }
+
     #military-page .toolbar { display: flex; flex-wrap: wrap; align-items: end; }
     #military-page .toolbar > .field { flex: 1 1 145px; min-width: 0; }
     #military-page .toolbar > .field:first-child { flex: 2 1 240px; }
@@ -3044,23 +3083,46 @@
         <header class="page-head">
         <div><h1>Efetivo</h1><p>Consulta ao efetivo atual e ao arquivo de ex-militares do quartel.</p></div>
         <div class="home-head-actions">
-          <button id="add-military-action" class="primary" type="button">Adicionar militar</button>
           <div class="read-only">Cadastro e lançamentos</div>
         </div>
       </header>
 
       <div id="error" class="error" hidden></div>
 
-      <section class="toolbar" aria-label="Filtros">
-        <div class="field"><label for="search">Localizar militar</label><input id="search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
-        <div class="field"><label for="administrative-unit" title="Quartel de vínculo administrativo">Efetivo</label><select id="administrative-unit"><option value="all">Todos os efetivos</option></select></div>
-        <div class="field"><label for="group" title="Onde o militar serve fisicamente">OBM Atual</label><select id="group"><option value="all">Todas as OBMs</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option><option value="Outra">Outra OBM</option><option value="__unset">Não informada</option></select></div>
-        <div class="field"><label for="situation">Situação</label><select id="situation"><option value="all">Todas</option><option value="ativo">Ativo</option><option value="ferias">Férias</option><option value="licenca">Licença</option><option value="dts">DTS</option><option value="dispensado">Dispensado</option><option value="outro">Outros</option></select></div>
-        <div class="field"><label for="activity">Vínculo / atividade</label><select id="activity"><option value="all">Efetivo atual</option><option value="TRANSFERIDO">Ex-militares</option><option value="OFICIAL">Oficiais</option><option value="PRAÇA">Praças</option><option value="FIM">Fim</option><option value="MEIO">Meio</option></select></div>
-        <button id="sort-seniority" class="secondary" type="button" aria-label="Ordenar por antiguidade" title="Posto/graduação, última promoção e RG">Antiguidade</button>
-        <button id="print-call-plan" class="secondary" type="button" title="Escolher o efetivo e a organização do Plano de Chamada para impressão">Imprimir Plano de Chamada</button>
-        <button id="refresh" class="secondary" type="button">Atualizar dados</button>
-        </section>
+      <section id="military-command-ribbon" class="military-command-ribbon" role="group" aria-label="Faixa de opções do Efetivo">
+        <div class="military-command-group military-command-search">
+          <div class="field"><label for="search">Localizar militar</label><input id="search" type="search" placeholder="Nome, nome de guerra ou RG" autocomplete="off"></div>
+          <span class="military-command-group-label">Localizar</span>
+        </div>
+        <div class="military-command-group">
+          <div class="military-command-filter-grid">
+            <div class="field"><label for="administrative-unit" title="Quartel de vínculo administrativo">Efetivo</label><select id="administrative-unit"><option value="all">Todos os efetivos</option></select></div>
+            <div class="field"><label for="group" title="Onde o militar serve fisicamente">OBM Atual</label><select id="group"><option value="all">Todas as OBMs</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option><option value="Outra">Outra OBM</option><option value="__unset">Não informada</option></select></div>
+            <div class="field"><label for="situation">Situação</label><select id="situation"><option value="all">Todas</option><option value="ativo">Ativo</option><option value="ferias">Férias</option><option value="licenca">Licença</option><option value="dts">DTS</option><option value="dispensado">Dispensado</option><option value="outro">Outros</option></select></div>
+            <div class="field"><label for="activity">Vínculo / atividade</label><select id="activity"><option value="all">Efetivo atual</option><option value="TRANSFERIDO">Ex-militares</option><option value="OFICIAL">Oficiais</option><option value="PRAÇA">Praças</option><option value="FIM">Fim</option><option value="MEIO">Meio</option></select></div>
+          </div>
+          <span class="military-command-group-label">Filtros</span>
+        </div>
+        <div class="military-command-group">
+          <div class="military-command-buttons">
+            <button id="add-military-action" class="primary military-command-button military-command-primary" type="button"><svg class="military-command-icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="12" cy="10" r="5"/><path d="M3 27v-3a9 9 0 0 1 18 0v3M25 12v12M19 18h12"/></svg><span>Adicionar militar</span></button>
+            <button id="refresh" class="secondary military-command-button" type="button"><svg class="military-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M25 10V5l-3 3a10 10 0 1 0 2.2 11.5"/><path d="M25 5h-5"/></svg><span>Atualizar dados</span></button>
+          </div>
+          <span class="military-command-group-label">Cadastro</span>
+        </div>
+        <div class="military-command-group">
+          <div class="military-command-buttons">
+            <button id="sort-seniority" class="secondary military-command-button" type="button" aria-label="Ordenar por antiguidade" title="Posto/graduação, última promoção e RG"><svg class="military-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 7h14M5 14h11M5 21h8M25 6v20M21 22l4 4 4-4"/></svg><span>Antiguidade</span></button>
+          </div>
+          <span class="military-command-group-label">Organização</span>
+        </div>
+        <div class="military-command-group">
+          <div class="military-command-buttons">
+            <button id="print-call-plan" class="secondary military-command-button" type="button" title="Escolher o efetivo e a organização do Plano de Chamada para impressão"><svg class="military-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 12V5h14v7M9 23H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3M9 19h14v8H9zM23 16h1"/></svg><span>Imprimir Plano de Chamada</span></button>
+          </div>
+          <span class="military-command-group-label">Impressão</span>
+        </div>
+      </section>
 
       <section class="stats" aria-label="Resumo do efetivo">
         <div class="stat"><span>Militares no filtro</span><strong id="stat-total">—</strong><small id="stat-groups">Vínculo administrativo</small></div>
@@ -3075,7 +3137,7 @@
           <div id="loading" class="loading">Consultando o Cadastro de Militares…</div>
           <div id="table-wrap" class="table-wrap" hidden>
             <table>
-              <thead><tr><th>Militar</th><th>RG</th><th>Quadro/QBMP</th><th>Efetivo</th><th>OBM Atual</th><th>Situação</th></tr></thead>
+              <thead><tr><th scope="col" data-effective-sort="military" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-effective-sort="rg" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="rg" aria-label="RG: ordenar em ordem crescente"><span>RG</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-effective-sort="qbmp" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="qbmp" aria-label="Quadro/QBMP: ordenar em ordem crescente"><span>Quadro/QBMP</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-effective-sort="administrativeUnit" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="administrativeUnit" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-effective-sort="currentUnit" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="currentUnit" aria-label="OBM Atual: ordenar em ordem crescente"><span>OBM Atual</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-effective-sort="situation" aria-sort="none"><button class="effective-sort-button" type="button" data-effective-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="effective-sort-arrow" aria-hidden="true" hidden></span></button></th></tr></thead>
               <tbody id="rows"></tbody>
             </table>
           </div>
@@ -15530,9 +15592,72 @@
         (administrativeFilter === 'all' || (administrativeFilter === '__unset' ? !administrative : administrative === administrativeFilter));
     }
 
+    // Only the Efetivo table owns this local order; shared Cadastro stays intact.
+    let effectiveSort_ = { key: 'seniority', direction: 'asc' };
+    const effectiveSortColumns_ = Object.freeze({ military: 'Militar', rg: 'RG', qbmp: 'Quadro/QBMP', administrativeUnit: 'Efetivo', currentUnit: 'OBM Atual', situation: 'Situação' });
+    const effectiveSortCollator_ = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base' });
+
+    function effectiveSortValue_(military, key) {
+      if (key === 'military') return String(military.warName || '').trim() || String(military.displayName || '').trim();
+      if (key === 'administrativeUnit') return militaryAdministrativeUnit(military);
+      if (key === 'situation') return isFormerMilitary(military) ? 'TRANSFERIDO' : String(military.situation || '').trim();
+      return String(military[key] == null ? '' : military[key]).trim();
+    }
+
+    function effectiveRgCompare_(a, b) {
+      if (/^\d+$/.test(a) && /^\d+$/.test(b)) {
+        const first = a.replace(/^0+(?=\d)/, ''), second = b.replace(/^0+(?=\d)/, '');
+        if (first.length !== second.length) return first.length < second.length ? -1 : 1;
+        return first === second ? 0 : (first < second ? -1 : 1);
+      }
+      return effectiveSortCollator_.compare(a, b);
+    }
+
+    function effectiveSortedRows_(records) {
+      const key = effectiveSort_.key, direction = effectiveSort_.direction === 'desc' ? -1 : 1;
+      return (Array.isArray(records) ? records : []).map(function(military, index) {
+        return { military: military, index: index, value: key === 'seniority' ? '' : effectiveSortValue_(military, key) };
+      }).sort(function(a, b) {
+        if (key === 'seniority') return compareMilitarySeniority(a.military, b.military) || a.index - b.index;
+        if (!a.value || !b.value) return a.value ? -1 : (b.value ? 1 : a.index - b.index);
+        const compared = key === 'rg' ? effectiveRgCompare_(a.value, b.value) : effectiveSortCollator_.compare(a.value, b.value);
+        return compared * direction || a.index - b.index;
+      }).map(function(row) { return row.military; });
+    }
+
+    function setEffectiveSort_(key) {
+      if (!Object.prototype.hasOwnProperty.call(effectiveSortColumns_, key)) return false;
+      effectiveSort_ = { key: key, direction: effectiveSort_.key === key && effectiveSort_.direction === 'asc' ? 'desc' : 'asc' };
+      return true;
+    }
+
+    function updateEffectiveSortHeaders_() {
+      document.querySelectorAll('#military-page #table-wrap th[data-effective-sort]').forEach(function(header) {
+        const key = header.dataset.effectiveSort, active = effectiveSort_.key === key;
+        const ascending = effectiveSort_.direction !== 'desc', button = header.querySelector('button');
+        const arrow = button.querySelector('.effective-sort-arrow');
+        header.setAttribute('aria-sort', active ? (ascending ? 'ascending' : 'descending') : 'none');
+        arrow.textContent = active ? (ascending ? '↑' : '↓') : '';
+        arrow.hidden = !active;
+        const hint = effectiveSortColumns_[key] + (active ? ': ordem ' + (ascending ? 'crescente' : 'decrescente') + '. Clique para ordenar em ordem ' + (ascending ? 'decrescente' : 'crescente') : ': ordenar em ordem crescente');
+        button.setAttribute('aria-label', hint);
+        button.setAttribute('title', hint);
+      });
+      elements.sortSeniority.setAttribute('aria-pressed', effectiveSort_.key === 'seniority' ? 'true' : 'false');
+    }
+
+    function initializeEffectiveSort_() {
+      document.querySelectorAll('#military-page #table-wrap th[data-effective-sort]').forEach(function(header) {
+        const button = header.querySelector('button');
+        button.addEventListener('click', function() { if (setEffectiveSort_(button.dataset.effectiveSortKey)) render(); });
+      });
+      updateEffectiveSortHeaders_();
+    }
+
     function render() {
+      updateEffectiveSortHeaders_();
       const term = normalize(elements.search.value);
-      const filtered = cadastroMilitaryData().filter(function(military) {
+      const filtered = effectiveSortedRows_(cadastroMilitaryData().filter(function(military) {
         const matchesText = !term || normalize([
           military.displayName,
           military.fullName,
@@ -15550,7 +15675,7 @@
             (activityFilter === 'praca' && (activityKey === 'fim' || activityKey === 'meio')) ||
             activityKey === activityFilter);
         return matchesText && matchesGroup && matchesSituation && matchesActivity;
-      });
+      }));
 
       elements.rows.innerHTML = filtered.map(function(military) {
         const selected = military.rg === state.selectedRg ? ' class="selected"' : '';
@@ -16437,8 +16562,9 @@
       loadGuardMovements();
     });
     elements.search.addEventListener('input', render);
+    initializeEffectiveSort_();
     elements.sortSeniority.addEventListener('click', function() {
-      cadastroMilitaryData().sort(compareMilitarySeniority);
+      effectiveSort_ = { key: 'seniority', direction: 'asc' };
       render();
       showToast('Ordenado por antiguidade: posto/graduação, última promoção e RG.');
     });
