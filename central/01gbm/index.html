@@ -996,6 +996,12 @@
     .ras-admin-applicants-list li { display: grid; gap: 3px; padding: 11px 12px; border: 1px solid #d6e0e5; border-radius: 8px; background: #f8fafb; overflow-wrap: anywhere; }
     .ras-admin-applicants-list li span { color: #58717f; font-size: 12px; }
     #ras-admin-applicants-summary { margin: 0 0 12px; color: #365464; }
+    .ras-admin-applicants-order { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+    .ras-admin-applicants-order label { font-weight: 700; }
+    .ras-admin-applicants-order select { flex: 1 1 190px; min-width: 0; min-height: 40px; padding: 7px 9px; border: 1px solid #bad2df; border-radius: 8px; color: #243e51; background: #fff; font: inherit; }
+    #ras-admin-applicants-help { margin: 0 0 14px; font-size: 12px; line-height: 1.45; color: #58717f; }
+    .ras-admin-applicants-list li small { font-size: 11px; line-height: 1.45; color: #58717f; }
+
 
     .ras-history-observation-dialog .decision-head span { display: block; margin-top: 6px; line-height: 1.5; }
     .ras-history-observation-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
@@ -4205,7 +4211,7 @@
 
       <dialog id="ras-admin-applicants-dialog" class="ras-history-observation-dialog" aria-labelledby="ras-admin-applicants-title" aria-describedby="ras-admin-applicants-service">
         <div class="decision-head"><strong id="ras-admin-applicants-title">Inscritos na oportunidade</strong><span id="ras-admin-applicants-service"></span></div>
-        <div class="decision-body"><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
+        <div class="decision-body"><div class="ras-admin-applicants-order"><label for="ras-admin-applicants-order">Ordenar por</label><select id="ras-admin-applicants-order" aria-describedby="ras-admin-applicants-help"><option value="preference">Preferência</option><option value="seniority">Antiguidade</option><option value="registration" title="Data da versão ativa das preferências; reenviar preferências atualiza essa data.">Ordem de inscrição</option></select></div><p id="ras-admin-applicants-help">Preferência é a prioridade escolhida pelo militar, não a ordem de concessão. A inscrição considera a versão ativa das preferências.</p><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
         <div class="decision-footer"><button id="ras-admin-applicants-close" class="secondary" type="button" autofocus>Fechar</button></div>
       </dialog>
 
@@ -6435,6 +6441,60 @@
     // Read-only identities come only from getRasAdminDashboard, not a new RPC.
     let rasAdminApplicantsReturnFocus_ = null;
 
+    let rasAdminApplicantsCurrent_ = null;
+
+    function rasAdminApplicantPosition_(value) {
+      return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null;
+    }
+
+    function rasAdminApplicantTimestamp_(value) {
+      return typeof value === 'number' && Number.isFinite(value) && value >= 0 &&
+        Number.isFinite(new Date(value).getTime()) ? value : null;
+    }
+
+    function rasAdminSortedApplicants_(applicants, mode) {
+      const order = mode === 'seniority' || mode === 'registration' ? mode : 'preference';
+      const rows = (Array.isArray(applicants) ? applicants : []).map(function(person, index) {
+        const preference = rasAdminApplicantPosition_(person && person.preferenceOrder);
+        const seniority = rasAdminApplicantPosition_(person && person.seniorityOrder);
+        const registration = rasAdminApplicantTimestamp_(person && person.subscribedAt);
+        return { person: person, index: index, preference: preference == null ? Infinity : preference,
+          seniority: seniority == null ? Infinity : seniority, registration: registration == null ? Infinity : registration };
+      });
+      return rows.sort(function(a, b) {
+        if (order === 'preference' && a.preference !== b.preference) return a.preference < b.preference ? -1 : 1;
+        if (order !== 'registration' && a.seniority !== b.seniority) return a.seniority < b.seniority ? -1 : 1;
+        if (a.registration !== b.registration) return a.registration < b.registration ? -1 : 1;
+        return a.index - b.index;
+      }).map(function(row) { return row.person; });
+    }
+
+    function rasAdminApplicantRegistrationLabel_(value) {
+      const timestamp = rasAdminApplicantTimestamp_(value);
+      return timestamp == null ? 'Inscrição sem data' : 'Inscrição: ' + new Date(timestamp).toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      });
+    }
+
+    function renderRasAdminApplicantsList_() {
+      const list = document.getElementById('ras-admin-applicants-list');
+      const current = rasAdminApplicantsCurrent_;
+      if (!rasAdminApplicantsAllowed_() || !current || !current.complete) { list.innerHTML = ''; return; }
+      const mode = document.getElementById('ras-admin-applicants-order').value;
+      list.innerHTML = rasAdminSortedApplicants_(current.applicants, mode).map(function(person) {
+        const rank = callPlanRank(person && person.rank);
+        const name = String(person && person.name || '').trim();
+        const rg = String(person && person.rg || '').trim();
+        const identity = [rank, name].filter(Boolean).join(' ') || 'Militar não identificado';
+        const preference = rasAdminApplicantPosition_(person && person.preferenceOrder);
+        const preferenceLabel = preference == null ? 'Preferência não informada' : preference + 'ª preferência';
+        const registration = mode === 'registration' ? '<small>' + escapeHtml(rasAdminApplicantRegistrationLabel_(person && person.subscribedAt)) + '</small>' : '';
+        return '<li><strong>' + escapeHtml(identity) + '</strong><span>RG ' + escapeHtml(rg || 'não informado') +
+          ' · <small>' + escapeHtml(preferenceLabel) + '</small></span>' + registration + '</li>';
+      }).join('');
+    }
+
     function rasAdminApplicantCount_(item) {
       const count = Number(item && item.preferenceCount || 0);
       return Number.isSafeInteger(count) && count >= 0 ? count : 0;
@@ -6463,20 +6523,17 @@
       const dialog = document.getElementById('ras-admin-applicants-dialog');
       const count = rasAdminApplicantCount_(item);
       const applicants = Array.isArray(item.applicants) ? item.applicants : [];
-      const list = document.getElementById('ras-admin-applicants-list');
+      const selector = document.getElementById('ras-admin-applicants-order');
       const complete = Array.isArray(item.applicants) && applicants.length === count;
       document.getElementById('ras-admin-applicants-service').textContent =
         [item.date, item.startTime, item.origin, item.location, item.role].filter(Boolean).join(' • ') || 'Serviço não informado';
       document.getElementById('ras-admin-applicants-summary').textContent = count === 0 ? 'Nenhum inscrito nesta oportunidade.' :
         complete ? count + (count === 1 ? ' inscrito nesta oportunidade.' : ' inscritos nesta oportunidade.') :
         'A lista de inscritos não está disponível nesta consulta. Atualize a Administração para conferir.';
-      list.innerHTML = complete ? applicants.map(function(person) {
-        const rank = callPlanRank(person && person.rank);
-        const name = String(person && person.name || '').trim();
-        const rg = String(person && person.rg || '').trim();
-        const identity = [rank, name].filter(Boolean).join(' ') || 'Militar não identificado';
-        return '<li><strong>' + escapeHtml(identity) + '</strong><span>RG ' + escapeHtml(rg || 'não informado') + '</span></li>';
-      }).join('') : '';
+      rasAdminApplicantsCurrent_ = { complete: complete, applicants: applicants.slice() };
+      selector.value = 'preference';
+      selector.disabled = !complete || count === 0;
+      renderRasAdminApplicantsList_();
       rasAdminApplicantsReturnFocus_ = trigger || document.activeElement;
       if (!dialog.open) dialog.showModal();
     }
@@ -6490,10 +6547,13 @@
         event.stopPropagation();
         openRasAdminApplicants_(button.getAttribute('data-ras-admin-applicants'), button);
       });
+      document.getElementById('ras-admin-applicants-order').addEventListener('change', renderRasAdminApplicantsList_);
       document.getElementById('ras-admin-applicants-close').addEventListener('click', function() { dialog.close(); });
       dialog.addEventListener('click', function(event) { if (event.target === dialog) dialog.close(); });
       dialog.addEventListener('close', function() {
         document.getElementById('ras-admin-applicants-list').innerHTML = '';
+        rasAdminApplicantsCurrent_ = null;
+        document.getElementById('ras-admin-applicants-order').value = 'preference';
         const target = rasAdminApplicantsReturnFocus_;
         rasAdminApplicantsReturnFocus_ = null;
         if (target && target.isConnected && rasAdminApplicantsAllowed_()) target.focus();
