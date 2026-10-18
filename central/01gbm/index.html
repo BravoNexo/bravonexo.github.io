@@ -232,7 +232,25 @@
     .permuta-toolbar { display: grid; grid-template-columns: minmax(220px,1fr) 170px 120px 150px 160px auto; gap: 10px; align-items: end; margin-bottom: 14px; }
     .permuta-toolbar.is-upcoming { grid-template-columns: minmax(240px,1fr) 170px 150px 160px auto; }
     .vacation-table { min-width: 1120px; }
+    #vacation-page #vac-table-wrap th[data-vacation-sort] { padding: 0; }
+    #vacation-page .vacation-sort-button { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 42px; padding: 11px 13px; border: 0; border-radius: 0; color: inherit; background: transparent; font: inherit; text-align: left; }
+    #vacation-page .vacation-sort-button:hover { color: #173f5f; background: #eaf2f6; }
+    #vacation-page .vacation-sort-button:focus-visible { outline: 2px solid #176ca1; outline-offset: -3px; }
+    #vacation-page #vac-table-wrap th[aria-sort="ascending"] .vacation-sort-button, #vacation-page #vac-table-wrap th[aria-sort="descending"] .vacation-sort-button { color: #173f5f; background: #e6f0f5; font-weight: 700; }
+    #vacation-page .vacation-sort-arrow { flex: 0 0 auto; font-size: 13px; line-height: 1; }
+    #vacation-page .vacation-sort-note { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 7px 12px; margin: 10px 13px; color: #58717f; font-size: 11px; }
+    #vacation-page .vacation-sort-note[hidden] { display: none !important; }
+    #vacation-page .vacation-sort-note button { min-height: 36px; padding: 5px 9px; border: 1px solid #c8d6df; border-radius: 6px; background: #f7fafb; color: #31566b; font: inherit; cursor: pointer; }
+
     .leave-table { min-width: 1160px; }
+    #leave-page #leave-table-wrap th[data-leave-sort] { padding: 0; }
+    #leave-page #leave-table-wrap .leave-sort-button { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 42px; padding: 11px 13px; border: 0; border-radius: 0; color: inherit; background: transparent; font: inherit; text-align: left; }
+    #leave-page #leave-table-wrap .leave-sort-button:hover { color: #173f5f; background: #eaf2f6; }
+    #leave-page #leave-table-wrap .leave-sort-button:focus-visible { outline: 2px solid #176ca1; outline-offset: -3px; }
+    #leave-page #leave-table-wrap th[aria-sort="ascending"] .leave-sort-button,
+    #leave-page #leave-table-wrap th[aria-sort="descending"] .leave-sort-button { color: #173f5f; background: #e6f0f5; font-weight: 700; }
+    #leave-page #leave-table-wrap .leave-sort-arrow { flex: 0 0 auto; font-size: 13px; line-height: 1; }
+
     .permuta-table { min-width: 1060px; }
     .vacation-month-group td { padding: 12px 14px; border-top: 2px solid #b8cfdb; border-bottom: 1px solid #c7dbe4; color: #173f5f; background: #dceaf1; box-shadow: inset 4px 0 0 #2f6f8f; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
     .planning-month { display: block; color: #24495f; font-weight: 700; }
@@ -3293,10 +3311,11 @@
 
         <section class="panel">
           <div class="panel-head"><strong>Programação de férias</strong><span id="vac-result-count">Carregando…</span></div>
+          <div id="vac-sort-note" class="vacation-sort-note" hidden><span id="vac-sort-note-label" role="status" aria-live="polite"></span><button id="vac-sort-reset" type="button">Organização original</button></div>
           <div id="vac-loading" class="loading">Consultando os registros de férias…</div>
           <div id="vac-table-wrap" class="table-wrap" hidden>
             <table class="vacation-table">
-              <thead><tr><th>Militar</th><th>Efetivo</th><th>Referência</th><th>Mês de planejamento</th><th>Período</th><th>Dias</th><th>Situação</th><th>Documento</th><th>Ação</th></tr></thead>
+              <thead><tr><th scope="col" data-vacation-sort="military" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="group" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="referenceYear" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="referenceYear" aria-label="Referência: ordenar em ordem crescente"><span>Referência</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="planningMonth" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="planningMonth" aria-label="Mês de planejamento: ordenar em ordem crescente"><span>Mês de planejamento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="period" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="period" aria-label="Período: ordenar em ordem crescente"><span>Período</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="days" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="situation" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="document" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
               <tbody id="vac-rows"></tbody>
             </table>
           </div>
@@ -3350,7 +3369,7 @@
           <div id="leave-loading" class="loading">Consultando os registros de afastamentos…</div>
           <div id="leave-table-wrap" class="table-wrap" hidden>
             <table class="leave-table">
-              <thead><tr><th>Militar</th><th>Efetivo</th><th>Tipo</th><th>Período</th><th>Dias</th><th>Situação</th><th>Documento</th><th>Ação</th></tr></thead>
+              <thead><tr><th scope="col" data-leave-sort="military" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="group" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="type" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="type" aria-label="Tipo: ordenar em ordem crescente"><span>Tipo</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="period" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="period" aria-label="Período: ordenar em ordem crescente"><span>Período</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="days" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="status" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="status" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-leave-sort="document" aria-sort="none"><button class="leave-sort-button" type="button" data-leave-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="leave-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
               <tbody id="leave-rows"></tbody>
             </table>
           </div>
@@ -14616,9 +14635,109 @@
       document.getElementById('vac-stat-days').textContent = activeRecords.reduce(function(total, record) { return total + Number(record.days || 0); }, 0);
     }
 
+    // Férias owns this detached presentation order, not the shared records.
+    let vacationColumnSort_ = { key: null, direction: 'asc' };
+    const vacationSortColumns_ = Object.freeze({ military: 'Militar', group: 'Efetivo', referenceYear: 'Referência', planningMonth: 'Mês de planejamento', period: 'Período', days: 'Dias', situation: 'Situação', document: 'Documento' });
+    const vacationSortCollator_ = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base' });
+
+    function vacationSortText_(value) {
+      const text = String(value == null ? '' : value).trim();
+      return !text || text === '—' || text === '-' ? null : text;
+    }
+
+    function vacationSortNumber_(value) {
+      if (value == null || typeof value === 'string' && !value.trim()) return null;
+      const number = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function vacationSortValue_(record, key) {
+      if (key === 'military') {
+        const military = cadastroMilitaryByRg(record.rg);
+        return vacationSortText_(military && military.warName) || vacationSortText_(record.military) || vacationSortText_(record.displayName);
+      }
+      if (key === 'group') return vacationSortText_(record.group);
+      if (key === 'situation') return vacationSortText_(record.periodStatus);
+      if (record.periodStatusKey === 'missing') return null;
+      if (key === 'referenceYear') {
+        const year = vacationSortNumber_(record.referenceYear);
+        return Number.isSafeInteger(year) && year > 0 ? year : null;
+      }
+      if (key === 'days') {
+        const days = vacationSortNumber_(record.days);
+        return days != null && days >= 0 ? days : null;
+      }
+      if (key === 'period') {
+        const date = rasOpportunityDateParts_(record.startDate);
+        return date ? date.sortDate : null;
+      }
+      if (key === 'planningMonth') {
+        const monthKey = String(record.planningMonthKey || '').trim();
+        const exact = /^\d{4}-(?:0[1-9]|1[0-2])$/.test(monthKey) ? rasOpportunityDateParts_(monthKey + '-01') : null;
+        if (exact) return exact.sortDate;
+        const year = vacationSortNumber_(record.planningYear), month = vacationSortNumber_(record.planningMonth);
+        if (!Number.isSafeInteger(year) || year <= 0 || !Number.isSafeInteger(month) || month < 1 || month > 12) return null;
+        return year * 10000 + month * 100 + 1;
+      }
+      if (key === 'document') return vacationSortText_([record.bulletin, record.note].filter(Boolean).join(' — '));
+      return null;
+    }
+
+    function vacationSortedRows_(records, order) {
+      const key = order && order.key, direction = order && order.direction === 'desc' ? -1 : 1;
+      if (!Object.prototype.hasOwnProperty.call(vacationSortColumns_, key)) return (records || []).slice();
+      return (Array.isArray(records) ? records : []).map(function(record, index) {
+        return { record: record, index: index, value: vacationSortValue_(record, key) };
+      }).sort(function(a, b) {
+        if (a.value == null || b.value == null) return a.value == null ? (b.value == null ? a.index - b.index : 1) : -1;
+        const compared = typeof a.value === 'number' && typeof b.value === 'number'
+          ? a.value - b.value : vacationSortCollator_.compare(String(a.value), String(b.value));
+        return compared * direction || a.index - b.index;
+      }).map(function(row) { return row.record; });
+    }
+
+    function setVacationColumnSort_(key) {
+      if (!Object.prototype.hasOwnProperty.call(vacationSortColumns_, key)) return false;
+      vacationColumnSort_ = { key: key, direction: vacationColumnSort_.key === key && vacationColumnSort_.direction === 'asc' ? 'desc' : 'asc' };
+      return true;
+    }
+
+    function updateVacationSortHeaders_() {
+      document.querySelectorAll('#vacation-page #vac-table-wrap th[data-vacation-sort]').forEach(function(header) {
+        const key = header.dataset.vacationSort, active = vacationColumnSort_.key === key;
+        const ascending = vacationColumnSort_.direction !== 'desc', button = header.querySelector('button');
+        const arrow = button.querySelector('.vacation-sort-arrow');
+        header.setAttribute('aria-sort', active ? (ascending ? 'ascending' : 'descending') : 'none');
+        arrow.textContent = active ? (ascending ? '↑' : '↓') : '';
+        arrow.hidden = !active;
+        const hint = vacationSortColumns_[key] + (active ? ': ordem ' + (ascending ? 'crescente' : 'decrescente') + '. Clique para ordenar em ordem ' + (ascending ? 'decrescente' : 'crescente') : ': ordenar em ordem crescente');
+        button.setAttribute('aria-label', hint);
+        button.setAttribute('title', hint);
+      });
+      document.getElementById('vac-sort-note').hidden = !vacationColumnSort_.key;
+      document.getElementById('vac-sort-note-label').textContent = vacationColumnSort_.key
+        ? 'Ordenação por ' + vacationSortColumns_[vacationColumnSort_.key] + ' • exibição sem divisão por mês.' : '';
+    }
+
+    function initializeVacationSort_() {
+      document.querySelectorAll('#vacation-page #vac-table-wrap th[data-vacation-sort]').forEach(function(header) {
+        const button = header.querySelector('button');
+        button.addEventListener('click', function() { if (setVacationColumnSort_(button.dataset.vacationSortKey)) renderVacations(); });
+      });
+      document.getElementById('vac-sort-reset').addEventListener('click', function() {
+        const previous = vacationColumnSort_.key;
+        vacationColumnSort_ = { key: null, direction: 'asc' };
+        renderVacations();
+        document.querySelectorAll('#vacation-page #vac-table-wrap th[data-vacation-sort]').forEach(function(header) {
+          if (header.dataset.vacationSort === previous) header.querySelector('button').focus();
+        });
+      });
+      updateVacationSortHeaders_();
+    }
+
     function renderVacations() {
       const term = normalize(elements.vacationSearch.value);
-      const filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
+      let filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
         if (!isCurrentCadastroMilitaryRg(record.rg)) return false;
         if (record.confirmedEditPending && String(record.referenceYear) !== String(elements.vacationYear.value || state.vacationYear)) return false;
         const matchesText = !term || normalize([
@@ -14636,18 +14755,20 @@
         return matchesText && matchesMonth && matchesGroup && matchesStatus;
       });
 
-      if (elements.vacationMonth.value === 'none') {
+      if (!vacationColumnSort_.key && elements.vacationMonth.value === 'none') {
         filtered.sort(function(a, b) {
           const seniorityDiff = Number(a.seniorityOrder || 999999) - Number(b.seniorityOrder || 999999);
           if (seniorityDiff !== 0) return seniorityDiff;
           return String(a.military || '').localeCompare(String(b.military || ''), 'pt-BR');
         });
-      } else if (filtered.some(function(record) { return record.confirmedEditPending; })) {
+      } else if (!vacationColumnSort_.key && filtered.some(function(record) { return record.confirmedEditPending; })) {
         // A confirmed date correction may move one period to another month
         // before IMPORTRANGE catches up. Keep each monthly section contiguous.
         filtered.sort(function(a, b) { return String(a.planningMonthKey || '9999-99').localeCompare(String(b.planningMonthKey || '9999-99')); });
       }
 
+      if (vacationColumnSort_.key) filtered = vacationSortedRows_(filtered, vacationColumnSort_);
+      updateVacationSortHeaders_();
       updateVacationStats(filtered);
       const monthCounts = {};
       filtered.forEach(function(record) {
@@ -14657,7 +14778,7 @@
       const rows = [];
       const showingMissing = elements.vacationStatus.value === 'missing';
       filtered.forEach(function(record) {
-        if (!showingMissing && elements.vacationMonth.value !== 'none' && record.planningMonthKey !== activeMonthKey) {
+        if (!vacationColumnSort_.key && !showingMissing && elements.vacationMonth.value !== 'none' && record.planningMonthKey !== activeMonthKey) {
           activeMonthKey = record.planningMonthKey;
           const count = monthCounts[activeMonthKey] || 0;
           const groupCountLabel = record.periodStatusKey === 'missing'
@@ -14792,9 +14913,75 @@
       document.getElementById('leave-stat-returning').textContent = Object.keys(returningRgs).length;
     }
 
+    // Table-only ordering; the received records and every other page keep their order.
+    let leaveTableSort_ = { key: '', direction: 'asc' };
+    const leaveTableSortColumns_ = Object.freeze({ military: 'Militar', group: 'Efetivo', type: 'Tipo', period: 'Período', days: 'Dias', status: 'Situação', document: 'Documento' });
+    const leaveTableSortCollator_ = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base' });
+
+    function leaveTableSortText_(value) {
+      const text = String(value == null ? '' : value).trim();
+      return text === '—' || text === '-' ? '' : text;
+    }
+
+    function leaveTableSortValue_(record, key) {
+      if (key === 'military') {
+        const military = cadastroMilitaryByRg(record.rg);
+        return leaveTableSortText_(record.warName) || leaveTableSortText_(military && military.warName) || leaveTableSortText_(record.military || record.displayName);
+      }
+      if (key === 'period') { const date = rasOpportunityDateParts_(record.startDate); return date ? date.sortDate : null; }
+      if (key === 'days') {
+        if (!['number', 'string'].includes(typeof record.days) || !String(record.days).trim()) return null;
+        const days = Number(record.days);
+        return Number.isFinite(days) && days > 0 ? days : null;
+      }
+      if (key === 'status') return leaveTableSortText_(record.periodStatus);
+      if (key === 'document') return [record.bulletin, record.note].map(leaveTableSortText_).filter(Boolean).join(' — ');
+      return leaveTableSortText_(record[key]);
+    }
+
+    function leaveSortedTableRows_(records) {
+      const input = Array.isArray(records) ? records : [], key = leaveTableSort_.key;
+      if (!key) return input.slice();
+      const direction = leaveTableSort_.direction === 'desc' ? -1 : 1;
+      return input.map(function(record, index) { return { record: record, index: index, value: leaveTableSortValue_(record, key) }; }).sort(function(a, b) {
+        const emptyA = a.value == null || a.value === '', emptyB = b.value == null || b.value === '';
+        if (emptyA || emptyB) return emptyA ? (emptyB ? a.index - b.index : 1) : -1;
+        const compared = key === 'period' || key === 'days' ? a.value - b.value : leaveTableSortCollator_.compare(a.value, b.value);
+        return compared * direction || a.index - b.index;
+      }).map(function(row) { return row.record; });
+    }
+
+    function setLeaveTableSort_(key) {
+      if (!Object.prototype.hasOwnProperty.call(leaveTableSortColumns_, key)) return false;
+      leaveTableSort_ = { key: key, direction: leaveTableSort_.key === key && leaveTableSort_.direction === 'asc' ? 'desc' : 'asc' };
+      return true;
+    }
+
+    function updateLeaveTableSortHeaders_() {
+      document.querySelectorAll('#leave-page #leave-table-wrap th[data-leave-sort]').forEach(function(header) {
+        const key = header.dataset.leaveSort, active = leaveTableSort_.key === key, ascending = leaveTableSort_.direction !== 'desc';
+        const button = header.querySelector('button'), arrow = button.querySelector('.leave-sort-arrow');
+        header.setAttribute('aria-sort', active ? (ascending ? 'ascending' : 'descending') : 'none');
+        arrow.textContent = active ? (ascending ? '↑' : '↓') : '';
+        arrow.hidden = !active;
+        const hint = leaveTableSortColumns_[key] + (active ? ': ordem ' + (ascending ? 'crescente' : 'decrescente') + '. Clique para ordenar em ordem ' + (ascending ? 'decrescente' : 'crescente') : ': ordenar em ordem crescente');
+        button.setAttribute('aria-label', hint);
+        button.setAttribute('title', hint);
+      });
+    }
+
+    function initializeLeaveTableSort_() {
+      document.querySelectorAll('#leave-page #leave-table-wrap th[data-leave-sort]').forEach(function(header) {
+        const button = header.querySelector('button');
+        button.addEventListener('click', function() { if (setLeaveTableSort_(button.dataset.leaveSortKey)) renderOtherLeaves(); });
+      });
+      updateLeaveTableSortHeaders_();
+    }
+
     function renderOtherLeaves() {
+      updateLeaveTableSortHeaders_();
       const term = normalize(elements.leaveSearch.value);
-      const filtered = state.leaveData.map(applyConfirmedLeaveEdit_).filter(function(record) {
+      const filtered = leaveSortedTableRows_(state.leaveData.map(applyConfirmedLeaveEdit_).filter(function(record) {
         if (!isCurrentCadastroMilitaryRg(record.rg)) return false;
         const matchesText = !term || normalize([
           record.military,
@@ -14809,7 +14996,7 @@
         const matchesGroup = elements.leaveGroup.value === 'all' || record.group === elements.leaveGroup.value;
         const matchesStatus = elements.leaveStatus.value === 'all' || record.periodStatusKey === elements.leaveStatus.value;
         return matchesText && matchesType && matchesGroup && matchesStatus;
-      });
+      }));
 
       updateOtherLeaveStats(filtered);
       elements.leaveRows.innerHTML = filtered.map(function(record) {
@@ -16651,6 +16838,7 @@
     });
     elements.refresh.addEventListener('click', function() { loadData(true); });
     elements.copyDocumentName.addEventListener('click', copySelectedDocumentName);
+    initializeVacationSort_();
     elements.vacationSearch.addEventListener('input', renderVacations);
     [elements.vacationMonth, elements.vacationGroup, elements.vacationStatus].forEach(function(element) {
       element.addEventListener('change', renderVacations);
@@ -16660,6 +16848,7 @@
       loadVacationData(false);
     });
     elements.vacationRefresh.addEventListener('click', function() { loadVacationData(true); });
+    initializeLeaveTableSort_();
     elements.leaveSearch.addEventListener('input', renderOtherLeaves);
     [elements.leaveType, elements.leaveGroup, elements.leaveStatus].forEach(function(element) {
       element.addEventListener('change', renderOtherLeaves);
