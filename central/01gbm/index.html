@@ -463,6 +463,35 @@
     .guard-external-link:hover { background: #1d725e; }
     .guard-external-link:focus-visible { outline: 3px solid rgba(23,97,79,.22); outline-offset: 2px; }
     .guard-external-link svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Guarda only: the same compact grouped ribbon as Efetivo and Férias. */
+    #guard-page .guard-command-ribbon { display: flex; align-items: stretch; gap: 0; min-width: 0; max-width: 100%; min-height: 104px; margin: 0 0 14px; padding: 4px 6px 0; overflow-x: auto; overflow-y: hidden; border: 1px solid #d5dee5; border-radius: 8px; background: linear-gradient(180deg, #fff, #f8fafb); box-shadow: 0 4px 12px #12344312; scrollbar-width: thin; }
+    #guard-page .guard-command-group { display: flex; flex: 0 0 auto; flex-direction: column; justify-content: space-between; min-height: 96px; padding: 3px 8px 0; }
+    #guard-page .guard-command-group + .guard-command-group { border-left: 1px solid #d8e0e6; }
+    #guard-page .guard-command-search { flex: 1 0 210px; min-width: 210px; }
+    #guard-page .guard-command-search > .field { display: flex; flex-direction: column; justify-content: center; gap: 7px; min-width: 0; height: 76px; padding: 8px 10px; border: 1px solid #d6e1e7; border-radius: 5px; background: #f4f8fa; }
+    #guard-page .guard-command-search > .field > label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: .04em; }
+    #guard-page .guard-command-search #guard-search { width: 100%; min-width: 0; min-height: 30px; height: 30px; margin: 0; padding: 3px 0; border: 0; border-radius: 2px; background: transparent; color: #244f69; font: inherit; font-size: 13px; }
+    #guard-page .guard-command-fields { display: grid; grid-template-columns: 138px; gap: 4px; height: 76px; }
+    #guard-page .guard-command-period .guard-command-fields { grid-template-columns: 142px; }
+    #guard-page .guard-command-fields .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    #guard-page .guard-command-fields .field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
+    #guard-page .guard-command-fields input, #guard-page .guard-command-fields select { width: 100%; min-width: 0; min-height: 24px; height: 24px; margin: 0; padding: 2px 5px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 11px; }
+    #guard-page .guard-command-buttons { display: flex; align-items: stretch; justify-content: center; gap: 4px; min-height: 76px; }
+    #guard-page .guard-command-button, #guard-page .guard-command-buttons .bnx-collab-launch { display: inline-flex; flex: 0 0 auto; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; width: 88px; min-width: 88px; min-height: 76px; margin: 0; padding: 5px 5px 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #263f50; font: inherit; font-size: 10.5px; font-weight: 700; line-height: 1.2; text-align: center; white-space: normal; text-decoration: none; cursor: pointer; }
+    #guard-page .guard-command-button > span { display: flex; align-items: center; justify-content: center; min-height: 27px; text-align: center; }
+    #guard-page .guard-command-button > svg { width: 30px; height: 30px; flex: 0 0 30px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; color: #385b70; }
+    #guard-page #guard-refresh::before, #guard-page .guard-command-buttons .bnx-collab-launch::before { content: ''; width: 30px; height: 30px; flex: 0 0 30px; margin-bottom: 2px; background: #385b70; }
+    #guard-page #guard-refresh::before { -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.65%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M25%2010V5l-3%203a10%2010%200%201%200%202.2%2011.5M25%205h-5%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.65%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M25%2010V5l-3%203a10%2010%200%201%200%202.2%2011.5M25%205h-5%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; }
+    #guard-page .guard-command-buttons .bnx-collab-launch::before { -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.65%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2210%22%20r%3D%225%22%2F%3E%3Cpath%20d%3D%22M2%2027v-3a9%209%200%200%201%2016-5M22%207h8M22%2013h8M22%2019h5M19%2029l3-1%208-8-2-2-8%208z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%221.65%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2210%22%20r%3D%225%22%2F%3E%3Cpath%20d%3D%22M2%2027v-3a9%209%200%200%201%2016-5M22%207h8M22%2013h8M22%2019h5M19%2029l3-1%208-8-2-2-8%208z%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; }
+    #guard-page .guard-command-button:not(:disabled):hover, #guard-page .guard-command-buttons .bnx-collab-launch:not(:disabled):hover { border-color: #c4d5e0; background: #edf4f8; }
+    #guard-page .guard-command-button:focus-visible, #guard-page .guard-command-ribbon input:focus-visible, #guard-page .guard-command-ribbon select:focus-visible, #guard-page .guard-command-buttons .bnx-collab-launch:focus-visible { outline: 2px solid #2477a7; outline-offset: 2px; }
+    #guard-page .guard-command-button:disabled { border-color: #e2e7ea; background: #f4f6f7; color: #98a2aa; opacity: 1; cursor: default; }
+    #guard-page .guard-command-button:disabled::before { background: #a5aeb5; }
+    #guard-page .guard-command-group-label { display: flex; align-items: center; justify-content: center; min-height: 17px; color: #687984; font-size: 9.5px; font-weight: 700; line-height: 1; }
+    @media (max-width: 700px), (pointer: coarse) { #guard-page .guard-command-ribbon { min-height: 138px; } #guard-page .guard-command-group { min-height: 130px; } #guard-page .guard-command-search > .field { height: 110px; } #guard-page .guard-command-search #guard-search { min-height: 40px; height: 40px; } #guard-page .guard-command-fields { height: 110px; gap: 6px; } #guard-page .guard-command-fields input, #guard-page .guard-command-fields select { min-height: 40px; height: 40px; } #guard-page .guard-command-buttons { min-height: 110px; } #guard-page .guard-command-button, #guard-page .guard-command-buttons .bnx-collab-launch { min-height: 110px; justify-content: center; } }
+    @media print { #guard-page .guard-command-ribbon { display: none !important; } }
+
     .guard-toolbar { display: grid; grid-template-columns: 122px 122px minmax(190px, 1fr) 108px 138px auto; gap: 6px; align-items: end; margin-bottom: 8px; }
     .guard-toolbar .field { min-width: 0; gap: 3px; }
     .guard-toolbar .field label { font-size: 10px; }
@@ -3916,12 +3945,36 @@
           <div><h1>Movimentação da Guarda</h1><p>Consulta centralizada das entradas e saídas registradas no controle de acesso do 1º GBM.</p></div>
           <div class="guard-head-actions">
             <div id="guard-updated" class="read-only">Aguardando consulta</div>
-            <a id="guard-app-link" class="guard-external-link" href="https://bravonexo.github.io/guarda/01gbm/" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5"></path><path d="M10 14L19 5"></path><path d="M19 13v6H5V5h6"></path></svg>
-              Abrir aplicativo da Guarda
-            </a>
           </div>
         </header>
+
+        <form id="guard-filter-form" class="guard-command-ribbon" aria-label="Faixa de opções da Guarda">
+          <div class="guard-command-group guard-command-search">
+            <div class="field guard-search-field"><label for="guard-search">Localizar</label><input id="guard-search" type="search" maxlength="120" placeholder="Nome, RG/CPF, VTR, local ou observação" autocomplete="off"></div>
+            <span class="guard-command-group-label">Localizar</span>
+          </div>
+          <div class="guard-command-group guard-command-period">
+            <div class="guard-command-fields"><div class="field"><label for="guard-from">De</label><input id="guard-from" type="date" required></div><div class="field"><label for="guard-to">Até</label><input id="guard-to" type="date" required></div></div>
+            <span class="guard-command-group-label">Período</span>
+          </div>
+          <div class="guard-command-group">
+            <div class="guard-command-fields"><div class="field"><label for="guard-type">Tipo</label><select id="guard-type"><option value="">Todos</option><option value="Entrada">Entrada</option><option value="Saída">Saída</option></select></div><div class="field"><label for="guard-category">Categoria</label><select id="guard-category"><option value="">Todas</option><option value="Militar">Militar</option><option value="Colaborador">Colaborador</option><option value="Visitante">Visitante</option></select></div></div>
+            <span class="guard-command-group-label">Filtros</span>
+          </div>
+          <div class="guard-command-group">
+            <div class="guard-command-buttons"><button id="guard-refresh" class="secondary guard-command-button" type="submit">Atualizar</button></div>
+            <span class="guard-command-group-label">Consulta</span>
+          </div>
+          <div class="guard-command-group">
+            <div class="guard-command-buttons guard-command-shortcuts">
+              <a id="guard-app-link" class="guard-external-link guard-command-button" href="https://bravonexo.github.io/guarda/01gbm/" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5"></path><path d="M10 14L19 5"></path><path d="M19 13v6H5V5h6"></path></svg>
+                <span>Abrir aplicativo da Guarda</span>
+              </a>
+            </div>
+            <span class="guard-command-group-label">Atalhos</span>
+          </div>
+        </form>
 
         <section class="stats" aria-label="Resumo da movimentação da Guarda">
           <div class="stat"><span>Pessoas dentro</span><strong id="guard-stat-inside">—</strong><small>sem saída posterior registrada</small></div>
@@ -3931,15 +3984,6 @@
         </section>
 
         <div class="guard-info"><strong>Somente leitura.</strong> Dados consolidados da movimentação atual e do arquivo anual da Guarda.</div>
-
-        <form id="guard-filter-form" class="guard-toolbar">
-          <div class="field"><label for="guard-from">De</label><input id="guard-from" type="date" required></div>
-          <div class="field"><label for="guard-to">Até</label><input id="guard-to" type="date" required></div>
-          <div class="field guard-search-field"><label for="guard-search">Localizar</label><input id="guard-search" type="search" maxlength="120" placeholder="Nome, RG/CPF, VTR, local ou observação" autocomplete="off"></div>
-          <div class="field"><label for="guard-type">Tipo</label><select id="guard-type"><option value="">Todos</option><option value="Entrada">Entrada</option><option value="Saída">Saída</option></select></div>
-          <div class="field"><label for="guard-category">Categoria</label><select id="guard-category"><option value="">Todas</option><option value="Militar">Militar</option><option value="Colaborador">Colaborador</option><option value="Visitante">Visitante</option></select></div>
-          <button id="guard-refresh" class="secondary" type="submit">Atualizar</button>
-        </form>
 
         <div id="guard-error" class="error" role="alert" hidden></div>
         <div id="guard-loading" class="loading" hidden>Consultando as movimentações da Guarda…</div>
