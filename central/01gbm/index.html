@@ -10547,8 +10547,10 @@
         })
         .withFailureHandler(function(error) {
           if (!medicalConfirmationCurrent_(ticket)) { medicalConfirmationStale_(ticket); return; }
-          const genericFailure = error && error.code === 'CENTRAL_BROWSER_OPERATION_FAILED' &&
-            error.message === 'Não foi possível concluir a operação. Confira o resultado antes de reenviar.';
+          const genericFailure = error && error.code === 'CENTRAL_BROWSER_OPERATION_FAILED' && [
+            'Não foi possível concluir a operação. Confira o resultado antes de reenviar.',
+            'Não foi possível confirmar o resultado. Confira os dados antes de reenviar; a operação não será repetida automaticamente.'
+          ].includes(error.message);
           if (error && error.serverConfirmed === true && error.code !== 'CENTRAL_BROWSER_UNAVAILABLE' && !genericFailure) {
             ticket.phase = 'refused';
             elements.serviceOfficersError.textContent = 'Não foi possível salvar a escala médica: ' + error.message;
