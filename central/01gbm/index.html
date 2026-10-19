@@ -2775,13 +2775,14 @@
 });
 
 (function(){
-  var activeTransport;
+  var activeTransport, medicalConnectionRevision = 0;
   window.BNXCentralGithub = Object.freeze({
     installTransport: function(transport) {
       if (typeof transport !== "function") throw new TypeError("A conexão exige um transporte explícito.");
-      activeTransport = transport;
+      activeTransport = transport; medicalConnectionRevision++;
     },
-    disconnect: function() { activeTransport = undefined; }
+    disconnect: function() { activeTransport = undefined; medicalConnectionRevision++; },
+    getConnectionRevision: function() { return activeTransport ? medicalConnectionRevision : null; }
   });
   window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin","updateRasMonthlyReceiptAdmin"],transport:function(request){
     if (!activeTransport) {
@@ -3811,6 +3812,7 @@
             </div>
             <div class="service-officers-actions">
               <button id="medical-officers-save" class="primary" type="button">Salvar escala médica do mês</button>
+              <button id="medical-officers-confirm" class="secondary" type="button" hidden>Conferir resultado</button>
             </div>
           </section>
         </div>
@@ -10298,6 +10300,7 @@
     }
 
     function loadServiceOfficers(forceRefresh) {
+      medicalConfirmationReset_();
       const monthIso = elements.serviceOfficersMonth.value || currentMonthIso();
       elements.serviceOfficersMonth.value = monthIso;
       const requestId = state.serviceOfficersRequestId + 1;
@@ -10381,45 +10384,185 @@
       elements.serviceOfficersError.hidden = true;
     }
 
-    function saveMedicalOfficers() {
-      const monthIso = elements.serviceOfficersMonth.value;
-      if (!monthIso) return;
+    // Readback confirms current state, never the outcome of an unknown request.
+    // This state is tab-local; no payload, token or receipt is persisted.
+    let medicalSaveConfirmationTicket_ = null;
+    let medicalSaveConfirmationSequence_ = 0;
+
+    function medicalConfirmationSession_() {
+      return window.BNXCentralGithub.getConnectionRevision();
+    }
+
+    function medicalConfirmationEditable_() {
+      return medicalConfirmationSession_() !== null && elements.medicalOfficersSave.hidden !== true &&
+        !(state.serviceOfficersData && state.serviceOfficersData.medicalSource && state.serviceOfficersData.medicalSource.readOnly);
+    }
+
+    function medicalConfirmationReset_() {
+      medicalSaveConfirmationTicket_ = null;
+      const button = document.getElementById('medical-officers-confirm');
+      button.hidden = true;
+      button.disabled = false;
+    }
+
+    function medicalConfirmationMonthDays_(month) {
+      if (typeof month !== 'string' || !/^\d{4}-(?:0[1-9]|1[0-2])$/.test(month)) return 0;
+      const date = new Date(month + '-01T12:00:00.000Z');
+      if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 7) !== month) return 0;
+      date.setUTCMonth(date.getUTCMonth() + 1, 0);
+      return date.getUTCDate();
+    }
+
+    function medicalConfirmationKey_(value, dashboard) {
+      if (!value || typeof value !== 'object') return null;
+      const days = medicalConfirmationMonthDays_(value.monthIso);
+      const rows = dashboard ? value.medical : value.records;
+      const notes = dashboard ? value.medicalNotes : value.notes;
+      if (!days || !Array.isArray(rows) || rows.length !== days || typeof notes !== 'string' || notes.trim().length > 3000) return null;
+      if (dashboard && (!value.medicalSource || value.medicalSource.external !== false || value.medicalSource.readOnly !== false || value.medicalSource.available !== true)) return null;
+      const all = Array.from({ length: days }, (_, i) => [i + 1, '', '', '']);
+      const seen = new Set();
+      for (const row of rows) {
+        if (!row || !Number.isInteger(row.day) || row.day < 1 || row.day > days || seen.has(row.day)) return null;
+        if (dashboard && row.dateIso !== value.monthIso + '-' + String(row.day).padStart(2, '0')) return null;
+        const values = [row.medical, row.onCall, row.observations];
+        if (values.some((v, i) => typeof v !== 'string' || v.trim().length > (i === 2 ? 600 : 300))) return null;
+        seen.add(row.day);
+        all[row.day - 1] = [row.day].concat(values.map(v => v.trim()));
+      }
+      // Deliberately no alias/rank/case/whitespace folding. The dashboard can
+      // format names; a mismatch then remains unconfirmed, never a false match.
+      return JSON.stringify([value.monthIso, notes.trim(), all]);
+    }
+
+    function medicalConfirmationDraft_() {
       const records = Array.from(elements.medicalOfficersRows.querySelectorAll('[data-medical-officer-day]')).map(function(row) {
         function value(field) {
           const input = row.querySelector('[data-medical-field="' + field + '"]');
           return input ? input.value.trim() : '';
         }
-        return {
-          day: Number(row.dataset.medicalOfficerDay),
-          medical: value('medical'),
-          onCall: value('onCall'),
-          observations: value('observations')
-        };
+        return Object.freeze({ day: Number(row.dataset.medicalOfficerDay), medical: value('medical'), onCall: value('onCall'), observations: value('observations') });
       });
-      elements.medicalOfficersSave.disabled = true;
-      elements.serviceOfficersRefresh.disabled = true;
+      return Object.freeze({ monthIso: elements.serviceOfficersMonth.value, notes: elements.medicalOfficersNotes.value.trim(), records: Object.freeze(records) });
+    }
+
+    function medicalConfirmationCurrent_(ticket) {
+      return medicalSaveConfirmationTicket_ === ticket && ticket.session !== null && medicalConfirmationSession_() === ticket.session &&
+        ticket.payload.monthIso === elements.serviceOfficersMonth.value && ticket.loadId === state.serviceOfficersRequestId;
+    }
+
+    function medicalConfirmationControls_(ticket, busy) {
+      if (!medicalConfirmationCurrent_(ticket)) return;
+      elements.medicalOfficersSave.disabled = busy || !medicalConfirmationEditable_();
+      elements.serviceOfficersRefresh.disabled = busy;
+      const button = document.getElementById('medical-officers-confirm');
+      button.hidden = ticket.phase !== 'uncertain';
+      button.disabled = busy;
+    }
+
+    function medicalConfirmationStale_(ticket) {
+      if (medicalSaveConfirmationTicket_ !== ticket || medicalConfirmationSession_() === ticket.session) return;
+      medicalSaveConfirmationTicket_ = null;
+      document.getElementById('medical-officers-confirm').hidden = true;
+      if (ticket.payload.monthIso === elements.serviceOfficersMonth.value && ticket.loadId === state.serviceOfficersRequestId) {
+        elements.medicalOfficersSave.disabled = !medicalConfirmationEditable_();
+        elements.serviceOfficersRefresh.disabled = medicalConfirmationSession_() === null;
+      }
+    }
+
+    function medicalConfirmationWarning_(ticket) {
+      if (!medicalConfirmationCurrent_(ticket)) return;
+      elements.serviceOfficersError.textContent = 'Não foi possível confirmar se os dados enviados já constam no sistema. Seu rascunho foi preservado. Use Conferir resultado antes de decidir salvar novamente; nenhum salvamento será repetido automaticamente.';
+      elements.serviceOfficersError.hidden = false;
+    }
+
+    function confirmMedicalOfficersResult() {
+      const ticket = medicalSaveConfirmationTicket_;
+      if (!ticket || ticket.phase !== 'uncertain' || ticket.reading || !medicalConfirmationCurrent_(ticket)) return;
+      ticket.reading = true;
+      medicalConfirmationControls_(ticket, true);
+      BNX_rpc.run
+        .withSuccessHandler(function(payload) {
+          ticket.reading = false;
+          if (!medicalConfirmationCurrent_(ticket)) { medicalConfirmationStale_(ticket); return; }
+          if (medicalConfirmationKey_(payload, true) !== ticket.key) {
+            medicalConfirmationWarning_(ticket);
+            medicalConfirmationControls_(ticket, false);
+            return;
+          }
+          ticket.phase = 'conferred';
+          const sameDraft = medicalConfirmationKey_(medicalConfirmationDraft_(), false) === ticket.key;
+          if (sameDraft) {
+            state.serviceOfficersDirty = false;
+            state.serviceOfficersData = payload;
+            state.serviceOfficersLoadedMonth = ticket.payload.monthIso;
+          }
+          elements.serviceOfficersError.hidden = true;
+          medicalConfirmationControls_(ticket, false);
+          showToast(sameDraft ? 'Escala conferida: os dados já constam no sistema.' : 'Os dados enviados constam no sistema. Suas alterações mais recentes no rascunho foram preservadas.');
+          state.scaleServiceOfficersRevision = (state.scaleServiceOfficersRevision || 0) + 1;
+        })
+        .withFailureHandler(function() {
+          ticket.reading = false;
+          if (!medicalConfirmationCurrent_(ticket)) { medicalConfirmationStale_(ticket); return; }
+          medicalConfirmationWarning_(ticket);
+          medicalConfirmationControls_(ticket, false);
+        })
+        .getServiceOfficersDashboard(ticket.payload.monthIso, true);
+    }
+
+    function saveMedicalOfficers() {
+      const old = medicalSaveConfirmationTicket_;
+      if (old && medicalConfirmationCurrent_(old) && (old.phase === 'saving' || old.reading)) return;
+      const payload = medicalConfirmationDraft_(), key = medicalConfirmationKey_(payload, false), session = medicalConfirmationSession_();
+      if (key === null || session === null || !medicalConfirmationEditable_()) {
+        elements.serviceOfficersError.textContent = session === null ? 'Entre novamente na conta autorizada. Seu rascunho foi preservado.' :
+          !medicalConfirmationEditable_() ? 'Esta escala está disponível somente para consulta. Seu rascunho foi preservado.' :
+          'Confira o mês e os campos da escala médica: nomes até 300 caracteres, observações diárias até 600 e observações do mês até 3000. Seu rascunho foi preservado.';
+        elements.serviceOfficersError.hidden = false;
+        return;
+      }
+      const ticket = { id: ++medicalSaveConfirmationSequence_, payload: payload, key: key, session: session,
+        loadId: state.serviceOfficersRequestId, phase: 'saving', reading: false };
+      medicalSaveConfirmationTicket_ = ticket;
+      medicalConfirmationControls_(ticket, true);
       elements.serviceOfficersError.hidden = true;
       BNX_rpc.run
         .withSuccessHandler(function(result) {
-          state.serviceOfficersDirty = false;
-          showToast((result.saved || 0) + ' dia(s) da escala médica salvos para ' + monthIso + '.');
-          loadServiceOfficers(true);
-          state.scaleServiceOfficersRevision = (state.scaleServiceOfficersRevision || 0) + 1;
-          if (elements.scaleDate.value && elements.scaleDate.value.slice(0, 7) === monthIso) {
-            loadScaleServiceOfficersForDate(elements.scaleDate.value, true);
+          if (!medicalConfirmationCurrent_(ticket)) { medicalConfirmationStale_(ticket); return; }
+          ticket.phase = 'returned';
+          const sameDraft = medicalConfirmationKey_(medicalConfirmationDraft_(), false) === ticket.key;
+          if (sameDraft) {
+            state.serviceOfficersDirty = false;
+            // A Save acknowledgement is not a fresh monthly DTO. Invalidate
+            // the old local model for the next explicit visit, without render.
+            state.serviceOfficersLoadedMonth = '';
           }
+          medicalConfirmationControls_(ticket, false);
+          showToast(sameDraft ? (result.saved || 0) + ' dia(s) da escala médica salvos para ' + payload.monthIso + '.' : 'A resposta do salvamento foi recebida. Suas alterações mais recentes no rascunho foram preservadas.');
+          // Do not reload/render the editor: the user can keep typing while a
+          // save is in flight. The independent scale view may refresh as before.
+          state.scaleServiceOfficersRevision = (state.scaleServiceOfficersRevision || 0) + 1;
+          if (elements.scaleDate.value && elements.scaleDate.value.slice(0, 7) === payload.monthIso) loadScaleServiceOfficersForDate(elements.scaleDate.value, true);
         })
         .withFailureHandler(function(error) {
-          elements.medicalOfficersSave.disabled = false;
-          elements.serviceOfficersRefresh.disabled = false;
-          elements.serviceOfficersError.textContent = 'Não foi possível salvar a escala médica: ' + (error && error.message ? error.message : error);
-          elements.serviceOfficersError.hidden = false;
+          if (!medicalConfirmationCurrent_(ticket)) { medicalConfirmationStale_(ticket); return; }
+          const genericFailure = error && error.code === 'CENTRAL_BROWSER_OPERATION_FAILED' &&
+            error.message === 'Não foi possível concluir a operação. Confira o resultado antes de reenviar.';
+          if (error && error.serverConfirmed === true && error.code !== 'CENTRAL_BROWSER_UNAVAILABLE' && !genericFailure) {
+            ticket.phase = 'refused';
+            elements.serviceOfficersError.textContent = 'Não foi possível salvar a escala médica: ' + error.message;
+            elements.serviceOfficersError.hidden = false;
+            medicalConfirmationControls_(ticket, false);
+            return;
+          }
+          ticket.phase = 'uncertain';
+          medicalConfirmationWarning_(ticket);
+          // Exactly one automatic READ. A later button click is another READ,
+          // never a Save, receipt mutation, pending cleanup, or automatic retry.
+          confirmMedicalOfficersResult();
         })
-        .saveMedicalOfficersMonth({
-          monthIso: monthIso,
-          notes: elements.medicalOfficersNotes.value.trim(),
-          records: records
-        });
+        .saveMedicalOfficersMonth(payload);
     }
 
     function expediente24hRgKey_(rg) {
@@ -16961,6 +17104,7 @@
     });
     elements.serviceOfficersRefresh.addEventListener('click', function() { loadServiceOfficers(true); });
     elements.medicalOfficersSave.addEventListener('click', saveMedicalOfficers);
+    document.getElementById('medical-officers-confirm').addEventListener('click', confirmMedicalOfficersResult);
     elements.medicalOfficersRows.addEventListener('input', function() { state.serviceOfficersDirty = true; });
     elements.medicalOfficersNotes.addEventListener('input', function() { state.serviceOfficersDirty = true; });
     elements.expediente24hMonth.addEventListener('change', function() {
