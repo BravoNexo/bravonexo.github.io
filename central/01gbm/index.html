@@ -3081,13 +3081,14 @@
 });
 
 </script>
+<style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo</h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.1</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo</strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.1">v2.0.1</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -3132,7 +3133,7 @@
         <div id="central-access-admin-anchor" class="nav-section" role="group" aria-label="Administração"><span class="nav-section-title">Administração</span></div>
         <button type="button" disabled>Boletins</button>
       </nav>
-      <div class="account"><strong id="app-version">Versão 225</strong><span id="user-email">Carregando usuário…</span></div>
+      <div class="account"><span id="user-email">Carregando usuário…</span></div>
     </aside>
 
     <main class="content">
@@ -12695,13 +12696,13 @@
       if (window.SV_beforeRender) window.SV_beforeRender();
       SG_beforeRender_();
       const payload = state.scalePreview || {};
-      const baseFunctions = associateScaleServiceOfficers((payload.funcoes || []).filter(SG_visible_), state.scaleServiceOfficers || {});
+      const baseFunctions = scaleManualSyncAutomaticSlots_(payload, state.scaleServiceOfficers || {}).filter(SG_visible_);
       const functions = baseFunctions;
       const away = payload.afastados || [];
       const ceded = payload.cedidosApoio || [];
       const available = payload.disponiveis || [];
       const filled = baseFunctions.filter(function(item) { return item.militar && item.situacao === 'DISPONÍVEL'; }).length;
-      const oncall = associateScaleOfficerOnCalls(payload.sobreaviso || [], state.scaleServiceOfficers || {}).filter(function(item) { return item.militar; });
+      const oncall = scaleManualOncalls_(payload);
       const dateIso = payload.data || elements.scaleDate.value || '';
 
       document.getElementById('scale-summary-date').textContent = (payload.dataFormatada || '—') + (payload.ala ? ' • Ala ' + payload.ala : '');
@@ -12729,16 +12730,16 @@
 
       const grdOncall = oncall.filter(function(item) { return scaleOnCallGroup(item) === 'grd'; });
       const grdOncallSlots = [
-        { role: 'CHEFE', match: /chefe/ },
-        { role: 'AUX.', match: /auxiliar|\baux\b/ },
-        { role: 'COND.', match: /condutor|\bcond\b/ }
+        { role: 'CHEFE', destino:'AE21', match: /chefe/ },
+        { role: 'AUX.', destino:'AE22', match: /auxiliar|\baux\b/ },
+        { role: 'COND.', destino:'AE23', match: /condutor|\bcond\b/ }
       ];
       elements.scaleOncallList.innerHTML = grdOncallSlots.map(function(slot) {
         const item = grdOncall.find(function(candidate) {
           return slot.match.test(normalize(candidate && candidate.funcao).replace(/\s+/g, ' '));
         });
-        const person = item && item.militar ? String(item.militar).replace(/\n/g, ' • ') : 'VAGO';
-        return '<div class="scale-side-item' + (item ? '' : ' scale-side-item-empty') + '"><strong>' + slot.role + '</strong><span class="scale-side-person">' + escapeHtml(person) + '</span></div>';
+        const assignment=item || {destino:slot.destino,funcao:'SOBREAVISO GRD / '+slot.role,role:slot.role,militar:'',rg:'',situacao:'VAGO',automatico:true,secundaria:true,opcional:true};
+        return '<div class="scale-side-item"><strong>' + slot.role + '</strong><span class="scale-side-person">' + renderScalePersonButton(assignment) + '</span></div>';
       }).join('');
 
       const awayRows = away.map(function(item) {
@@ -12792,7 +12793,7 @@
       Object.keys(assignedByRg).forEach(function(rg) {
         const assignments = assignedByRg[rg];
         if (assignments.length < 2) return;
-        blockers.push('RG ' + rg + ' aparece em ' + assignments.length + ' funções.');
+        (assignments.some(item=>item.manualOverride===true)?warnings:blockers).push('RG ' + rg + ' aparece em ' + assignments.length + ' funções.');
       });
 
       const requiredVacancies = checklistFunctions.filter(function(item) {
@@ -12938,6 +12939,49 @@
       return match ? match[1] : '';
     }
 
+    function scaleManualOncallDestination_(item) {
+      const destination=String(item && item.destino || '').toUpperCase();
+      if(['Z3','Z4','Z5','AE21','AE22','AE23'].indexOf(destination)!==-1)return destination;
+      const label=normalize(item && (item.funcao||item.role)).replace(/\s+/g,' ').trim();
+      if(!/sobre[\s-]*aviso/.test(label))return '';
+      if(/grd/.test(label))return /chefe/.test(label)?'AE21':/aux/.test(label)?'AE22':/cond/.test(label)?'AE23':'';
+      if(/oficial medico|of\.? medico/.test(label))return 'Z4';
+      if(/oficial de dia|of\.? de dia/.test(label))return 'Z3';
+      if(/adjunto/.test(label))return 'Z5';
+      return '';
+    }
+
+    function scaleManualSyncAutomaticSlots_(payload,officers) {
+      const previous=payload.funcoes||[],oncall=associateScaleOfficerOnCalls(payload.sobreaviso||[],officers);
+      const definitions=[{destino:'Z3',funcao:'SOBREAVISO • OFICIAL DE DIA'},
+        {destino:'Z4',funcao:'SOBREAVISO • OFICIAL MÉDICO'},{destino:'Z5',funcao:'SOBREAVISO • ADJUNTO'},
+        {destino:'AE21',funcao:'SOBREAVISO GRD / CHEFE'},{destino:'AE22',funcao:'SOBREAVISO GRD / AUXILIAR'},
+        {destino:'AE23',funcao:'SOBREAVISO GRD / CONDUTOR'}];
+      const main=associateScaleServiceOfficers(previous.filter(item=>!scaleManualOncallDestination_(item)),officers);
+      [{destino:'U15',source:'I3',prefix:'AR',role:'OF. DE DIA'},{destino:'U18',source:'I4',prefix:'ASE',role:'OF. MÉDICO'}].forEach(function(alias){
+        const existing=previous.find(item=>item && item.destino===alias.destino);
+        if(existing && existing.manualOverride===true)return;
+        const source=main.find(item=>item && item.destino===alias.source),vehicleSlot=main.find(item=>new RegExp('^'+alias.prefix+'(?:\\s*-|\\s*/|$)','i').test(String(item && item.funcao || '')));
+        const vehicle=vehicleSlot?String(vehicleSlot.funcao).split('/')[0].trim():alias.prefix;
+        const item=Object.assign({},source?readScaleOccupant(source):{militar:'',rg:'',situacao:'VAGO',motivo:''},{destino:alias.destino,funcao:vehicle+' / '+alias.role,role:alias.role,secundaria:true,opcional:true,automatico:true,oficialAssociado:true,manualDailySlot:true});
+        delete item.manualOverride;
+        const index=main.findIndex(entry=>entry && entry.destino===alias.destino);
+        if(index<0)main.push(item);else main[index]=item;
+      });
+      definitions.forEach(function(definition){
+        const existing=previous.find(item=>item && item.destino===definition.destino);
+        if(existing && existing.manualOverride===true){main.push(existing);return;}
+        const source=oncall.find(item=>scaleManualOncallDestination_(item)===definition.destino),militar=source && source.militar || '';
+        main.push(Object.assign({},definition,{role:definition.funcao,militar:militar,rg:source && source.rg || scaleOfficerRgFromLabel(militar),situacao:militar?'DISPONÍVEL':'VAGO',motivo:'',opcional:true,secundaria:true,automatico:true,manualDailySlot:true}));
+      });
+      payload.funcoes=main;
+      return main.filter(item=>!scaleManualOncallDestination_(item));
+    }
+
+    function scaleManualOncalls_(payload) {
+      return (payload.funcoes||[]).filter(item=>scaleManualOncallDestination_(item));
+    }
+
     function associateScaleGrdAutomatic(functions) {
       const items = Array.isArray(functions) ? functions : [];
       const occupantFields = [
@@ -12964,6 +13008,8 @@
       });
       function makeAlias(source, role, label) {
         const result = {
+          destino: role === 'LÍDER' ? 'AE15' : 'AE19',
+          manualDailySlot: true,
           funcao: 'GRD / ' + role,
           role: role,
           militar: '',
@@ -13005,7 +13051,7 @@
       items.forEach(function(item) {
         const kind = aliasKind(item);
         if (!kind) { result.push(item); return; }
-        if (!inserted[kind]) { result.push(aliases[kind]); inserted[kind] = true; }
+        if (!inserted[kind]) { result.push(item.manualOverride === true ? item : aliases[kind]); inserted[kind] = true; }
       });
       ['leader', 'driver'].forEach(function(kind) {
         if (!inserted[kind]) result.push(aliases[kind]);
@@ -13017,6 +13063,7 @@
       const official = serviceOfficers && serviceOfficers.officialDay;
       const medical = serviceOfficers && serviceOfficers.medical;
       const associated = (functions || []).map(function(item) {
+        if (item && item.manualOverride === true) return item;
         const functionName = normalize(item && item.funcao).replace(/\s+/g, ' ').trim();
         let assigned = '';
         if (/^(?:of\.?\s*de\s*dia|oficial\s+de\s+dia)\b/.test(functionName)) {
@@ -13042,6 +13089,9 @@
       const commandRows = [];
       if (!hasOfficialDay) {
         commandRows.push({
+          destino: 'I3',
+          automatico: true,
+          manualDailySlot: true,
           funcao: 'OF. DE DIA',
           militar: official && official.scheduled || '',
           rg: scaleOfficerRgFromLabel(official && official.scheduled),
@@ -13052,6 +13102,9 @@
       }
       if (!hasMedicalOfficer) {
         commandRows.push({
+          destino: 'I4',
+          automatico: true,
+          manualDailySlot: true,
           funcao: 'OFICIAL MÉDICO',
           militar: medical && medical.medical || '',
           rg: scaleOfficerRgFromLabel(medical && medical.medical),
@@ -13173,11 +13226,11 @@
         const standby = (oncall || []).find(function(item) {
           return scaleOnCallGroup(item) === row.group;
         });
-        const standbyName = standby && standby.militar ? String(standby.militar).replace(/\n/g, ' • ') : 'NÃO INFORMADO';
+        const standbyAssignment=standby || {destino:row.group==='officialDay'?'Z3':row.group==='medical'?'Z4':'Z5',funcao:'SOBREAVISO • '+row.label,militar:'',rg:'',situacao:'VAGO',automatico:true,secundaria:true,opcional:true};
         return '<div class="scale-command-function">' + escapeHtml(row.label) + '</div>' +
           '<div class="scale-command-person">' + renderScalePersonButton(assigned) + '</div>' +
           '<div class="scale-command-oncall-label">Sobreaviso</div>' +
-          '<div class="scale-command-oncall-person">' + escapeHtml(standbyName) + '</div>';
+          '<div class="scale-command-oncall-person">' + renderScalePersonButton(standbyAssignment) + '</div>';
       }).join('') + '</section>';
     }
 
@@ -13325,7 +13378,7 @@
       const military = occupant && occupant.situacao !== 'AFASTADO' ? (occupant.militar || '') : '';
       const rg = military ? (occupant.rg || '') : '';
       configuration.cafe = String(configuration.modo || '').toLowerCase() === 'avancada'
-        ? Object.assign({}, configuration.cafe && typeof configuration.cafe === 'object' ? configuration.cafe : {}, { militar: military, rg: rg })
+        ? Object.assign({}, configuration.cafe && typeof configuration.cafe === 'object' ? configuration.cafe : {}, { militar: military, rg: rg, manualOverride: Boolean(occupant && occupant.manualOverride === true) })
         : military;
       configuration.cafeRg = rg;
     }
@@ -13354,7 +13407,9 @@
           ? 'Há condutor sem antiguidade no Cadastro. Escolha o encarregado manualmente.'
           : 'Preencha os condutores para selecionar o mais antigo automaticamente.';
       } else {
-        writeScaleOccupant(slot, readScaleOccupant(candidates[0]));
+        const automaticOccupant=readScaleOccupant(candidates[0]);
+        delete automaticOccupant.manualOverride;
+        writeScaleOccupant(slot, automaticOccupant);
         slot.encMotoristasReason = 'Condutor mais antigo entre os alocados nesta escala.';
       }
       SG_availableIfUnassigned_(old);
@@ -13366,6 +13421,7 @@
       if (!slot) return;
       pushScaleDraftHistory();
       slot.encMotoristasMode = 'auto';
+      delete slot.manualOverride;
       SG_recalculateMotorists_();
       markScaleDraftChanged('Encarregado dos Motoristas voltou à seleção automática.');
     }
@@ -13720,9 +13776,9 @@
       item = item || scaleVacantAssignment('FUNÇÃO');
       const isAway = item.situacao === 'AFASTADO';
       const isVacant = item.situacao === 'VAGO' || !item.militar;
-      const hasDestination = Boolean(item.destino) && !item.oficialAssociado && !item.guardaSugerida;
+      const hasDestination = Boolean(item.destino);
       const sortable = hasDestination && !isAway;
-      const status = item.grdAutomatico
+      const status = item.manualOverride === true ? 'Definido manualmente nesta escala' : item.grdAutomatico
         ? (item.grdAutomaticoFonte + (item.motivo ? ' • ' + item.motivo : ' • altere na função de origem'))
         : (item.automatico
           ? 'Definido automaticamente pela planilha'
@@ -13731,7 +13787,9 @@
       const rasTag = item.isRas ? ' (RAS)' : '';
       const expediente24hTag = item.isExpediente24h ? ' (EXP 24H)' : '';
       const displayPerson = scalePermutaCardIdentity(person, item.rg, item.permutaTag) + rasTag + expediente24hTag + (item.manualExternal ? ' (APOIO)' : '');
-      const colorClass = scaleCrewColorClass(item);
+      const warnings=typeof window.SV_conflictWarnings==='function'?window.SV_conflictWarnings(item):[];
+      const warningText=warnings.join(' • ');
+      const colorClass = scaleCrewColorClass(item)+(warnings.length?' sv-conflict-person':'');
       const manualExtra = scaleManualExtraVisible_(item);
       const manualExtraClass = manualExtra ? ' manual-extra-person' : '';
       const destination = hasDestination ? ' data-scale-destination="' + escapeHtml(item.destino) + '"' : '';
@@ -13743,15 +13801,17 @@
       const precariousClass = militaryIsPrecariousDriver(item) ? ' precario-person' : '';
       const selectedClass = sortable && state.scaleSelectedDestination === item.destino ? ' swap-selected-person' : '';
       const secondary = item.secundaria ? ' data-scale-secondary="true"' : '';
-      return '<button type="button" class="scale-person-card ' + colorClass + vacantClass + rasClass + expediente24hClass + permutaClass + precariousClass + selectedClass + manualExtraClass + '"' + destination + draggable + secondary + ' title="' + escapeHtml(displayPerson + ' • ' + status + (manualExtra ? ' • Inclusão manual extra' : '')) + '">' +
+      return '<button type="button" class="scale-person-card ' + colorClass + vacantClass + rasClass + expediente24hClass + permutaClass + precariousClass + selectedClass + manualExtraClass + '"' + destination + draggable + secondary + ' title="' + escapeHtml(displayPerson + ' • ' + status + (manualExtra ? ' • Inclusão manual extra' : '') + (warningText?' • '+warningText:'')) + '">' +
         '<span class="map-person-name">' + escapeHtml(displayPerson) + '</span>' + (isVacant && sortable ? '<span class="scale-vacancy-hint">Clique para inserir militar</span>' : '') + '</button>' +
+        (hasDestination && (!isVacant || isAway) ? '<button type="button" class="sv-replace" data-sv-replace="' + escapeHtml(item.destino) + '">Alterar</button>' : '') +
+        (warningText?'<span class="sv-conflict-label" role="note">'+escapeHtml(warningText)+'</span>':'') +
         (sortable && item.manualExternal && item.manualExternal.pendingIdentification ? '<button type="button" class="sv-complete" data-sv-complete="' + escapeHtml(item.destino) + '">Completar identificação</button>' : '');
     }
 
     function renderScaleCrewMember(item) {
       const isAway = item.situacao === 'AFASTADO';
       const isVacant = item.situacao === 'VAGO' || !item.militar;
-      const hasDestination = Boolean(item.destino) && !item.oficialAssociado && !item.guardaSugerida;
+      const hasDestination = Boolean(item.destino);
       const sortable = hasDestination && !isAway;
       const rowClass = (isAway ? ' away' : (isVacant ? ' vacant' : ' available')) + (sortable ? ' scale-sortable' : '');
       return '<div class="scale-crew-row' + rowClass + '"><div class="scale-crew-role">' + escapeHtml(item.role || item.funcao) + '</div>' + renderScalePersonButton(item) + '</div>';
@@ -13832,12 +13892,13 @@
       if (message) showToast(message);
     }
 
-    const SCALE_OCCUPANT_FIELDS = ['militar', 'rg', 'situacao', 'motivo', 'permutaTag', 'permutaRequestKey', 'isRas', 'rasInjected', 'rasRecordId', 'rasSituationKey', 'rasStatus', 'rasHours', 'rasChance', 'isExpediente24h', 'expediente24hInjected', 'expediente24hSector', 'expediente24hSelected', 'expediente24hDate', 'expediente24hReason', 'origem', 'vacancyEntry', 'manualExternal', 'manualExtra'];
+    const SCALE_OCCUPANT_FIELDS = ['militar', 'rg', 'situacao', 'motivo', 'permutaTag', 'permutaRequestKey', 'isRas', 'rasInjected', 'rasRecordId', 'rasSituationKey', 'rasStatus', 'rasHours', 'rasChance', 'isExpediente24h', 'expediente24hInjected', 'expediente24hSector', 'expediente24hSelected', 'expediente24hDate', 'expediente24hReason', 'origem', 'vacancyEntry', 'manualExternal', 'manualExtra', 'manualOverride', 'manualWarnings'];
 
     function readScaleOccupant(item) {
       const occupant = {};
       SCALE_OCCUPANT_FIELDS.forEach(function(field) {
         occupant[field] = item ? item[field] : undefined;
+        if (field === 'manualWarnings' && Array.isArray(occupant[field])) occupant[field] = occupant[field].slice();
       });
       return occupant;
     }
@@ -13847,7 +13908,7 @@
       SCALE_OCCUPANT_FIELDS.forEach(function(field) {
         const value = occupant ? occupant[field] : undefined;
         if (value === undefined || value === null) delete slot[field];
-        else slot[field] = value;
+        else slot[field] = field === 'manualWarnings' && Array.isArray(value) ? value.slice() : value;
       });
     }
 
@@ -13886,6 +13947,8 @@
       if (existing) {
         if (person.vacancyEntry) existing.vacancyEntry = true;
         if (person.manualExtra) existing.manualExtra = true;
+        if (person.manualOverride === true) existing.manualOverride = true;
+        if (Array.isArray(person.manualWarnings)) existing.manualWarnings = person.manualWarnings.slice();
         if (person.manualExternal) existing.manualExternal = Object.assign({}, person.manualExternal);
         if (person.permutaTag) existing.permutaTag = person.permutaTag;
         if (person.permutaRequestKey) existing.permutaRequestKey = person.permutaRequestKey;
@@ -13928,6 +13991,8 @@
         origem: person.origem || '',
         vacancyEntry: Boolean(person.vacancyEntry),
         manualExtra: Boolean(person.manualExtra),
+        manualOverride: person.manualOverride === true,
+        manualWarnings: Array.isArray(person.manualWarnings) ? person.manualWarnings.slice() : [],
         manualExternal: person.manualExternal ? Object.assign({}, person.manualExternal) : null
       });
       pool.sort(function(first, second) {
@@ -14020,7 +14085,7 @@
     function scaleRasGrdMovementAllowed_(person, destination) {
       if (!person || !person.rg || !person.militar) return true;
       const conflict = typeof SV_rasGrdConflict === 'function' ? SV_rasGrdConflict(person.rg, destination) : '';
-      if (conflict) { showToast(conflict); return false; }
+      if (conflict) showToast(conflict + ' Inclusão manual mantida; confira o aviso no cartão.');
       return true;
     }
 
@@ -14048,7 +14113,8 @@
       pushScaleDraftHistory();
       writeScaleOccupant(target, Object.assign(readScaleOccupant(incoming), validatedOccupant || {}, {
         situacao: 'DISPONÍVEL',
-        motivo: ''
+        motivo: '',
+        manualOverride: true
       }));
       payload.disponiveis = pool.filter(function(item) {
         return canonicalScaleRg(item.rg) !== selectedRg;
@@ -14075,6 +14141,7 @@
       const removed = Object.assign({ ordem: target.ordem }, readScaleOccupant(target));
       pushScaleDraftHistory();
       clearScaleOccupant(target);
+      target.manualOverride = true;
       SG_noteManualSlot_(target);
       const stillAssigned = functions.some(function(item) {
         return item !== target &&
@@ -14250,9 +14317,9 @@
       if (!scaleRasGrdMovementAllowed_(sourceOccupant, targetDestination) ||
           (!targetWasAway && !scaleRasGrdMovementAllowed_(targetOccupant, sourceDestination))) return;
       pushScaleDraftHistory();
-      writeScaleOccupant(source, targetOccupant);
-      writeScaleOccupant(target, sourceOccupant);
-      if (targetWasAway) clearScaleOccupant(source);
+      writeScaleOccupant(source, Object.assign({},targetOccupant,{manualOverride:true}));
+      writeScaleOccupant(target, Object.assign({},sourceOccupant,{manualOverride:true}));
+      if (targetWasAway) { clearScaleOccupant(source); source.manualOverride=true; }
       SG_noteManualSlot_(source);
       SG_noteManualSlot_(target);
       markScaleDraftChanged(targetWasAway
@@ -14283,7 +14350,8 @@
       pushScaleDraftHistory();
       writeScaleOccupant(recipient, Object.assign(readScaleOccupant(donor), {
         situacao: 'DISPONÍVEL',
-        motivo: ''
+        motivo: '',
+        manualOverride: true
       }));
       const displacedStillAssigned = returnDisplaced && functions.some(function(item) {
         return item !== recipient &&
@@ -14317,7 +14385,7 @@
       const nightFireRg = fireCallRg(previewFireCalls.noite) || canonicalScaleRg(nightFireSlot && nightFireSlot.rg);
       const fireCallsChecked = Boolean(previewFireCalls.conferidos) || Boolean(dayFireSlot && nightFireSlot);
       return scaleFunctions.filter(function(item) {
-        return Boolean(item.destino);
+        return Boolean(item.destino) && (!item.manualDailySlot || item.manualOverride === true);
       }).map(function(item) {
         const available = item.situacao === 'DISPONÍVEL' && SG_visible_(item);
         const itemRg = canonicalScaleRg(item.rg);
@@ -14332,6 +14400,7 @@
         return {
           destino: item.destino,
           encMotoristasMode: item.destino === 'AA36' ? item.encMotoristasMode : undefined,
+          manualOverride: item.manualOverride === true,
           funcao: item.funcao || '',
           militar: available
             ? ((item.militar || '') + (item.permutaTag ? ' (' + String(item.permutaTag).replace(/[()]/g, '') + ')' : ''))
@@ -19530,6 +19599,11 @@ installCallPlanOptions();
   #scale-page .sv-inline :disabled { opacity:.65; cursor:wait; }
   #scale-page .sv-inline-help { margin:4px 0 0; font-size:10px; color:#496c7e; line-height:1.3; text-transform:none; }
   #scale-page .sv-inline-error { color:#963b2f; }
+  #scale-page .scale-person-card.sv-conflict-person { border-bottom:3px solid #b42318; box-shadow:inset 0 -1px #b42318; }
+  #scale-page .sv-conflict-label { display:block; margin:3px 0 2px; color:#a32318; font:600 10px Inter,Arial,sans-serif; line-height:1.3; text-transform:none; }
+  #scale-page .sv-replace { margin:3px 0 0; padding:2px 5px; border:1px solid #b9cbd6; border-radius:4px; background:#fff; color:#31566d; font:600 10px Inter,Arial,sans-serif; cursor:pointer; }
+  #scale-page .scale-command-person,#scale-page .scale-command-oncall-person,#scale-page .scale-official-person-cell,#scale-page .scale-official-grd-person,#scale-page .scale-official-side-table .scale-side-person { display:flex; flex-direction:column; align-items:stretch; justify-content:center; }
+  #scale-page .sv-replace { align-self:flex-end; }
   #scale-page .sv-complete { display:block; max-width:100%; margin:3px 0 0; padding:3px 5px; border:1px solid #d8bc75; border-radius:4px; background:#fff7df; color:#725213; font:600 10px Inter,Arial,sans-serif; text-transform:none; cursor:pointer; }
   #scale-page .sv-inline input:focus-visible,#scale-page .sv-inline button:focus-visible,#scale-page .sv-complete:focus-visible { outline:2px solid #277da4; outline-offset:2px; }
   #sv-unknown-notice[hidden] { display:none!important; }
@@ -19557,7 +19631,7 @@ installCallPlanOptions();
       (typeof hasScaleWriteInFlight_==='function' && hasScaleWriteInFlight_()));
   }
   function SV_target(destination) { return ((state.scalePreview && state.scalePreview.funcoes)||[]).find(item=>item && item.destino===destination)||null; }
-  function SV_editable(item) { return Boolean(item && item.destino && !item.automatico && !item.grdAutomatico && !item.oficialAssociado && !item.guardaSugerida && item.situacao!=='AFASTADO'); }
+  function SV_editable(item) { return Boolean(item && item.destino); }
   function SV_vacant(item) { const label=SV_text(item && item.militar).trim(),rg=SV_rg(item && item.rg);return SV_editable(item) && !rg && (!label || /^VAGO$/i.test(label) && item.situacao==='VAGO'); }
   function SV_isVacantDestination(destination) { return SV_vacant(SV_target(destination)); }
   function SV_isGrdDestination(destination) { return ['AE16','AE17','AE18'].indexOf(SV_text(destination).toUpperCase())!==-1; }
@@ -19570,7 +19644,7 @@ installCallPlanOptions();
   function SV_current(session) {
     if(!session || SV_session!==session || !session.form.isConnected || !session.card.isConnected || !session.card.parentNode || session.form.parentNode!==session.card.parentNode || !session.form.getClientRects().length)return false;
     const target=SV_target(session.destination);
-    const validSlot=session.mode==='complete'?SV_editable(target) && target.manualExternal && SV_rg(target.rg)===session.rg:SV_vacant(target);
+    const validSlot=session.mode==='complete'?SV_editable(target) && target.manualExternal && SV_rg(target.rg)===session.rg:session.mode==='replace'?SV_editable(target):SV_vacant(target);
     return Boolean(validSlot && state.scalePreview===session.preview && elements.scaleDate.value===session.dateIso && state.scaleLoadedDate===session.dateIso && SV_snapshot()===session.signature);
   }
   function SV_status(session,message,error) { session.status.textContent=message;session.status.className='sv-inline-help'+(error?' sv-inline-error':'');session.status.setAttribute('role',error?'alert':'status'); }
@@ -19589,8 +19663,8 @@ installCallPlanOptions();
   }
   function SV_open(destination,mode) {
     if(!SV_doc || SV_globalBusy())return false;
-    const target=SV_target(destination),completing=mode==='complete';
-    if(!state.scalePreview || state.scaleLoadedDate!==elements.scaleDate.value || (completing?!(SV_editable(target) && target.manualExternal):!SV_vacant(target)))return false;
+    const target=SV_target(destination),completing=mode==='complete',replacing=mode==='replace';
+    if(!state.scalePreview || state.scaleLoadedDate!==elements.scaleDate.value || (completing?!(SV_editable(target) && target.manualExternal):replacing?!SV_editable(target):!SV_vacant(target)))return false;
     if(SV_session && SV_session.destination===destination && SV_current(SV_session)){SV_session.input.focus();return true;}
     SV_end(true,false);
     const card=SV_card(destination);if(!card || !card.parentNode)return false;
@@ -19602,10 +19676,10 @@ installCallPlanOptions();
     submit.type='submit';submit.textContent='↵';submit.setAttribute('aria-label','Confirmar identificação');submit.title='Confirmar com Enter';
     cancel.type='button';cancel.textContent='×';cancel.setAttribute('aria-label','Cancelar digitação');cancel.title='Cancelar (Esc)';
     row.appendChild(input);row.appendChild(submit);row.appendChild(cancel);form.appendChild(row);form.appendChild(status);
-    const session={mode:completing?'complete':'insert',preview:state.scalePreview,dateIso:elements.scaleDate.value,destination:destination,rg:completing?SV_rg(target.rg):'',signature:SV_snapshot(),form:form,card:card,cardWasHidden:card.hidden,input:input,submit:submit,cancel:cancel,status:status,busy:false,sequence:++SV_sequence};
+    const session={mode:completing?'complete':replacing?'replace':'insert',preview:state.scalePreview,dateIso:elements.scaleDate.value,destination:destination,rg:completing?SV_rg(target.rg):'',signature:SV_snapshot(),form:form,card:card,cardWasHidden:card.hidden,input:input,submit:submit,cancel:cancel,status:status,busy:false,sequence:++SV_sequence};
     SV_session=session;
     input.value=SV_buffers[SV_key(session)] || (completing?(target.manualExternal.pendingIdentification?'':target.manualExternal.rank+' '+target.manualExternal.warName+' - '+target.rg):'');
-    SV_status(session,completing?'Digite graduação e nome, terminando com o RG '+target.rg+'. Enter confirma.':'Digite o RG ou SD NOME - RG • Enter inclui • Esc cancela',false);
+    SV_status(session,completing?'Digite graduação e nome, terminando com o RG '+target.rg+'. Enter confirma.':replacing?'Digite o RG do substituto • Enter altera somente esta escala • Esc cancela':'Digite o RG ou SD NOME - RG • Enter inclui • Esc cancela',false);
     form.addEventListener('submit',function(event){event.preventDefault();event.stopPropagation();SV_request(session);});
     form.addEventListener('click',function(event){event.stopPropagation();});
     form.addEventListener('keydown',function(event){event.stopPropagation();if(event.key==='Escape'){event.preventDefault();SV_end(false,true);}else if(event.key==='Enter' && event.target===input){event.preventDefault();if(!event.isComposing)SV_request(session);}});
@@ -19647,27 +19721,38 @@ installCallPlanOptions();
   SV_global.SV_rasGrdConflict=SV_rasGrdConflict;
 
   function SV_conflict(candidate,session,sources) {
-    const preview=state.scalePreview||{},target=SV_target(session.destination),rg=SV_rg(candidate.rg);
-    if(session.mode==='complete' ? !(SV_editable(target) && target.manualExternal && SV_rg(target.rg)===rg) : !SV_vacant(target))return 'A função mudou. Confira a prévia antes de incluir.';
+    const target=SV_target(session.destination),rg=SV_rg(candidate.rg);
+    if(session.mode==='complete' ? !(SV_editable(target) && target.manualExternal && SV_rg(target.rg)===rg) : session.mode==='replace'?!SV_editable(target):!SV_vacant(target))return 'A função mudou. Confira a prévia antes de incluir.';
     if(typeof isFormerMilitaryRg==='function' && isFormerMilitaryRg(rg))return 'O militar está marcado como transferido e não pode ser incluído.';
-    if(!target.secundaria && sources.assigned.some(person=>!person.secundaria && person.destino!==session.destination))return 'Este militar já ocupa outra função principal. Arraste o cartão para movimentá-lo.';
-    if((preview.afastados||[]).some(person=>SV_personMatches(person,rg)))return 'O militar consta como afastado nesta data.';
-    if((preview.sobreaviso||[]).some(person=>SV_personMatches(person,rg)))return 'O militar consta de sobreaviso nesta data.';
-    if((preview.cedidosApoio||[]).some(person=>SV_personMatches(person,rg)) && !SV_isGrdDestination(session.destination))return 'O militar consta como cedido ou em apoio operacional nesta data e só pode ser incluído no GRD.';
-    const ras=(state.scaleRas||[]).some(person=>SV_personMatches(person,rg) && (!person.situationKey || ['scheduled','completed'].indexOf(person.situationKey)!==-1));
-    const grdRasConflict=SV_rasGrdConflict(rg,session.destination);if(grdRasConflict)return grdRasConflict;
-    if(ras && !(sources.source && sources.source.isRas) && !SV_rasGrdAllowed(rg,session.destination))return 'Este militar possui RAS nesta data. Use seu cartão RAS no painel de disponíveis.';
-    const expediente=preview.expediente24h,records=Array.isArray(expediente)?expediente:(expediente && expediente.records||[]);
-    if(records.some(person=>SV_rg(person.rg)===rg && person.available===false))return 'A escolha de Serviço 24h do Expediente está impedida nesta data.';
     return '';
   }
+  function SV_conflictWarnings(candidate) {
+    if(!candidate || candidate.manualOverride!==true || !candidate.rg)return [];
+    const preview=state.scalePreview||{},rg=SV_rg(candidate.rg),destination=SV_text(candidate.destino),target=SV_target(destination)||candidate,sources=SV_sources(rg),warnings=[];
+    const standby=['Z3','Z4','Z5','AE21','AE22','AE23'].indexOf(destination)!==-1;
+    function add(text){if(text && warnings.indexOf(text)===-1)warnings.push(text);}
+    (Array.isArray(candidate.manualWarnings)?candidate.manualWarnings:[]).slice(0,20).forEach(function(text){if(typeof text==='string' && text.trim() && text.length<=500)add(text.trim());});
+    if(!target.secundaria && sources.assigned.some(person=>!person.secundaria && person.destino!==destination))add('O militar também ocupa outra função principal.');
+    (preview.afastados||[]).filter(person=>SV_personMatches(person,rg)).forEach(function(person){add('Afastamento nesta data'+(person && person.motivo?': '+SV_text(person.motivo):'.'));});
+    if(!standby && (preview.sobreaviso||[]).some(person=>SV_personMatches(person,rg)))add('O militar consta de sobreaviso nesta data.');
+    if(standby && sources.assigned.some(person=>!person.secundaria && person.destino!==destination))add('O militar também exerce uma função principal nesta data.');
+    if((preview.cedidosApoio||[]).some(person=>SV_personMatches(person,rg)) && !SV_isGrdDestination(destination))add('Militar cedido ou em apoio operacional nesta data.');
+    const ras=(state.scaleRas||[]).some(person=>SV_personMatches(person,rg) && (!person.situationKey || ['scheduled','completed'].indexOf(person.situationKey)!==-1));
+    const rasRecords=SV_rasRecords(rg);
+    if(rasRecords.some(record=>/^DBM0?1\/0?1$/.test(SV_rasUnitKey(record.serviceUnit))))add('O militar possui RAS no DBM 1/1 nesta data.');
+    else if(ras && !candidate.isRas)add('O militar possui RAS nesta data.');
+    const expediente=preview.expediente24h,records=Array.isArray(expediente)?expediente:(expediente && expediente.records||[]);
+    if(records.some(person=>SV_rg(person.rg)===rg && person.available===false))add('A escolha de Serviço 24h do Expediente está impedida nesta data.');
+    return warnings;
+  }
+  SV_global.SV_conflictWarnings=SV_conflictWarnings;
   function SV_applyCandidate(result,session) {
     const candidate=result && result.occupant;
     if(!candidate || !/^[0-9]{3,12}$/.test(SV_rg(candidate.rg)) || !SV_text(candidate.militar).trim() || candidate.situacao!=='DISPONÍVEL')throw new Error('A consulta retornou uma identificação incompleta. Tente novamente.');
     if(SV_globalBusy() || !SV_current(session))throw new Error('A prévia mudou ou há outra operação em andamento. Confira a escala antes de incluir.');
     if(session.mode==='complete' && SV_rg(candidate.rg)!==session.rg)throw new Error('Mantenha o RG '+session.rg+' ao completar a identificação.');
     const sources=SV_sources(SV_rg(candidate.rg)),conflict=SV_conflict(candidate,session,sources);if(conflict)throw new Error(conflict);
-    const validated=Object.assign({},candidate,{manualExternal:candidate.manualExternal?Object.assign({},candidate.manualExternal):null});
+    const validated=Object.assign({},candidate,{manualOverride:true,manualWarnings:(Array.isArray(candidate.manualWarnings)?candidate.manualWarnings:[]).filter(text=>typeof text==='string' && text.trim() && text.length<=500).slice(0,20),manualExternal:candidate.manualExternal?Object.assign({},candidate.manualExternal):null});
     // Local provenance only: a fresh RG inclusion outside the map/pool.
     // Completion and later moves keep that provenance; special cards retain their own presentation.
     const extraExp=state.scalePreview && state.scalePreview.expediente24h,extraExpRows=Array.isArray(extraExp)?extraExp:(extraExp && extraExp.records || []);
@@ -19687,7 +19772,9 @@ installCallPlanOptions();
       markScaleDraftChanged('Identificação atualizada nesta prévia da escala.');
     }else if(sources.pool){assignScaleAvailableToDestination(candidate.rg,destination,validated);}
     else {
-      pushScaleDraftHistory();writeScaleOccupant(SV_target(destination),Object.assign({},sources.source?readScaleOccupant(sources.source):{},validated,{situacao:'DISPONÍVEL',motivo:''}));
+      const target=SV_target(destination),displaced=Object.assign({ordem:target.ordem},readScaleOccupant(target));
+      pushScaleDraftHistory();writeScaleOccupant(target,Object.assign({},sources.source?readScaleOccupant(sources.source):{},validated,{situacao:'DISPONÍVEL',motivo:''}));
+      if(displaced.rg && displaced.militar && displaced.situacao==='DISPONÍVEL' && SV_rg(displaced.rg)!==SV_rg(validated.rg) && !(state.scalePreview.funcoes||[]).some(item=>item!==target && SV_rg(item.rg)===SV_rg(displaced.rg) && item.militar) && typeof addScaleAvailablePerson==='function')addScaleAvailablePerson(displaced);
       if(typeof SG_noteManualSlot_==='function')SG_noteManualSlot_(SV_target(destination));
       markScaleDraftChanged('Militar incluído na função selecionada.');
     }
@@ -19707,7 +19794,7 @@ installCallPlanOptions();
     if(!requestedRg || entryText.length>100){SV_status(session,'Digite o RG, ou graduação e nome de guerra seguidos do RG.',true);session.input.focus();return;}
     if(session.mode==='complete' && requestedRg!==session.rg){SV_status(session,'Mantenha o RG '+session.rg+' ao completar a identificação.',true);return;}
     const sequence=++SV_sequence;session.sequence=sequence;session.busy=true;session.input.disabled=true;session.submit.disabled=true;SV_status(session,'Conferindo RG…',false);
-    const payload={dateIso:session.dateIso,destination:session.destination,quickEntry:true,entryText:entryText};
+    const payload={dateIso:session.dateIso,destination:session.destination,quickEntry:true,entryText:entryText,manualOverride:true};
     BNX_rpc.run.withSuccessHandler(function(result){
       if(SV_session!==session || sequence!==SV_sequence)return;
       session.busy=false;session.input.disabled=false;session.submit.disabled=false;
@@ -19749,6 +19836,8 @@ installCallPlanOptions();
     });
   }
   if(SV_doc)SV_doc.addEventListener('click',function(event){
+    const replacement=event.target && event.target.closest?event.target.closest('[data-sv-replace]'):null;
+    if(replacement){event.preventDefault();event.stopImmediatePropagation();SV_open(replacement.dataset.svReplace,'replace');return;}
     const target=event.target && event.target.closest?event.target.closest('[data-sv-complete]'):null;
     if(target){event.preventDefault();event.stopImmediatePropagation();SV_open(target.dataset.svComplete,'complete');return;}
     const command=event.target && event.target.closest?event.target.closest('button'):null;
