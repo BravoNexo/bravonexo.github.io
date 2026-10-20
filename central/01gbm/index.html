@@ -4,6 +4,36 @@
   <base target="_top">
   <meta charset="UTF-8">
   <style>
+
+    .ras-reports-form { display:grid; gap:14px; padding:16px; border:1px solid #d0dfe8; border-radius:12px; background:#f5f9fb; }
+    .ras-reports-period, .ras-reports-statuses { display:flex; flex-wrap:wrap; gap:10px 18px; margin:0; border:0; padding:0; }
+    .ras-reports-period legend, .ras-reports-statuses legend { margin:0 0 8px; padding:0; font-size:13px; font-weight:700; }
+    .ras-reports-form .ras-reports-check { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; cursor:pointer; }
+    .ras-reports-check input { width:17px; height:17px; margin:0; accent-color:#173f5f; }
+    .ras-reports-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .ras-reports-dates { display:grid; grid-template-columns:repeat(2,minmax(0,220px)); gap:12px; }
+    .ras-reports-form .field { min-width:0; }
+    .ras-reports-form input[type=date], .ras-reports-form select { width:100%; min-height:40px; padding:8px; border:1px solid #b6cbd8; border-radius:7px; background:white; color:#173f5f; }
+    .ras-reports-cycles { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; max-height:180px; overflow:auto; padding:10px; border:1px solid #bed1dc; border-radius:8px; background:white; }
+    .ras-reports-cycles .ras-reports-check { align-items:flex-start; line-height:1.4; }
+    .ras-reports-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
+    .ras-reports-actions button { min-height:40px; }
+    .ras-reports-help { margin:0; color:#526c7c; font-size:12px; line-height:1.5; }
+    .ras-reports-context { margin:14px 0 0; padding:10px 12px; border-radius:8px; background:#edf3f8; color:#38566b; font-size:12px; line-height:1.5; }
+    .ras-reports-context[data-state=error], .ras-reports-warning { background:#fff6df; color:#755923; border-left:3px solid #b48730; }
+    .ras-reports-warning { margin:12px 0; padding:10px 12px; border-radius:6px; font-size:12px; line-height:1.5; }
+    .ras-reports-totals { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:16px 0; }
+    .ras-reports-stat { display:grid; gap:4px; padding:12px; background:#edf3f7; border:1px solid #d5e1e9; border-radius:9px; }
+    .ras-reports-stat strong { color:#173f5f; font-size:22px; }
+    .ras-reports-stat small { color:#516b7b; font-size:12px; }
+    .ras-reports-stat.rr-total-stat { background:#dfeef6; }
+    .ras-reports-table { min-width:850px; font-size:12px; }
+    .ras-reports-table td small { display:block; margin-top:3px; color:#59717f; font-size:11px; }
+    .ras-reports-table td.rr-number { text-align:right; white-space:nowrap; }
+    .ras-reports-table tbody tr:nth-child(even) td { background:#f1f4f6; }
+    #ras-reports-error { margin:12px 0 0; color:#9d2727; font-size:13px; }
+    @media(max-width:1000px) { .ras-reports-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:600px) { .ras-reports-grid,.ras-reports-dates { grid-template-columns:1fr; }.ras-reports-totals { grid-template-columns:repeat(2,minmax(0,1fr)); }.ras-reports-form{padding:12px;}.ras-reports-actions button { flex:1 1 150px; } }
     :root {
       color-scheme: light;
       font-family: Inter, Arial, sans-serif;
@@ -3109,12 +3139,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.2</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.3</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.2">v2.0.2</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.3">v2.0.3</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -3150,6 +3180,7 @@
             <button id="ras-tab-admin" type="button" data-ras-tab="admin" aria-controls="ras-view-admin">Administração</button>
             <button id="ras-tab-opportunities" type="button" data-ras-tab="opportunities" aria-controls="ras-view-opportunities">Oportunidades</button>
             <button id="ras-tab-history" type="button" data-ras-tab="history" aria-controls="ras-view-history">Histórico</button>
+            <button id="ras-tab-reports" type="button" data-ras-tab="reports" aria-controls="ras-view-reports">Relatórios</button>
             <button id="ras-tab-balances" type="button" data-ras-tab="balances" aria-controls="ras-view-balances">Saldos</button>
             <button id="ras-tab-eligibility" type="button" data-ras-tab="eligibility" aria-controls="ras-view-eligibility">Aptidão</button>
           </div>
@@ -4288,6 +4319,23 @@
             <div id="ras-opportunities-empty" class="empty" hidden>Nenhuma oportunidade encontrada.</div>
           </section>
 
+          <section id="ras-view-reports" class="panel" role="region" aria-labelledby="ras-tab-reports" hidden>
+            <div class="panel-head"><strong>Relatórios de RAS</strong><span id="ras-reports-count">Selecione o período</span></div>
+            <form id="ras-reports-form" class="ras-reports-form">
+              <fieldset class="ras-reports-period"><legend>Período do relatório</legend><label class="ras-reports-check"><input type="radio" name="ras-report-period" value="dates" checked> Entre datas</label><label class="ras-reports-check"><input type="radio" name="ras-report-period" value="cycles"> Um ou mais ciclos</label></fieldset>
+              <div id="ras-reports-dates" class="ras-reports-dates"><div class="field"><label for="ras-reports-from">Início</label><input id="ras-reports-from" type="date"></div><div class="field"><label for="ras-reports-to">Fim (inclusive)</label><input id="ras-reports-to" type="date"></div></div>
+              <div id="ras-reports-cycles-wrap" hidden><p class="ras-reports-help">Marque os ciclos desejados. Um mesmo lançamento é contabilizado uma única vez.</p><div id="ras-reports-cycles" class="ras-reports-cycles" role="group" aria-label="Ciclos do relatório"></div></div>
+              <fieldset class="ras-reports-statuses"><legend>Situações incluídas</legend><label class="ras-reports-check"><input id="ras-reports-scheduled" type="checkbox" checked> Agendados</label><label class="ras-reports-check"><input id="ras-reports-completed" type="checkbox" checked> Realizados</label><label class="ras-reports-check"><input id="ras-reports-canceled" type="checkbox"> Cancelados</label></fieldset>
+              <div class="ras-reports-grid"><div class="field"><label for="ras-reports-membership">Efetivo na data do RAS</label><select id="ras-reports-membership"><option value="">Todos</option></select></div><div class="field"><label for="ras-reports-posting">Lotação na data do RAS</label><select id="ras-reports-posting"><option value="">Todas</option></select></div><div class="field"><label for="ras-reports-unit">OBM do RAS</label><select id="ras-reports-unit"><option value="">Todas</option></select></div><div class="field"><label for="ras-reports-location">Viatura / local do RAS</label><select id="ras-reports-location"><option value="">Todos</option></select></div></div>
+              <div class="ras-reports-actions"><div class="field"><label for="ras-reports-sort">Ordenar militares por</label><select id="ras-reports-sort"><option value="hours-desc">Total de horas - maior primeiro</option><option value="name">Nome de guerra</option></select></div><label class="ras-reports-check"><input id="ras-reports-details" type="checkbox"> Incluir lançamentos detalhados no PDF</label><button id="ras-reports-generate" type="submit">Gerar prévia / PDF</button><button id="ras-reports-context-refresh" class="secondary" type="button">Atualizar contexto histórico</button></div>
+              <p class="ras-reports-help">O total soma as horas realizadas e agendadas selecionadas. Cancelados têm contagem e horas separadas e não aumentam o total. Este relatório não representa o saldo ajustado da fila contínua.</p>
+            </form>
+            <p id="ras-reports-context" class="ras-reports-context" role="status" aria-live="polite">As OBMs históricas só são exibidas quando há comprovação para a data do serviço.</p>
+            <p id="ras-reports-error" role="alert" hidden></p><div id="ras-reports-warning" class="ras-reports-warning" hidden></div>
+            <div id="ras-reports-totals" class="ras-reports-totals"></div>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Resumo de horas de RAS por militar"><table class="ras-reports-table"><thead><tr><th>Militar / RG</th><th>Efetivo na data do RAS</th><th>Lotação na data do RAS</th><th>Realizado</th><th>Agendado</th><th>Cancelado</th><th>Total no período</th></tr></thead><tbody id="ras-reports-rows"></tbody></table></div>
+          </section>
+
           <section id="ras-view-history" class="panel" role="region" aria-labelledby="ras-tab-history" hidden>
             <div class="panel-head"><strong>Histórico de lançamentos</strong><span id="ras-history-count">—</span></div>
             <div class="ras-toolbar">
@@ -4902,6 +4950,11 @@
       rasCorrectionRecordId: '',
       rasCorrectionOriginalDate: '',
       rasCorrectionExpected: null,
+      rasReportsContextMap: null,
+      rasReportsContextLoading: false,
+      rasReportsContextRecords: null,
+      rasReportsContextRequest: 0,
+      rasReportsContextWarning: '',
       rasTab: 'queue',
       rasEditorMode: 'create',
       rasEditingId: ''
@@ -5315,12 +5368,14 @@
       rasTabHistory: document.getElementById('ras-tab-history'),
       rasTabBalances: document.getElementById('ras-tab-balances'),
       rasTabEligibility: document.getElementById('ras-tab-eligibility'),
+      rasTabReports: document.getElementById('ras-tab-reports'),
       rasViewQueue: document.getElementById('ras-view-queue'),
       rasViewAdmin: document.getElementById('ras-view-admin'),
       rasViewOpportunities: document.getElementById('ras-view-opportunities'),
       rasViewHistory: document.getElementById('ras-view-history'),
       rasViewBalances: document.getElementById('ras-view-balances'),
       rasViewEligibility: document.getElementById('ras-view-eligibility'),
+      rasViewReports: document.getElementById('ras-view-reports'),
       rasQueueSearch: document.getElementById('ras-queue-search'),
       rasQueueStatus: document.getElementById('ras-queue-status'),
       rasQueueCount: document.getElementById('ras-queue-count'),
@@ -5913,8 +5968,8 @@
     }
 
     function setRasTab(tab) {
-      state.rasTab = ['queue', 'admin', 'opportunities', 'history', 'balances', 'eligibility'].indexOf(tab) !== -1 ? tab : 'queue';
-      const tabs = ['queue', 'admin', 'opportunities', 'history', 'balances', 'eligibility'];
+      state.rasTab = ['queue', 'admin', 'opportunities', 'history', 'balances', 'eligibility', 'reports'].indexOf(tab) !== -1 ? tab : 'queue';
+      const tabs = ['queue', 'admin', 'opportunities', 'history', 'balances', 'eligibility', 'reports'];
       tabs.forEach(function(name) {
         const cap = name.charAt(0).toUpperCase() + name.slice(1);
         const button = elements['rasTab' + cap];
@@ -5924,7 +5979,293 @@
         else button.removeAttribute('aria-current');
         elements['rasView' + cap].hidden = state.rasTab !== name;
       });
+      if (state.rasTab === 'reports' && state.page === 'ras') BNXRasReportsUi.loadContext(false);
     }
+
+    var BNXRasReportsModel = (function createRasReportsModel() {
+  var UNKNOWN = '__unknown__';
+  function text(value) { return typeof value === 'string' ? value.trim() : ''; }
+  function normal(value) { return text(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase(); }
+  function rg(value) { return text(String(value == null ? '' : value)).replace(/\D/g, '').replace(/^0+(?=\d)/, ''); }
+  function date(value) {
+    var raw = text(value), iso = /^(\d{4})-(\d{2})-(\d{2})(?:[ T].*)?$/.exec(raw);
+    var br = !iso && /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T].*)?$/.exec(raw);
+    if (!iso && !br) return null;
+    var y = Number(iso ? iso[1] : br[3]), m = Number(iso ? iso[2] : br[2]), d = Number(iso ? iso[3] : br[1]);
+    var leap = y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0), days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (y < 1900 || y > 9999 || m < 1 || m > 12 || d < 1 || d > days[m - 1]) return null;
+    var yy = String(y).padStart(4, '0'), mm = String(m).padStart(2, '0'), dd = String(d).padStart(2, '0');
+    return { iso: yy + '-' + mm + '-' + dd, label: dd + '/' + mm + '/' + yy };
+  }
+  function status(record) {
+    var value = normal(record && record.situation);
+    if (value === 'CANCELADO' || value === 'CANCELADA' || value === 'CANCELADO PELO MILITAR') return 'canceled';
+    if (value === 'REALIZADO') return 'completed';
+    if (value === 'AGENDADO') return 'scheduled';
+    var key = text(record && record.situationKey);
+    return ['completed', 'scheduled', 'canceled'].indexOf(key) >= 0 ? key : '';
+  }
+  function statusLabel(value) { return ({ completed: 'Realizado', scheduled: 'Agendado', canceled: 'Cancelado' })[value] || 'Não informado'; }
+  function list(values) { return Array.from(new Set(values.filter(Boolean))).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }); }
+  function historical(record, contextMap, key) {
+    var context = contextMap && Object.prototype.hasOwnProperty.call(contextMap, record.id) ? contextMap[record.id] : null;
+    // Only these explicit historical keys are accepted. Present-day fields are ignored.
+    if (context && context.contextStatus && context.contextStatus !== 'recorded-history') return '';
+    return text(context && context[key]) || text(record[key]);
+  }
+  function normalizeRecords(source) {
+    var input = source && Array.isArray(source.records) ? source.records : [], seen = Object.create(null), invalid = 0, duplicates = 0;
+    var records = [];
+    input.forEach(function(item) {
+      if (!item || typeof item !== 'object') { invalid++; return; }
+      var id = text(item.id), day = date(item.dateIso) || date(item.date), identity = rg(item.rg), key = status(item);
+      var hours = typeof item.hours === 'number' ? item.hours : Number(String(item.hours == null ? '' : item.hours).replace(',', '.'));
+      if (!id || !day || !identity || !Number.isFinite(hours) || hours < 0 || hours > Number.MAX_SAFE_INTEGER / 100) { invalid++; return; }
+      if (!key) return;
+      if (seen[id]) { duplicates++; return; }
+      seen[id] = true;
+      records.push({ id: id, rg: identity, rank: text(item.rank), name: text(item.name) || 'Militar não identificado',
+        dateIso: day.iso, date: day.label, cycleId: text(item.cycleId), status: key, statusLabel: statusLabel(key),
+        hoursUnits: Math.round(hours * 100), hours: Math.round(hours * 100) / 100,
+        membershipObmAtService: historical(item, source.contextMap, 'membershipObmAtService'),
+        postingObmAtService: historical(item, source.contextMap, 'postingObmAtService'),
+        contextStatus: source.contextMap && source.contextMap[id] && text(source.contextMap[id].contextStatus) || '',
+        serviceUnit: text(item.serviceUnit), serviceLocation: text(item.serviceLocation), serviceRole: text(item.serviceRole) });
+    });
+    return { records: records, invalid: invalid, duplicates: duplicates };
+  }
+  function options(source) {
+    source = source || {};
+    var normalized = normalizeRecords(source), rows = normalized.records, cycles = [], seen = Object.create(null);
+    (Array.isArray(source.cycles) ? source.cycles : []).forEach(function(item) {
+      var id = text(item && item.id); if (!id || seen[id]) return; seen[id] = true;
+      cycles.push({ id: id, label: text(item.name) || id, openDate: text(item.openDate), closeDate: text(item.closeDate) });
+    });
+    list(rows.map(function(item) { return item.cycleId; })).forEach(function(id) { if (!seen[id]) cycles.push({ id: id, label: id, openDate: '', closeDate: '' }); });
+    function field(name) { return list(rows.map(function(item) { return item[name]; })); }
+    return { cycles: cycles, membershipObms: field('membershipObmAtService'), postingObms: field('postingObmAtService'),
+      serviceUnits: field('serviceUnit'), serviceLocations: field('serviceLocation'), unknownValue: UNKNOWN };
+  }
+  function build(source, filters) {
+    source = source || {}; filters = filters || {};
+    var mode = filters.mode === 'cycles' ? 'cycles' : 'dates', from = date(filters.from), to = date(filters.to);
+    var ids = list((Array.isArray(filters.cycleIds) ? filters.cycleIds : []).map(text));
+    var selected = list((Array.isArray(filters.statuses) ? filters.statuses : ['completed', 'scheduled']).filter(function(value) { return ['completed', 'scheduled', 'canceled'].indexOf(value) >= 0; }));
+    if (!selected.length) throw Error('Selecione pelo menos uma situação de RAS.');
+    if (mode === 'dates' && (!from || !to || from.iso > to.iso)) throw Error('Informe um período válido, com início anterior ou igual ao fim.');
+    if (mode === 'cycles' && !ids.length) throw Error('Selecione pelo menos um ciclo.');
+    var opt = options(source), knownCycles = opt.cycles.map(function(cycle) { return cycle.id; });
+    if (mode === 'cycles' && ids.some(function(id) { return knownCycles.indexOf(id) < 0; })) throw Error('Um ciclo selecionado não está mais disponível. Confira a seleção.');
+    var filterFields = ['membershipObmAtService', 'postingObmAtService', 'serviceUnit', 'serviceLocation'];
+    function matches(item, field) { var wanted = text(filters[field]); return !wanted || (wanted === UNKNOWN ? !item[field] : item[field] === wanted); }
+    var normalized = normalizeRecords(source), details = normalized.records.filter(function(item) {
+      return selected.indexOf(item.status) >= 0 && (mode === 'cycles' ? ids.indexOf(item.cycleId) >= 0 : item.dateIso >= from.iso && item.dateIso <= to.iso) &&
+        filterFields.every(function(field) { return matches(item, field); });
+    });
+    var byRg = Object.create(null), totals = { completedUnits: 0, scheduledUnits: 0, canceledUnits: 0, completedCount: 0, scheduledCount: 0, canceledCount: 0,
+      records: details.length, militaries: 0, unknownMembership: 0, unknownPosting: 0 };
+    details.forEach(function(item) {
+      var row = byRg[item.rg];
+      if (!row) row = byRg[item.rg] = { rg: item.rg, rank: item.rank, name: item.name, completedUnits: 0, scheduledUnits: 0, canceledUnits: 0,
+        completedCount: 0, scheduledCount: 0, canceledCount: 0, records: 0, membershipObms: [], postingObms: [], serviceUnits: [], serviceLocations: [] };
+      row[item.status + 'Units'] += item.hoursUnits; totals[item.status + 'Units'] += item.hoursUnits;
+      row[item.status + 'Count']++; totals[item.status + 'Count']++; row.records++;
+      row.membershipObms.push(item.membershipObmAtService || 'Não registrado'); row.postingObms.push(item.postingObmAtService || 'Não registrado');
+      row.serviceUnits.push(item.serviceUnit || 'Não informado'); row.serviceLocations.push(item.serviceLocation || 'Não informado');
+      if (!item.membershipObmAtService) totals.unknownMembership++;
+      if (!item.postingObmAtService) totals.unknownPosting++;
+    });
+    function finish(target) {
+      target.completedHours = target.completedUnits / 100; target.scheduledHours = target.scheduledUnits / 100; target.canceledHours = target.canceledUnits / 100;
+      target.totalHours = (target.completedUnits + target.scheduledUnits) / 100; return target;
+    }
+    var summary = Object.keys(byRg).map(function(key) { var row = finish(byRg[key]); ['membershipObms', 'postingObms', 'serviceUnits', 'serviceLocations'].forEach(function(field) { row[field] = list(row[field]); }); return row; });
+    var sort = filters.sort === 'name' ? 'name' : 'hours-desc';
+    summary.sort(function(a, b) { return (sort === 'hours-desc' ? b.totalHours - a.totalHours : 0) || a.name.localeCompare(b.name, 'pt-BR') || a.rg.localeCompare(b.rg, 'pt-BR', { numeric: true }); });
+    var position = Object.create(null); summary.forEach(function(item, index) { position[item.rg] = index; });
+    details.sort(function(a, b) { return position[a.rg] - position[b.rg] || a.dateIso.localeCompare(b.dateIso) || a.id.localeCompare(b.id); });
+    totals.militaries = summary.length; finish(totals);
+    var cycleLabels = ids.map(function(id) { var cycle = opt.cycles.find(function(value) { return value.id === id; }); return cycle ? cycle.label : id; });
+    var warnings = [];
+    if (text(source.contextWarning)) warnings.push(text(source.contextWarning));
+    if (totals.unknownMembership || totals.unknownPosting) warnings.push('Há registros sem comprovação da OBM de origem ou lotação na data do RAS. Eles aparecem como “Não registrado”; o cadastro atual não foi usado para inferir o passado.');
+    if (details.some(function(item) { return item.contextStatus === 'future-not-confirmed'; })) warnings.push('A OBM de origem e a lotação de serviços futuros ainda não estão confirmadas. Não foi feita previsão a partir do cadastro atual.');
+    if (normalized.invalid) warnings.push(normalized.invalid + ' registro(s) com identificação, data ou horas inválidas não puderam ser incluídos.');
+    if (normalized.duplicates) warnings.push(normalized.duplicates + ' repetição(ões) de identificador foram desconsideradas para evitar contagem duplicada.');
+    var labels = { membershipObmAtService: 'Efetivo na data do RAS', postingObmAtService: 'Lotação na data do RAS', serviceUnit: 'OBM do RAS', serviceLocation: 'Viatura / local do RAS' };
+    var filterLabels = filterFields.map(function(field) { var value = text(filters[field]); return labels[field] + ': ' + (!value ? 'Todos' : value === UNKNOWN ? 'Não registrado' : value); });
+    return { kind: 'RAS_PERIOD_REPORT_V1', periodMode: mode, periodLabel: mode === 'cycles' ? 'Ciclos: ' + cycleLabels.join(' / ') : from.label + ' a ' + to.label,
+      filters: { mode: mode, from: from && from.iso || '', to: to && to.iso || '', cycleIds: ids, statuses: selected, sort: sort, includeDetails: filters.includeDetails === true },
+      filterLabels: filterLabels, statusLabel: selected.map(statusLabel).join(' + '), summary: summary, details: details, totals: totals, warnings: warnings,
+      accountingNote: 'Total do período = horas realizadas + agendadas selecionadas. Cancelados são exibidos separadamente e não somam ao total. Não é o saldo ajustado da fila contínua.' };
+  }
+  function hours(value) { return Number(value || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + 'h'; }
+  return Object.freeze({ build: build, options: options, date: date, status: status, hours: hours, UNKNOWN: UNKNOWN });
+})();
+    var BNXRasReportsPrint = (function createRasReportsPrint() {
+  function escape(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function(char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
+  function hours(value) { return Number(value || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + 'h'; }
+  function identity(item) { return [item.rank, item.name].filter(Boolean).join(' '); }
+  // DOM-independent pagination policy; the renderer performs measured fit checks.
+  function paginate(groups, renderer) {
+    var pages = [], page = null, printable = true;
+    function next() { page = renderer.createPage(); pages.push(page); }
+    for (var g = 0; g < groups.length && printable; g++) {
+      var group = groups[g], section = null, count = 0;
+      if (!page) next();
+      section = renderer.createSection(page, group, false);
+      var rows = group.rows.length ? group.rows : [null];
+      for (var r = 0; r < rows.length; r++) {
+        var node = renderer.appendRow(section, rows[r]);
+        if (!renderer.fits(page)) {
+          renderer.removeRow(section, node);
+          if (!count) renderer.removeSection(page, section);
+          next(); section = renderer.createSection(page, group, count > 0);
+          node = renderer.appendRow(section, rows[r]);
+          if (!renderer.fits(page)) { printable = false; break; }
+        }
+        count++;
+      }
+    }
+    return { pages: pages, printable: printable };
+  }
+  function runtime() {
+    'use strict';
+    var host = document.getElementById('rr-pages'), print = document.getElementById('rr-print'), status = document.getElementById('rr-status');
+    var ready = false, busy = false;
+    var groups = Array.from(document.getElementById('rr-source').content.querySelectorAll('.rr-group')).map(function(node) { return { node: node, rows: Array.from(node.querySelectorAll('tbody tr')) }; });
+    var renderer = {
+      createPage: function() { var page = document.getElementById('rr-template').content.firstElementChild.cloneNode(true); host.appendChild(page); return page; },
+      createSection: function(page, group, continued) { var node = group.node.cloneNode(true); node.querySelector('tbody').replaceChildren(); if (continued) node.querySelector('.rr-continuation').textContent = ' - continuação'; page.querySelector('.rr-content').appendChild(node); return node; },
+      appendRow: function(section, source) { var node = source ? source.cloneNode(true) : document.createElement('tr'); if (!source) { var cell = document.createElement('td'); cell.colSpan = section.querySelectorAll('thead th').length; cell.className = 'rr-empty'; cell.textContent = 'Nenhum RAS encontrado para os filtros selecionados.'; node.appendChild(cell); } section.querySelector('tbody').appendChild(node); return node; },
+      removeRow: function(section, node) { node.remove(); },
+      removeSection: function(page, section) { section.remove(); },
+      fits: function(page) { var content = page.querySelector('.rr-content'); return content.clientHeight > 0 && content.scrollHeight <= content.clientHeight + 1; }
+    };
+    function layout() {
+      if (busy) return; busy = true; ready = false; print.disabled = true; document.body.classList.add('rr-blocked');
+      try {
+        host.replaceChildren(); var result = rasReportPaginate(groups, renderer);
+        result.pages.forEach(function(page, index) { page.querySelector('.rr-page-number').textContent = 'Página ' + (index + 1) + ' de ' + result.pages.length; });
+        ready = result.printable; print.disabled = !ready; document.body.classList.toggle('rr-blocked', !ready);
+        status.textContent = ready ? 'Prévia completa: ' + result.pages.length + ' página(s) A4 paisagem. Use Salvar como PDF, escala 100%, sem cabeçalhos e rodapés do navegador.' : 'Um texto não cabe na área útil de uma página. A impressão foi bloqueada para evitar cortes; revise os filtros ou solicite ajuste do relatório.';
+      } catch (error) { status.textContent = 'Não foi possível preparar a impressão. Feche e gere a prévia novamente. Nenhum dado foi alterado.'; }
+      finally { busy = false; }
+    }
+    print.addEventListener('click', function() { layout(); if (ready) window.print(); });
+    document.getElementById('rr-close').addEventListener('click', function() { window.close(); });
+    window.addEventListener('beforeprint', function() { document.body.classList.toggle('rr-blocked', !ready); });
+    window.setTimeout(layout, 0);
+  }
+  function buildDocument(report, metadata) {
+    if (!report || report.kind !== 'RAS_PERIOD_REPORT_V1' || !Array.isArray(report.summary) || !Array.isArray(report.details) || !report.totals) throw Error('Relatório inválido. Gere a prévia novamente.');
+    var e = escape, totals = report.totals, generated = metadata && metadata.generatedAt || '';
+    var summary = report.summary.map(function(row) { return '<tr><td><strong>' + e(identity(row)) + '</strong><small>RG ' + e(row.rg) + '</small></td><td>' + e(row.membershipObms.join(' / ')) + '</td><td>' + e(row.postingObms.join(' / ')) + '</td><td class="rr-number">' + e(hours(row.completedHours)) + '<small>' + row.completedCount + ' RAS</small></td><td class="rr-number">' + e(hours(row.scheduledHours)) + '<small>' + row.scheduledCount + ' RAS</small></td><td class="rr-number rr-canceled">' + e(hours(row.canceledHours)) + '<small>' + row.canceledCount + ' RAS</small></td><td class="rr-number"><strong>' + e(hours(row.totalHours)) + '</strong></td></tr>'; }).join('');
+    var groups = '<section class="rr-group"><h2>RESUMO POR MILITAR<span class="rr-continuation"></span></h2><table><colgroup><col style="width:28%"><col style="width:18%"><col style="width:18%"><col style="width:9%"><col style="width:9%"><col style="width:9%"><col style="width:9%"></colgroup><thead><tr><th>Militar / RG</th><th>Efetivo na data do RAS</th><th>Lotação na data do RAS</th><th>Realizado</th><th>Agendado</th><th>Cancelado</th><th>Total</th></tr></thead><tbody>' + summary + '</tbody></table></section>';
+    if (report.filters.includeDetails) {
+      var details = report.details.map(function(row) { return '<tr><td>' + e(row.date) + '<small>' + e(row.cycleId || 'Sem ciclo registrado') + '</small></td><td><strong>' + e(identity(row)) + '</strong><small>RG ' + e(row.rg) + '</small></td><td>' + e(row.membershipObmAtService || 'Não registrado') + '</td><td>' + e(row.postingObmAtService || 'Não registrado') + '</td><td>' + e(row.serviceUnit || 'Não informado') + '<small>' + e(row.serviceLocation || 'Local não informado') + '</small></td><td>' + e(row.serviceRole || 'Não informado') + '</td><td>' + e(row.statusLabel) + '</td><td class="rr-number">' + e(hours(row.hours)) + '</td></tr>'; }).join('');
+      groups += '<section class="rr-group"><h2>LANÇAMENTOS DO PERÍODO<span class="rr-continuation"></span></h2><table><colgroup><col style="width:12%"><col style="width:23%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:9%"><col style="width:7%"><col style="width:5%"></colgroup><thead><tr><th>Data / ciclo</th><th>Militar / RG</th><th>Efetivo na data</th><th>Lotação na data</th><th>OBM / viatura / local</th><th>Função</th><th>Situação</th><th>Horas</th></tr></thead><tbody>' + details + '</tbody></table></section>';
+    }
+    var warnings = report.warnings.length ? '<p class="rr-warning">' + report.warnings.map(e).join(' ') + '</p>' : '';
+    var header = '<header class="rr-head"><div><h1>RELATÓRIO DE RAS</h1><p>BravoNexo - 1º GBM | ' + e(report.periodLabel) + '</p></div><div class="rr-meta">' + e(generated ? 'Gerado em ' + generated : '') + '<br>' + e(report.statusLabel) + '</div></header><div class="rr-filters">' + report.filterLabels.map(e).join(' | ') + '</div><div class="rr-totals"><span><strong>' + totals.militaries + '</strong> militares</span><span><strong>' + e(hours(totals.completedHours)) + '</strong> realizados (' + totals.completedCount + ')</span><span><strong>' + e(hours(totals.scheduledHours)) + '</strong> agendados (' + totals.scheduledCount + ')</span><span><strong>' + e(hours(totals.canceledHours)) + '</strong> cancelados (' + totals.canceledCount + ')</span><span class="rr-total"><strong>' + e(hours(totals.totalHours)) + '</strong> total</span></div>' + warnings;
+    var template = '<article class="rr-page">' + header + '<main class="rr-content"></main><footer class="rr-foot"><span>Uso interno - ' + e(report.accountingNote) + '</span><strong class="rr-page-number"></strong></footer></article>';
+    var script = 'var rasReportPaginate=' + paginate.toString() + ';(' + runtime.toString() + ')();';
+    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatório de RAS - BravoNexo</title><style>' +
+      '*{box-sizing:border-box}body{margin:0;background:#e8eef2;color:#142c3d;font-family:Arial,Helvetica,sans-serif}.rr-tools{position:sticky;top:0;z-index:2;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#173f5f;color:#fff}.rr-tools button{min-height:42px;border:0;border-radius:7px;padding:10px 16px;background:#fff;color:#173f5f;font:700 14px Arial;cursor:pointer}.rr-tools button:disabled{opacity:.5}.rr-tools p{flex:1 1 450px;margin:0;font-size:13px;line-height:1.4}#rr-pages{padding:14px}.rr-page{width:297mm;height:210mm;margin:0 auto 14px;padding:9mm 10mm;display:flex;flex-direction:column;gap:2mm;background:#fff;box-shadow:0 2px 10px #0003;break-after:page;page-break-after:always}.rr-page:last-child{break-after:auto;page-break-after:auto}.rr-head{display:flex;justify-content:space-between;gap:8mm;border-bottom:1.2pt solid #173f5f;padding-bottom:2mm;flex:none}.rr-head h1{font-size:15pt;line-height:1.1;margin:0}.rr-head p{font-size:9pt;margin:1mm 0 0;overflow-wrap:anywhere}.rr-meta{text-align:right;font-size:7.3pt;line-height:1.3;flex:0 0 56mm;overflow-wrap:anywhere}.rr-filters{font-size:7pt;line-height:1.3;color:#475f6e;overflow-wrap:anywhere;flex:none}.rr-totals{display:flex;flex-wrap:wrap;gap:3mm;align-items:center;padding:2mm 2.5mm;background:#edf3f7;flex:none;font-size:8pt}.rr-totals span{flex:1 1 auto}.rr-totals strong{font-size:10pt}.rr-totals .rr-total{color:#173f5f;text-align:right}.rr-warning{margin:0;padding:1.5mm 2mm;background:#fff5db;border-left:2pt solid #ba8425;font-size:7pt;line-height:1.3;flex:none}.rr-content{flex:1;min-height:0;overflow:visible}.rr-group{margin:0 0 3mm}.rr-group h2{margin:0;padding:1.3mm 1.5mm;background:#dbe7ee;border:.5pt solid #9aafbc;font-size:8pt;line-height:1.2}.rr-group table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:7.5pt;line-height:1.2}.rr-group th,.rr-group td{padding:1mm 1.4mm;border:.4pt solid #afbdc6;text-align:left;vertical-align:top;overflow-wrap:anywhere}.rr-group th{font-size:7pt;background:#edf2f5}.rr-group tbody tr:nth-child(even) td{background:#f0f2f4}.rr-group td small{display:block;margin-top:.5mm;color:#536979;font-size:6.5pt}.rr-group td.rr-number{text-align:right;white-space:nowrap}.rr-canceled{color:#765b55}.rr-group .rr-empty{text-align:center;padding:4mm;color:#586f7c}.rr-foot{display:flex;justify-content:space-between;gap:5mm;align-items:flex-start;flex:none;border-top:.5pt solid #a6b7c2;padding-top:1.5mm;font-size:6.5pt;line-height:1.3}.rr-foot span{max-width:241mm}.rr-page-number{white-space:nowrap}#rr-template,#rr-source,.rr-print-blocker{display:none}@media(max-width:1160px){#rr-pages{overflow-x:auto}.rr-page{margin-left:0}}@page{size:A4 landscape;margin:0}@media print{html,body{background:#fff;margin:0;padding:0}.rr-tools{display:none!important}#rr-pages{padding:0;overflow:visible}.rr-page{margin:0;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}.rr-group thead{display:table-header-group}.rr-group tr{break-inside:avoid;page-break-inside:avoid}body.rr-blocked #rr-pages{display:none!important}body.rr-blocked .rr-print-blocker{display:block;padding:20mm;font-size:12pt}}' +
+      '</style></head><body class="rr-blocked"><nav class="rr-tools" aria-label="Impressão do relatório de RAS"><button id="rr-print" type="button" disabled>Imprimir / Salvar PDF</button><button id="rr-close" type="button">Fechar</button><p id="rr-status" role="status" aria-live="polite">Preparando o relatório completo...</p></nav><div class="rr-print-blocker">Aguarde a preparação da prévia antes de imprimir. Confira o aviso na janela.</div><div id="rr-pages"></div><template id="rr-template">' + template + '</template><template id="rr-source">' + groups + '</template><script>' + script + '</' + 'script></body></html>';
+  }
+  return Object.freeze({ buildDocument: buildDocument, paginate: paginate, escape: escape });
+})();
+    var BNXRasReportsUi = (function createRasReportsUi() {
+  function node(id) { return document.getElementById('ras-reports-' + id); }
+  function source() { return { records: state.rasData && state.rasData.records || [], cycles: state.rasData && state.rasData.cycles || [], contextMap: state.rasReportsContextMap || Object.create(null), contextWarning: state.rasReportsContextWarning || '' }; }
+  function allowed() { var workspace = document.getElementById('central-workspace'); return state.page === 'ras' && state.rasTab === 'reports' && state.rasLoaded && workspace && !workspace.hidden; }
+  function filters() {
+    var form = node('form'), checked = form.querySelector('input[name="ras-report-period"]:checked');
+    return { mode: checked && checked.value || 'dates', from: node('from').value, to: node('to').value,
+      cycleIds: Array.from(node('cycles').querySelectorAll('input:checked')).map(function(input) { return input.value; }),
+      statuses: ['scheduled', 'completed', 'canceled'].filter(function(key) { return node(key).checked; }),
+      membershipObmAtService: node('membership').value, postingObmAtService: node('posting').value,
+      serviceUnit: node('unit').value, serviceLocation: node('location').value, sort: node('sort').value, includeDetails: node('details').checked };
+  }
+  function optionHtml(values, unknownLabel) { return '<option value="">Todos</option>' + values.map(function(value) { return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>'; }).join('') + '<option value="__unknown__">' + escapeHtml(unknownLabel || 'Não registrado') + '</option>'; }
+  function updateOptions() {
+    var options = BNXRasReportsModel.options(source());
+    [['membership', options.membershipObms], ['posting', options.postingObms], ['unit', options.serviceUnits], ['location', options.serviceLocations]].forEach(function(entry) {
+      var select = node(entry[0]), value = select.value; select.innerHTML = optionHtml(entry[1], entry[0] === 'unit' || entry[0] === 'location' ? 'Não informado' : 'Não registrado');
+      select.value = Array.from(select.options).some(function(option) { return option.value === value; }) ? value : '';
+    });
+    var chosen = Array.from(node('cycles').querySelectorAll('input:checked')).map(function(input) { return input.value; });
+    node('cycles').innerHTML = options.cycles.length ? options.cycles.map(function(cycle) { return '<label class="ras-reports-check"><input type="checkbox" value="' + escapeHtml(cycle.id) + '"' + (chosen.indexOf(cycle.id) >= 0 ? ' checked' : '') + '> <span>' + escapeHtml(cycle.label) + (cycle.openDate ? '<small> - ' + escapeHtml(cycle.openDate) + (cycle.closeDate ? ' a ' + escapeHtml(cycle.closeDate) : '') + '</small>' : '') + '</span></label>'; }).join('') : '<p class="ras-reports-help">Nenhum ciclo encontrado.</p>';
+  }
+  function error(message) { node('error').textContent = message || ''; node('error').hidden = !message; }
+  function contextMessage(message, failed) { node('context').textContent = message; node('context').dataset.state = failed ? 'error' : 'ready'; }
+  function render() {
+    if (!allowed()) return;
+    var selection = filters(); node('dates').hidden = selection.mode !== 'dates'; node('cycles-wrap').hidden = selection.mode !== 'cycles';
+    node('context-refresh').disabled = state.rasReportsContextLoading === true;
+    node('generate').disabled = state.rasReportsContextLoading === true;
+    var report;
+    try { report = BNXRasReportsModel.build(source(), selection); error(''); }
+    catch (failure) { error(failure.message); node('rows').innerHTML = ''; node('totals').innerHTML = ''; node('warning').hidden = true; node('count').textContent = 'Confira os filtros'; return; }
+    node('count').textContent = report.totals.militaries + ' militar(es) - ' + report.totals.records + ' RAS';
+    node('warning').textContent = report.warnings.join(' '); node('warning').hidden = !report.warnings.length;
+    var totals = report.totals;
+    node('totals').innerHTML = [['Realizados', totals.completedHours, totals.completedCount], ['Agendados', totals.scheduledHours, totals.scheduledCount], ['Cancelados', totals.canceledHours, totals.canceledCount], ['Total no período', totals.totalHours, totals.completedCount + totals.scheduledCount]].map(function(item, index) { return '<div class="ras-reports-stat' + (index === 3 ? ' rr-total-stat' : '') + '"><small>' + item[0] + '</small><strong>' + escapeHtml(BNXRasReportsModel.hours(item[1])) + '</strong><small>' + item[2] + ' RAS</small></div>'; }).join('');
+    node('rows').innerHTML = report.summary.length ? report.summary.map(function(item) { var name = [callPlanRank(item.rank), item.name].filter(Boolean).join(' '); return '<tr><td><strong>' + escapeHtml(name) + '</strong><small>RG ' + escapeHtml(item.rg) + '</small></td><td>' + escapeHtml(item.membershipObms.join(' / ')) + '</td><td>' + escapeHtml(item.postingObms.join(' / ')) + '</td><td class="rr-number">' + escapeHtml(BNXRasReportsModel.hours(item.completedHours)) + '<small>' + item.completedCount + ' RAS</small></td><td class="rr-number">' + escapeHtml(BNXRasReportsModel.hours(item.scheduledHours)) + '<small>' + item.scheduledCount + ' RAS</small></td><td class="rr-number">' + escapeHtml(BNXRasReportsModel.hours(item.canceledHours)) + '<small>' + item.canceledCount + ' RAS</small></td><td class="rr-number"><strong>' + escapeHtml(BNXRasReportsModel.hours(item.totalHours)) + '</strong></td></tr>'; }).join('') : '<tr><td colspan="7" class="empty">Nenhum RAS encontrado para os filtros selecionados.</td></tr>';
+  }
+  function loadContext(force) {
+    if (!allowed()) return;
+    var records = state.rasData && state.rasData.records;
+    if (state.rasReportsContextLoading && state.rasReportsContextRecords === records) return;
+    if (!force && state.rasReportsContextRecords === records) { updateOptions(); render(); return; }
+    var request = (state.rasReportsContextRequest || 0) + 1; state.rasReportsContextRequest = request;
+    state.rasReportsContextRecords = records; state.rasReportsContextMap = Object.create(null); state.rasReportsContextLoading = true; state.rasReportsContextWarning = '';
+    contextMessage('Conferindo o histórico de efetivo e lotação na data de cada RAS...', false); updateOptions(); render();
+    function current() { return state.rasReportsContextRequest === request && state.rasData && state.rasData.records === records; }
+    function fail(failure) { if (!current()) return; state.rasReportsContextLoading = false; state.rasReportsContextWarning = 'A consulta ao contexto histórico não foi concluída. As OBMs sem comprovação aparecem como “Não registrado”.'; contextMessage('O contexto histórico não pôde ser consultado. Você ainda pode gerar o relatório, com as OBMs sem comprovação identificadas como “Não registrado”.', true); updateOptions(); render(); }
+    try {
+      BNX_rpc.run.withSuccessHandler(function(payload) {
+        if (!current()) return;
+        var supplied = payload && payload.contextMap, context = Object.create(null), known = Object.create(null), mismatches = 0;
+        (records || []).forEach(function(record) { if (record && typeof record.id === 'string') known[record.id] = record; });
+        if (!payload || payload.v !== 1 || payload.kind !== 'RAS_REPORT_CONTEXT' || !Number.isSafeInteger(payload.rasRevision) || !/^[a-f0-9]{64}$/.test(payload.projectionHash) || !supplied || typeof supplied !== 'object' || Array.isArray(supplied)) { fail(); return; }
+        Object.keys(supplied).forEach(function(id) {
+          if (!known[id] || !supplied[id] || typeof supplied[id] !== 'object') return;
+          var item = supplied[id], record = known[id], basis = item.recordBasis;
+          var day = BNXRasReportsModel.date(record.dateIso) || BNXRasReportsModel.date(record.date);
+          var normalizedRg = String(record.rg).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+          if (!basis || !day || basis.dateIso !== day.iso || basis.rg !== normalizedRg || basis.cycleId !== record.cycleId || basis.hours !== record.hours || basis.situation !== record.situation) { mismatches++; return; }
+          context[id] = { membershipObmAtService: item.contextStatus === 'recorded-history' && typeof item.membershipObmAtService === 'string' ? item.membershipObmAtService : '',
+            postingObmAtService: item.contextStatus === 'recorded-history' && typeof item.postingObmAtService === 'string' ? item.postingObmAtService : '', contextStatus: item.contextStatus || '' };
+        });
+        state.rasReportsContextMap = context; state.rasReportsContextLoading = false;
+        if (mismatches) state.rasReportsContextWarning = 'Parte do histórico não corresponde à versão dos lançamentos carregados. As respectivas OBMs foram omitidas; atualize os dados de RAS para conferir novamente.';
+        contextMessage(mismatches ? state.rasReportsContextWarning : 'Histórico conferido. Valores sem comprovação permanecem como “Não registrado”. A lotação de serviços futuros ainda não está confirmada.', mismatches > 0); updateOptions(); render();
+      }).withFailureHandler(fail).getRasReportContextAdmin();
+    } catch (failure) { fail(failure); }
+  }
+  function generate(event) {
+    if (event) event.preventDefault(); if (!allowed() || state.rasReportsContextLoading) return;
+    var report;
+    try { report = BNXRasReportsModel.build(source(), filters()); } catch (failure) { error(failure.message); return; }
+    var popup = window.open('', '_blank');
+    if (!popup) { error('Permita abrir a prévia do relatório para imprimir ou salvar em PDF.'); return; }
+    popup.opener = null;
+    try { popup.document.open(); popup.document.write(BNXRasReportsPrint.buildDocument(report, { generatedAt: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) })); popup.document.close(); error(''); }
+    catch (failure) { popup.close(); error('Não foi possível preparar a prévia. Nenhum dado foi alterado.'); }
+  }
+  function initialize() {
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' });
+    var pieces = today.split('-'), y = Number(pieces[0]), m = Number(pieces[1]);
+    if (!y || !m) { var now = new Date(); y = now.getFullYear(); m = now.getMonth() + 1; }
+    node('from').value = String(y) + '-' + String(m).padStart(2, '0') + '-01';
+    node('to').value = String(y) + '-' + String(m).padStart(2, '0') + '-' + String(new Date(y, m, 0).getDate()).padStart(2, '0');
+    node('form').addEventListener('change', render); node('form').addEventListener('submit', generate);
+    node('context-refresh').addEventListener('click', function() { loadContext(true); });
+  }
+  return Object.freeze({ initialize: initialize, render: render, loadContext: loadContext, source: source, filters: filters, generate: generate });
+})();
 
     function renderRasMonthlyOffers_(data) {
       const value = data && data.totals && data.totals.offeredThisMonth;
@@ -5960,6 +6301,7 @@
       renderRasHistory();
       renderRasBalances();
       renderRasEligibility();
+      BNXRasReportsUi.render();
     }
 
     function rasPersonHtml(item) {
@@ -17152,6 +17494,7 @@
       });
     });
     initializeScalesNavigation();
+    BNXRasReportsUi.initialize();
     initializeRasNavigation();
     elements.navGuard.addEventListener('click', function() { setPage('guard'); });
     elements.navVehicles.addEventListener('click', function() { setPage('vehicles'); });
