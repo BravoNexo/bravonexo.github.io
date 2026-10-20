@@ -3139,12 +3139,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.4</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.5</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.4">v2.0.4</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.5">v2.0.5</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4327,10 +4327,10 @@
               <div id="ras-reports-cycles-wrap" hidden><p class="ras-reports-help">Marque os ciclos desejados. Um mesmo lançamento é contabilizado uma única vez.</p><div id="ras-reports-cycles" class="ras-reports-cycles" role="group" aria-label="Ciclos do relatório"></div></div>
               <fieldset class="ras-reports-statuses"><legend>Situações incluídas</legend><label class="ras-reports-check"><input id="ras-reports-scheduled" type="checkbox" checked> Agendados</label><label class="ras-reports-check"><input id="ras-reports-completed" type="checkbox" checked> Realizados</label><label class="ras-reports-check"><input id="ras-reports-canceled" type="checkbox"> Cancelados</label></fieldset>
               <div class="ras-reports-grid"><div class="field"><label for="ras-reports-membership">OBM</label><select id="ras-reports-membership"><option value="">Todos</option></select></div><div class="field"><label for="ras-reports-unit">Local do RAS (unidade)</label><select id="ras-reports-unit"><option value="">Todas</option></select></div><div class="field"><label for="ras-reports-location">Viatura / local do RAS</label><select id="ras-reports-location"><option value="">Todos</option></select></div></div>
-              <div class="ras-reports-actions"><div class="field"><label for="ras-reports-sort">Ordenar militares por</label><select id="ras-reports-sort"><option value="hours-desc">Total de horas - maior primeiro; empate por antiguidade</option><option value="name">Nome de guerra</option></select></div><label class="ras-reports-check"><input id="ras-reports-details" type="checkbox"> Incluir lançamentos detalhados no PDF</label><button id="ras-reports-generate" type="submit">Gerar prévia / PDF</button><button id="ras-reports-context-refresh" class="secondary" type="button">Atualizar contexto histórico</button></div>
-              <p class="ras-reports-help">OBM indica o vínculo administrativo comprovado na data do serviço; o local do RAS é onde ele foi prestado. O total soma as horas realizadas e agendadas selecionadas. Cancelados têm contagem e horas separadas e não aumentam o total. Este relatório não representa o saldo ajustado da fila contínua.</p>
+              <div class="ras-reports-actions"><div class="field"><label for="ras-reports-sort">Ordenar militares por</label><select id="ras-reports-sort"><option value="hours-desc">Total de horas - maior primeiro; empate por antiguidade</option><option value="name">Nome de guerra</option></select></div><label class="ras-reports-check"><input id="ras-reports-details" type="checkbox"> Incluir lançamentos detalhados no PDF</label><button id="ras-reports-generate" type="submit">Gerar prévia / PDF</button><button id="ras-reports-context-refresh" class="secondary" type="button">Conferir OBM do Cadastro</button></div>
+              <p class="ras-reports-help">OBM indica o vínculo administrativo atual no Cadastro de Militares; o local do RAS é onde ele foi prestado. O total soma as horas realizadas e agendadas selecionadas. Cancelados têm contagem e horas separadas e não aumentam o total. Este relatório não representa o saldo ajustado da fila contínua.</p>
             </form>
-            <p id="ras-reports-context" class="ras-reports-context" role="status" aria-live="polite">A OBM administrativa só é exibida quando há comprovação para a data do serviço.</p>
+            <p id="ras-reports-context" class="ras-reports-context" role="status" aria-live="polite">OBM administrativa atual, obtida do Cadastro de Militares.</p>
             <p id="ras-reports-error" role="alert" hidden></p><div id="ras-reports-warning" class="ras-reports-warning" hidden></div>
             <div id="ras-reports-totals" class="ras-reports-totals"></div>
             <div class="table-wrap" tabindex="0" role="region" aria-label="Resumo de horas de RAS por militar"><table class="ras-reports-table"><thead><tr><th>Militar / RG</th><th>OBM</th><th>Realizado</th><th>Agendado</th><th>Cancelado</th><th>Total no período</th></tr></thead><tbody id="ras-reports-rows"></tbody></table></div>
@@ -6026,14 +6026,18 @@
     Object.keys(conflicting).forEach(function(identity) { delete result[identity]; });
     return result;
   }
-  function historical(record, contextMap, key) {
-    var context = contextMap && Object.prototype.hasOwnProperty.call(contextMap, record.id) ? contextMap[record.id] : null;
-    // Only these explicit historical keys are accepted. Present-day fields are ignored.
-    if (context && context.contextStatus && context.contextStatus !== 'recorded-history') return '';
-    return text(context && context[key]) || text(record[key]);
+  function cadastroMap(source) {
+    var result = Object.create(null);
+    (Array.isArray(source.cadastroMilitares) ? source.cadastroMilitares : []).forEach(function(item) {
+      var identity = rg(item && item.rg), unit = text(item && item.administrativeUnit); if (!identity) return;
+      var entry = result[identity] || (result[identity] = { unit: '', conflict: false });
+      if (unit && entry.unit && entry.unit !== unit) entry.conflict = true;
+      if (unit && !entry.unit) entry.unit = unit;
+    });
+    return result;
   }
   function normalizeRecords(source) {
-    var input = source && Array.isArray(source.records) ? source.records : [], seen = Object.create(null), invalid = 0, duplicates = 0;
+    var input = source && Array.isArray(source.records) ? source.records : [], seen = Object.create(null), invalid = 0, duplicates = 0, cadastro = cadastroMap(source);
     var records = [];
     input.forEach(function(item) {
       if (!item || typeof item !== 'object') { invalid++; return; }
@@ -6043,12 +6047,13 @@
       if (!key) return;
       if (seen[id]) { duplicates++; return; }
       seen[id] = true;
+      var entry = cadastro[identity], unit = entry && !entry.conflict ? entry.unit : '';
+      var missing = !entry ? 'Cadastro não localizado' : entry.conflict ? 'OBM divergente no Cadastro' : 'OBM não informada no Cadastro';
       records.push({ id: id, rg: identity, rank: text(item.rank), name: text(item.name) || 'Militar não identificado',
         dateIso: day.iso, date: day.label, cycleId: text(item.cycleId), status: key, statusLabel: statusLabel(key),
         hoursUnits: Math.round(hours * 100), hours: Math.round(hours * 100) / 100,
-        membershipObmAtService: historical(item, source.contextMap, 'membershipObmAtService'),
-        postingObmAtService: historical(item, source.contextMap, 'postingObmAtService'),
-        contextStatus: source.contextMap && source.contextMap[id] && text(source.contextMap[id].contextStatus) || '',
+        // Compatibility key for existing filters; the value is now explicitly CURRENT Cadastro.
+        membershipObmAtService: unit, membershipObmLabel: unit || missing, postingObmAtService: '', contextStatus: 'cadastro-current',
         serviceUnit: text(item.serviceUnit), serviceLocation: text(item.serviceLocation), serviceRole: text(item.serviceRole) });
     });
     return { records: records, invalid: invalid, duplicates: duplicates };
@@ -6067,6 +6072,7 @@
   }
   function build(source, filters) {
     source = source || {}; filters = filters || {};
+    if (source.cadastroReady === false) throw Error('Aguarde o carregamento do Cadastro de Militares para gerar o relatório com a OBM correta.');
     var mode = filters.mode === 'cycles' ? 'cycles' : 'dates', from = date(filters.from), to = date(filters.to);
     var ids = list((Array.isArray(filters.cycleIds) ? filters.cycleIds : []).map(text));
     var selected = list((Array.isArray(filters.statuses) ? filters.statuses : ['completed', 'scheduled']).filter(function(value) { return ['completed', 'scheduled', 'canceled'].indexOf(value) >= 0; }));
@@ -6094,7 +6100,7 @@
       }
       row[item.status + 'Units'] += item.hoursUnits; totals[item.status + 'Units'] += item.hoursUnits;
       row[item.status + 'Count']++; totals[item.status + 'Count']++; row.records++;
-      row.membershipObms.push(item.membershipObmAtService || 'Não registrado'); row.postingObms.push(item.postingObmAtService || 'Não registrado');
+      row.membershipObms.push(item.membershipObmAtService || item.membershipObmLabel); row.postingObms.push(item.postingObmAtService || '');
       row.serviceUnits.push(item.serviceUnit || 'Não informado'); row.serviceLocations.push(item.serviceLocation || 'Não informado');
       if (!item.membershipObmAtService) totals.unknownMembership++;
       if (!item.postingObmAtService) totals.unknownPosting++;
@@ -6118,9 +6124,7 @@
     totals.militaries = summary.length; finish(totals);
     var cycleLabels = ids.map(function(id) { var cycle = opt.cycles.find(function(value) { return value.id === id; }); return cycle ? cycle.label : id; });
     var warnings = [];
-    if (text(source.contextWarning)) warnings.push(text(source.contextWarning));
-    if (totals.unknownMembership) warnings.push('Há registros sem comprovação da OBM administrativa na data do RAS. Eles aparecem como “Não registrado”; o cadastro atual não foi usado para inferir o passado.');
-    if (details.some(function(item) { return item.contextStatus === 'future-not-confirmed'; })) warnings.push('A OBM administrativa de serviços futuros ainda não está confirmada. Não foi feita previsão a partir do cadastro atual.');
+    if (totals.unknownMembership) warnings.push(totals.unknownMembership + ' lançamento(s) com Cadastro não localizado ou OBM administrativa não informada/divergente. Confira o Cadastro de Militares; nenhuma OBM foi presumida.');
     if (totals.unknownSeniority) warnings.push(totals.unknownSeniority + ' militar(es) sem antiguidade informada. Em empates de horas, vêm após os de antiguidade informada; entre posições não diferenciadas, mantém-se a ordem dos registros, sem usar nome ou RG como antiguidade.');
     if (normalized.invalid) warnings.push(normalized.invalid + ' registro(s) com identificação, data ou horas inválidas não puderam ser incluídos.');
     if (normalized.duplicates) warnings.push(normalized.duplicates + ' repetição(ões) de identificador foram desconsideradas para evitar contagem duplicada.');
@@ -6129,7 +6133,7 @@
     return { kind: 'RAS_PERIOD_REPORT_V1', periodMode: mode, periodLabel: mode === 'cycles' ? 'Ciclos: ' + cycleLabels.join(' / ') : from.label + ' a ' + to.label,
       filters: { mode: mode, from: from && from.iso || '', to: to && to.iso || '', cycleIds: ids, statuses: selected, sort: sort, includeDetails: filters.includeDetails === true },
       filterLabels: filterLabels, statusLabel: selected.map(statusLabel).join(' + '), summary: summary, details: details, totals: totals, warnings: warnings,
-      accountingNote: 'Total do período = horas realizadas + agendadas selecionadas. Cancelados são exibidos separadamente e não somam ao total. Não é o saldo ajustado da fila contínua.' };
+      accountingNote: 'OBM: vínculo administrativo atual do Cadastro de Militares. Total do período = horas realizadas + agendadas selecionadas. Cancelados são exibidos separadamente e não somam ao total. Não é o saldo ajustado da fila contínua.' };
   }
   function hours(value) { return Number(value || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + 'h'; }
   return Object.freeze({ build: build, options: options, date: date, status: status, hours: hours, UNKNOWN: UNKNOWN });
@@ -6195,7 +6199,7 @@
     var summary = report.summary.map(function(row) { return '<tr><td><strong>' + e(identity(row)) + '</strong><small>RG ' + e(row.rg) + '</small>' + (row.seniorityOrder === null ? '<small>Antiguidade não informada</small>' : '') + '</td><td>' + e(row.membershipObms.join(' / ')) + '</td><td class="rr-number">' + e(hours(row.completedHours)) + '<small>' + row.completedCount + ' RAS</small></td><td class="rr-number">' + e(hours(row.scheduledHours)) + '<small>' + row.scheduledCount + ' RAS</small></td><td class="rr-number rr-canceled">' + e(hours(row.canceledHours)) + '<small>' + row.canceledCount + ' RAS</small></td><td class="rr-number"><strong>' + e(hours(row.totalHours)) + '</strong></td></tr>'; }).join('');
     var groups = '<section class="rr-group"><h2>RESUMO POR MILITAR<span class="rr-continuation"></span></h2><table><colgroup><col style="width:32%"><col style="width:24%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"></colgroup><thead><tr><th>Militar / RG</th><th>OBM</th><th>Realizado</th><th>Agendado</th><th>Cancelado</th><th>Total</th></tr></thead><tbody>' + summary + '</tbody></table></section>';
     if (report.filters.includeDetails) {
-      var details = report.details.map(function(row) { return '<tr><td>' + e(row.date) + '<small>' + e(row.cycleId || 'Sem ciclo registrado') + '</small></td><td><strong>' + e(identity(row)) + '</strong><small>RG ' + e(row.rg) + '</small></td><td>' + e(row.membershipObmAtService || 'Não registrado') + '</td><td>' + e(row.serviceUnit || 'Não informado') + '<small>' + e(row.serviceLocation || 'Local não informado') + '</small></td><td>' + e(row.serviceRole || 'Não informado') + '</td><td>' + e(row.statusLabel) + '</td><td class="rr-number">' + e(hours(row.hours)) + '</td></tr>'; }).join('');
+      var details = report.details.map(function(row) { return '<tr><td>' + e(row.date) + '<small>' + e(row.cycleId || 'Sem ciclo registrado') + '</small></td><td><strong>' + e(identity(row)) + '</strong><small>RG ' + e(row.rg) + '</small></td><td>' + e(row.membershipObmAtService || row.membershipObmLabel || 'Cadastro não localizado') + '</td><td>' + e(row.serviceUnit || 'Não informado') + '<small>' + e(row.serviceLocation || 'Local não informado') + '</small></td><td>' + e(row.serviceRole || 'Não informado') + '</td><td>' + e(row.statusLabel) + '</td><td class="rr-number">' + e(hours(row.hours)) + '</td></tr>'; }).join('');
       groups += '<section class="rr-group"><h2>LANÇAMENTOS DO PERÍODO<span class="rr-continuation"></span></h2><table><colgroup><col style="width:14%"><col style="width:29%"><col style="width:19%"><col style="width:17%"><col style="width:9%"><col style="width:7%"><col style="width:5%"></colgroup><thead><tr><th>Data / ciclo</th><th>Militar / RG</th><th>OBM</th><th>Local do RAS</th><th>Função</th><th>Situação</th><th>Horas</th></tr></thead><tbody>' + details + '</tbody></table></section>';
     }
     var warnings = report.warnings.length ? '<p class="rr-warning">' + report.warnings.map(e).join(' ') + '</p>' : '';
@@ -6210,7 +6214,11 @@
 })();
     var BNXRasReportsUi = (function createRasReportsUi() {
   function node(id) { return document.getElementById('ras-reports-' + id); }
-  function source() { return { records: state.rasData && state.rasData.records || [], cycles: state.rasData && state.rasData.cycles || [], eligibility: state.rasData && state.rasData.eligibility || [], queue: state.rasData && state.rasData.queue || [], contextMap: state.rasReportsContextMap || Object.create(null), contextWarning: state.rasReportsContextWarning || '' }; }
+  function source() {
+    var cadastro = typeof cadastroMilitaryData === 'function' ? cadastroMilitaryData() : Array.isArray(state.cadastroData) ? state.cadastroData : state.data || [];
+    return { records: state.rasData && state.rasData.records || [], cycles: state.rasData && state.rasData.cycles || [], eligibility: state.rasData && state.rasData.eligibility || [], queue: state.rasData && state.rasData.queue || [], cadastroMilitares: cadastro,
+      cadastroReady: Boolean(state.generatedAt) || Array.isArray(cadastro) && cadastro.length > 0 };
+  }
   function allowed() { var workspace = document.getElementById('central-workspace'); return state.page === 'ras' && state.rasTab === 'reports' && state.rasLoaded && workspace && !workspace.hidden; }
   function filters() {
     var form = node('form'), checked = form.querySelector('input[name="ras-report-period"]:checked');
@@ -6224,7 +6232,7 @@
   function updateOptions() {
     var options = BNXRasReportsModel.options(source());
     [['membership', options.membershipObms], ['unit', options.serviceUnits], ['location', options.serviceLocations]].forEach(function(entry) {
-      var select = node(entry[0]), value = select.value; select.innerHTML = optionHtml(entry[1], entry[0] === 'unit' || entry[0] === 'location' ? 'Não informado' : 'Não registrado');
+      var select = node(entry[0]), value = select.value; select.innerHTML = optionHtml(entry[1], entry[0] === 'unit' || entry[0] === 'location' ? 'Não informado' : 'Cadastro sem OBM / não localizado');
       select.value = Array.from(select.options).some(function(option) { return option.value === value; }) ? value : '';
     });
     var chosen = Array.from(node('cycles').querySelectorAll('input:checked')).map(function(input) { return input.value; });
@@ -6236,7 +6244,7 @@
     if (!allowed()) return;
     var selection = filters(); node('dates').hidden = selection.mode !== 'dates'; node('cycles-wrap').hidden = selection.mode !== 'cycles';
     node('context-refresh').disabled = state.rasReportsContextLoading === true;
-    node('generate').disabled = state.rasReportsContextLoading === true;
+    node('generate').disabled = state.rasReportsContextLoading === true || source().cadastroReady === false;
     var report;
     try { report = BNXRasReportsModel.build(source(), selection); error(''); }
     catch (failure) { error(failure.message); node('rows').innerHTML = ''; node('totals').innerHTML = ''; node('warning').hidden = true; node('count').textContent = 'Confira os filtros'; return; }
@@ -6248,34 +6256,10 @@
   }
   function loadContext(force) {
     if (!allowed()) return;
-    var records = state.rasData && state.rasData.records;
-    if (state.rasReportsContextLoading && state.rasReportsContextRecords === records) return;
-    if (!force && state.rasReportsContextRecords === records) { updateOptions(); render(); return; }
-    var request = (state.rasReportsContextRequest || 0) + 1; state.rasReportsContextRequest = request;
-    state.rasReportsContextRecords = records; state.rasReportsContextMap = Object.create(null); state.rasReportsContextLoading = true; state.rasReportsContextWarning = '';
-    contextMessage('Conferindo a OBM administrativa na data de cada RAS...', false); updateOptions(); render();
-    function current() { return state.rasReportsContextRequest === request && state.rasData && state.rasData.records === records; }
-    function fail(failure) { if (!current()) return; state.rasReportsContextLoading = false; state.rasReportsContextWarning = 'A consulta ao contexto histórico não foi concluída. As OBMs sem comprovação aparecem como “Não registrado”.'; contextMessage('O contexto histórico não pôde ser consultado. Você ainda pode gerar o relatório, com as OBMs sem comprovação identificadas como “Não registrado”.', true); updateOptions(); render(); }
-    try {
-      BNX_rpc.run.withSuccessHandler(function(payload) {
-        if (!current()) return;
-        var supplied = payload && payload.contextMap, context = Object.create(null), known = Object.create(null), mismatches = 0;
-        (records || []).forEach(function(record) { if (record && typeof record.id === 'string') known[record.id] = record; });
-        if (!payload || payload.v !== 1 || payload.kind !== 'RAS_REPORT_CONTEXT' || !Number.isSafeInteger(payload.rasRevision) || !/^[a-f0-9]{64}$/.test(payload.projectionHash) || !supplied || typeof supplied !== 'object' || Array.isArray(supplied)) { fail(); return; }
-        Object.keys(supplied).forEach(function(id) {
-          if (!known[id] || !supplied[id] || typeof supplied[id] !== 'object') return;
-          var item = supplied[id], record = known[id], basis = item.recordBasis;
-          var day = BNXRasReportsModel.date(record.dateIso) || BNXRasReportsModel.date(record.date);
-          var normalizedRg = String(record.rg).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
-          if (!basis || !day || basis.dateIso !== day.iso || basis.rg !== normalizedRg || basis.cycleId !== record.cycleId || basis.hours !== record.hours || basis.situation !== record.situation) { mismatches++; return; }
-          context[id] = { membershipObmAtService: item.contextStatus === 'recorded-history' && typeof item.membershipObmAtService === 'string' ? item.membershipObmAtService : '',
-            postingObmAtService: item.contextStatus === 'recorded-history' && typeof item.postingObmAtService === 'string' ? item.postingObmAtService : '', contextStatus: item.contextStatus || '' };
-        });
-        state.rasReportsContextMap = context; state.rasReportsContextLoading = false;
-        if (mismatches) state.rasReportsContextWarning = 'Parte do histórico não corresponde à versão dos lançamentos carregados. As respectivas OBMs foram omitidas; atualize os dados de RAS para conferir novamente.';
-        contextMessage(mismatches ? state.rasReportsContextWarning : 'Histórico conferido. A OBM sem comprovação permanece como “Não registrado”. O vínculo administrativo de serviços futuros ainda não está confirmado.', mismatches > 0); updateOptions(); render();
-      }).withFailureHandler(fail).getRasReportContextAdmin();
-    } catch (failure) { fail(failure); }
+    state.rasReportsContextLoading = false; state.rasReportsContextMap = null; state.rasReportsContextWarning = '';
+    var ready = source().cadastroReady;
+    contextMessage(ready ? 'OBM obtida do Cadastro de Militares: vínculo administrativo atual. O local original dos RAS não foi alterado.' : 'Aguardando o carregamento do Cadastro de Militares para informar a OBM correta.', !ready);
+    updateOptions(); render();
   }
   function generate(event) {
     if (event) event.preventDefault(); if (!allowed() || state.rasReportsContextLoading) return;
