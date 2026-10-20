@@ -651,6 +651,32 @@
     .wing-card { overflow: hidden; border: 1px solid #d7e2e8; border-radius: 11px; background: #fff; }
     .wing-head { display: flex; align-items: center; gap: 9px; padding: 13px 14px; color: #fff; background: #244f69; }
     .wing-head strong { font-size: 14px; }
+    /* Same exact palette as the shared image/PDF, kept separate from leave-status colors. */
+    #wings-map-page [data-map-wing="1"], #wings-map-page [data-map-column="ala-1"], #wings-map-page [data-wings-away-target="ala-1"], #wings-map-page [data-origin-wing="1"] { --wing-ink:#28566e; --wing-pale:#edf5f9; --wing-head:#d3e7f1; }
+    #wings-map-page [data-map-wing="2"], #wings-map-page [data-map-column="ala-2"], #wings-map-page [data-wings-away-target="ala-2"], #wings-map-page [data-origin-wing="2"] { --wing-ink:#446246; --wing-pale:#f1f6ee; --wing-head:#dfead8; }
+    #wings-map-page [data-map-wing="3"], #wings-map-page [data-map-column="ala-3"], #wings-map-page [data-wings-away-target="ala-3"], #wings-map-page [data-origin-wing="3"] { --wing-ink:#705727; --wing-pale:#faf6ec; --wing-head:#f0e5cb; }
+    #wings-map-page [data-map-wing="4"], #wings-map-page [data-map-column="ala-4"], #wings-map-page [data-wings-away-target="ala-4"], #wings-map-page [data-origin-wing="4"] { --wing-ink:#605076; --wing-pale:#f5f0f9; --wing-head:#e7dcf0; }
+    #wings-map-page .wing-head[data-map-column] { color:var(--wing-ink); background:var(--wing-head); }
+    #wings-map-page .wing-head[data-map-column] span { color:var(--wing-ink); }
+    #wings-map-page .map-assignment[data-map-wing] { background:var(--wing-pale); }
+    #wings-map-page .map-assignment[data-map-wing] > .map-person.map-status-active,
+    #wings-map-page .wings-ceded-column[data-map-wing] .map-person.map-status-active,
+    #wings-map-page .wings-available-column > .wings-available-list > .map-person.map-status-active,
+    #wings-map-page #wings-map-content .map-person[data-origin-wing].map-status-active { color:var(--wing-ink); background:var(--wing-pale); border-color:var(--wing-head); box-shadow:inset 3px 0 var(--wing-ink); }
+    #wings-map-page .wings-ceded-column[data-map-wing], #wings-map-page .wings-available-column[data-map-wing] { background:var(--wing-pale); }
+    #wings-map-page .wings-ceded-column[data-map-wing] > header, #wings-map-page .wings-available-column[data-map-wing] > header { color:var(--wing-ink); }
+    #wings-map-page .wings-away-column[data-wings-away-target^="ala-"]:not(.away-drop-active) { background:var(--wing-pale); }
+    #wings-map-page .wings-away-column[data-wings-away-target^="ala-"] > header { color:var(--wing-ink); }
+    .wings-available-board-grid { margin-top:8px; }
+    .wings-available-label { grid-column:1 / span 2; display:grid; align-content:center; gap:4px; padding:10px 8px; background:#e8eef3; color:#38546a; text-align:center; }
+    .wings-available-label strong { font-size:10px; text-transform:uppercase; }
+    .wings-available-label span { font-size:9px; }
+    .wings-available-column { min-width:0; padding:6px; border-left:1px solid #d7e2e8; }
+    .wings-available-column > header { display:flex; gap:8px; justify-content:space-between; margin:0 0 6px; font-size:10px; }
+    .wings-available-list { display:grid; gap:5px; }
+    .wings-available-list .map-person { width:100%; min-width:0; min-height:36px; }
+    #wings-map-page .wings-ceded-list { grid-auto-rows:minmax(36px,auto); }
+
     .wing-head span { margin-left: auto; color: rgba(255,255,255,.78); font-size: 10px; }
     .wing-list { display: grid; }
     .map-board-grid { --map-vehicle-column: 104px; --map-function-column: 72px; --map-wing-column: 210px; display: grid; width: max-content; grid-template-columns: var(--map-vehicle-column) var(--map-function-column) repeat(var(--wings-visible), var(--map-wing-column)); overflow: hidden; border: 1px solid #d7e2e8; border-radius: 11px; background: #fff; }
@@ -3083,12 +3109,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.1</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.2</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.1">v2.0.1</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.2">v2.0.2</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -3478,7 +3504,7 @@
           <div class="stat"><span>Fora da escala</span><strong id="wings-stat-unavailable">—</strong><small>entre Alas e Expediente</small></div>
         </section>
 
-        <div class="vacation-help">Conectado diretamente ao “Mapa das Alas - 1º GBM”. O mapa já abre em edição direta: arraste os cartões entre Alas, Cedidos, Expediente e “Sem função”; as mudanças só são gravadas ao clicar em “Aplicar alterações”. As três vagas de Cedidos de cada Ala ficam fora da escala. “Incluir DBM 1/1” considera a OBM atual, e “Mostrar Oficiais” considera a classificação do cadastro. Ao iniciar um afastamento vigente que retira da escala, o militar libera a função e vai para “Afastados do efetivo”; no retorno, vai para “Sem função”, sem desfazer a distribuição que já estiver pronta. A DTS com restrição de 24h permite permanecer ou ser alocado no Expediente, se não houver outro afastamento impeditivo, sem liberar o serviço de 24h. Para devolver ao 1º GBM um militar cedido ao DBM 1/1, use o comando próprio da faixa superior.</div>
+        <div class="vacation-help">Conectado diretamente ao “Mapa das Alas - 1º GBM”. O mapa já abre em edição direta: arraste os cartões entre Alas, Cedidos, Expediente e “Sem função”; as mudanças só são gravadas ao clicar em “Aplicar alterações”. Cedidos de cada Ala ficam fora da escala e não têm limite fixo de vagas. “Incluir DBM 1/1” considera a OBM atual, e “Mostrar Oficiais” considera a classificação do cadastro. Ao iniciar um afastamento vigente que retira da escala, o militar libera a função e vai para “Afastados do efetivo”; no retorno, volta a “Disponíveis da Ala” de origem, sem substituir militares nem escolher uma função automaticamente. A DTS com restrição de 24h permite permanecer ou ser alocado no Expediente, se não houver outro afastamento impeditivo, sem liberar o serviço de 24h. Para devolver ao 1º GBM um militar cedido ao DBM 1/1, use o comando próprio da faixa superior.</div>
 
         <section class="map-toolbar" aria-label="Filtros do Mapa das Alas">
           <div class="field"><label for="wings-map-search">Localizar militar ou função</label><input id="wings-map-search" type="search" placeholder="Nome, RG, viatura, função ou setor" autocomplete="off"></div>
@@ -8263,12 +8289,13 @@
           elements.wingsMapUpdated.textContent = payload.generatedAt ? 'Atualizado em ' + payload.generatedAt : 'Mapa atualizado';
           const sync = payload.sync || {};
           const synchronizedCount = Number(sync.movedToAway || 0) + Number(sync.returnedToUnassigned || 0);
+          const returnedToWing = Number(sync.returnedToWing || 0);
           const syncWarnings = Array.isArray(sync.warnings) ? sync.warnings : [];
           if (syncWarnings.length) {
             elements.wingsMapError.textContent = 'Atenção na sincronização automática: ' + syncWarnings.join(' ');
             elements.wingsMapError.hidden = false;
           } else if (synchronizedCount && !pendingOfficeRg) {
-            showToast(synchronizedCount + (synchronizedCount === 1 ? ' movimentação automática aplicada no mapa.' : ' movimentações automáticas aplicadas no mapa.'));
+            showToast(synchronizedCount + (synchronizedCount === 1 ? ' movimentação automática aplicada no mapa.' : ' movimentações automáticas aplicadas no mapa.') + (returnedToWing ? ' Retorno à Ala de origem: ' + returnedToWing + '.' : ''));
           }
           renderWingsMap();
           if (pendingOfficeRg) {
@@ -8370,6 +8397,51 @@
         className: '',
         label: normalize(person.situation) === 'ativo' ? 'Disponível' : (person.situation + ' • disponível')
       };
+    }
+
+    function wingsPersonOriginWing(person) {
+      const raw = person && person.originWing;
+      const value = typeof raw === 'number' || typeof raw === 'string' && /^[1-4]$/.test(raw) ? Number(raw) : 0;
+      return Number.isInteger(value) && value >= 1 && value <= 4 ? value : 0;
+    }
+
+    function wingsOriginColorAttributes(person, slot) {
+      const origin = wingsPersonOriginWing(person);
+      return origin && slot && slot.kind === 'pool' ? ' data-origin-wing="' + origin + '"' : '';
+    }
+
+    function wingsOriginAvailable(payload, number, term) {
+      const wing = (payload && payload.wings || []).find(function(item) { return Number(item.number) === Number(number); });
+      const declared = {};
+      (wing && wing.available || []).forEach(function(person) { declared[canonicalMilitaryRg(person && person.rg)] = true; });
+      const seen = {};
+      return wingsScopedUnassigned().filter(function(person) {
+        const rg = canonicalMilitaryRg(person.rg), origin = wingsPersonOriginWing(person);
+        if (!rg || seen[rg] || !(origin === Number(number) || !origin && declared[rg])) return false;
+        seen[rg] = true;
+        return !term || wingsPersonMatches(person, term);
+      });
+    }
+
+    function renderWingsAvailableBoard(payload, visibleWings, term) {
+      if (!(visibleWings || []).length) return '';
+      const columns = visibleWings.map(function(wing) {
+        const people = wingsOriginAvailable(payload, wing.number, term);
+        const cards = people.map(function(person) {
+          return wingsPersonHtml(person, false, { kind: 'pool', location: 'Disponíveis • Ala ' + wing.number, wing: wing.number });
+        }).join('');
+        return '<section class="wings-available-column" data-map-wing="' + escapeHtml(wing.number) + '" aria-label="Disponíveis da Ala ' + escapeHtml(wing.number) + '"><header><strong>Ala ' + escapeHtml(wing.number) + '</strong><span>' + people.length + '</span></header><div class="wings-available-list">' + (cards || '<div class="map-empty-mini">Nenhum militar disponível sem função.</div>') + '</div></section>';
+      }).join('');
+      return '<div class="map-board-grid wings-available-board-grid" style="--wings-visible:' + visibleWings.length + '" aria-label="Disponíveis sem função, por Ala de origem"><div class="wings-available-label"><strong>Disponíveis da Ala</strong><span>Distribuição pendente</span></div>' + columns + '</div>';
+    }
+
+    function wingsIsDedicatedCededMovement(payload, item) {
+      if (!item || item.group !== 'CEDIDOS/APOIO OPERACIONAL' || !Array.isArray(payload && payload.ceded)) return false;
+      return payload.ceded.some(function(column) {
+        return (column.slots || []).some(function(slot) {
+          return Number(slot.sourceRow) === Number(item.sourceRow) && Number(slot.sourceColumn) === Number(item.sourceColumn);
+        });
+      });
     }
 
     function wingsPersonColorClass(person) {
@@ -8514,49 +8586,46 @@
       return '<div class="map-board-grid wings-away-board-grid' + (hasSupportRow ? ' wings-away-board-with-support' : '') + '" style="--wings-visible:' + Math.max(1, wingColumns) + '" aria-label="Afastados vigentes do efetivo"><div class="wings-away-label"><strong>Afastados do efetivo</strong><span>' + escapeHtml(totalLabel) + '</span></div>' + columnsHtml + '</div>';
     }
 
-    function renderWingsCededBoard(payload, visibleWings, term) {
-      const cededByWing = {};
-      (payload && payload.ceded || []).forEach(function(column) {
-        cededByWing[String(column.number)] = column;
+    function wingsCededSlots(column) {
+      const slots = (column.slots || []).slice().sort(function(first, second) {
+        return Number(first.sourceRow) - Number(second.sourceRow);
       });
+      // One append target is enough: filling it creates the next one locally,
+      // so a batch can add any number without changing the occupied positions.
+      if (!slots.some(function(slot) { return !slot.person; })) {
+        const sourceRow = Math.max(45, ...slots.map(function(slot) { return Number(slot.sourceRow) || 0; })) + 1;
+        slots.push({ wing: Number(column.number), slotNumber: sourceRow - 34,
+          sourceRow: sourceRow, sourceColumn: Number(column.number) + 2,
+          slotKey: 'CED-ALA-' + column.number + '-R' + sourceRow + '-C' + (Number(column.number) + 2), person: null });
+      }
+      column.slots = slots;
+      return slots;
+    }
+
+    function renderWingsCededBoard(payload, visibleWings, term) {
+      const ceded = payload.ceded || (payload.ceded = []);
+      const cededByWing = {};
+      ceded.forEach(function(column) { cededByWing[String(column.number)] = column; });
       const columns = (visibleWings || []).map(function(wing) {
         const number = Number(wing.number);
-        const sourceColumn = number + 2;
-        return cededByWing[String(number)] || {
-          number: number,
-          slots: [35, 36, 37].map(function(sourceRow) {
-            return {
-              wing: number,
-              slotNumber: sourceRow - 34,
-              sourceRow: sourceRow,
-              sourceColumn: sourceColumn,
-              slotKey: 'CED-ALA-' + number + '-R' + sourceRow + '-C' + sourceColumn,
-              person: null
-            };
-          })
-        };
+        let column = cededByWing[String(number)];
+        if (!column) { column = { number: number, slots: [] }; ceded.push(column); }
+        return column;
       });
       if (!columns.length) return '';
       const columnsHtml = columns.map(function(column) {
-        const slots = (column.slots || []).slice().sort(function(first, second) {
-          return Number(first.sourceRow) - Number(second.sourceRow);
-        });
+        const slots = wingsCededSlots(column);
         const occupied = slots.filter(function(slot) { return Boolean(slot.person) && !wingsIsFormerPerson(slot.person); }).length;
         const slotsHtml = slots.map(function(slot) {
-          const swapSlot = {
-            kind: 'ceded',
-            location: 'Cedidos • Ala ' + column.number,
-            wing: column.number,
-            row: slot.sourceRow,
-            column: slot.sourceColumn,
-            vacancyLabel: 'VAGA PARA CEDIDO'
-          };
+          const swapSlot = { kind: 'ceded', location: 'Cedidos • Ala ' + column.number,
+            wing: column.number, row: slot.sourceRow, column: slot.sourceColumn,
+            vacancyLabel: 'ADICIONAR CEDIDO' };
           const filtered = Boolean(term && slot.person && !wingsIsFormerPerson(slot.person) && !wingsPersonMatches(slot.person, term));
           return '<div class="wings-ceded-slot' + (filtered ? ' is-filtered' : '') + '" data-ceded-slot="' + escapeHtml(slot.slotNumber || Number(slot.sourceRow) - 34) + '">' + wingsPersonHtml(slot.person, false, swapSlot) + '</div>';
         }).join('');
-        return '<section class="wings-ceded-column" data-map-column="cedidos-ala-' + escapeHtml(column.number) + '" aria-label="Cedidos da Ala ' + escapeHtml(column.number) + '"><header><strong>Ala ' + escapeHtml(column.number) + '</strong><span>' + occupied + '/3</span></header><div class="wings-ceded-list">' + slotsHtml + '</div></section>';
+        return '<section class="wings-ceded-column" data-map-column="cedidos-ala-' + escapeHtml(column.number) + '" data-map-wing="' + escapeHtml(column.number) + '" aria-label="Cedidos da Ala ' + escapeHtml(column.number) + '"><header><strong>Ala ' + escapeHtml(column.number) + '</strong><span>' + occupied + (occupied === 1 ? ' militar' : ' militares') + '</span></header><div class="wings-ceded-list">' + slotsHtml + '</div></section>';
       }).join('');
-      return '<div class="map-board-grid wings-ceded-board-grid" style="--wings-visible:' + columns.length + '" aria-label="Cedidos e apoio operacional, fora da escala"><div class="wings-ceded-label"><strong>Cedidos / Apoio Operacional</strong><span>Fora da escala • 3 vagas por Ala</span></div>' + columnsHtml + '</div>';
+      return '<div class="map-board-grid wings-ceded-board-grid" style="--wings-visible:' + columns.length + '" aria-label="Cedidos e apoio operacional, fora da escala"><div class="wings-ceded-label"><strong>Cedidos / Apoio Operacional</strong><span>Fora da escala • sem limite de vagas</span></div>' + columnsHtml + '</div>';
     }
 
     function wingsSlotsEqual(first, second) {
@@ -8633,7 +8702,7 @@
       const draggable = hasSwapSlot && state.wingsSwapMode ? ' draggable="true"' : '';
       const identity = wingsPersonIdentity(person);
       const accessibleName = identity + (officeRestriction ? ' • DTS com restrição ao serviço de 24h; disponível para Expediente' : '');
-      return '<button type="button" class="map-person ' + escapeHtml(wingsPersonColorClass(person)) + swapClass + selectedClass + precariousClass + (officeRestriction ? ' map-person-office-restricted' : '') + '" data-wings-rg="' + escapeHtml(person.rg || '') + '" title="' + escapeHtml(accessibleName) + '" aria-label="' + escapeHtml(accessibleName) + '"' + swapAttributes + draggable + '>' +
+      return '<button type="button" class="map-person ' + escapeHtml(wingsPersonColorClass(person)) + swapClass + selectedClass + precariousClass + (officeRestriction ? ' map-person-office-restricted' : '') + '"' + wingsOriginColorAttributes(person, swapSlot) + ' data-wings-rg="' + escapeHtml(person.rg || '') + '" title="' + escapeHtml(accessibleName) + '" aria-label="' + escapeHtml(accessibleName) + '"' + swapAttributes + draggable + '>' +
         '<span class="map-person-name">' + escapeHtml(identity) + '</span>' +
         stateHtml +
         '</button>';
@@ -8988,10 +9057,7 @@
           }, 0)
         : 0;
       const originalDedicatedCededTotal = (payload.movements || []).filter(function(item) {
-        return item.group === 'CEDIDOS/APOIO OPERACIONAL' &&
-          item.person && !wingsIsFormerPerson(item.person) &&
-          Number(item.sourceRow) >= 35 && Number(item.sourceRow) <= 37 &&
-          [3, 4, 5, 6].indexOf(Number(item.sourceColumn)) !== -1;
+        return wingsIsDedicatedCededMovement(payload, item) && item.person && !wingsIsFormerPerson(item.person);
       }).length;
       const cededTotal = Array.isArray(payload.ceded)
         ? Math.max(0, Number(summary.cededTotal || 0) - originalDedicatedCededTotal + dedicatedCededTotal)
@@ -9051,11 +9117,12 @@
       const operationalBoardHtml = visibleWings.length
         ? '<div class="map-board-grid" style="--wings-visible:' + visibleWings.length + '">' + gridHeaders + (gridBody || '<div class="map-empty-mini">Nenhum militar encontrado.</div>') + '</div>'
         : '';
+      const availableBoardHtml = renderWingsAvailableBoard(payload, visibleWings, term);
       const cededBoardHtml = renderWingsCededBoard(payload, visibleCededWings, term);
       const awayBoardHtml = showAwayBoard
         ? renderWingsAwayBoard(payload, visibleWings, term, area === 'expediente')
         : '';
-      elements.wingsMapBoard.innerHTML = operationalBoardHtml + cededBoardHtml + awayBoardHtml;
+      elements.wingsMapBoard.innerHTML = operationalBoardHtml + availableBoardHtml + cededBoardHtml + awayBoardHtml;
       if (showAwayBoard) {
         visiblePeople += wingsAwayColumns(payload, visibleWings, term, area === 'expediente').reduce(function(total, column) {
           return total + column.people.length;
@@ -9068,14 +9135,17 @@
         }).length;
       }, 0);
 
-      const unassignedAll = wingsScopedUnassigned();
+      const originAvailableRgs = {};
+      visibleWings.forEach(function(wing) { wingsOriginAvailable(payload, wing.number, '').forEach(function(person) { originAvailableRgs[canonicalMilitaryRg(person.rg)] = true; }); });
+      visiblePeople += visibleWings.reduce(function(total, wing) { return total + wingsOriginAvailable(payload, wing.number, term).length; }, 0);
+      const unassignedAll = wingsScopedUnassigned().filter(function(person) { return !originAvailableRgs[canonicalMilitaryRg(person.rg)]; });
       const unassignedVisible = unassignedAll.filter(function(person) { return !term || wingsPersonMatches(person, term); });
       elements.wingsUnassigned.hidden = !state.wingsSwapMode;
       elements.wingsUnassigned.classList.toggle('is-empty', unassignedAll.length === 0);
       elements.wingsUnassignedCount.textContent = unassignedAll.length + (unassignedAll.length === 1 ? ' militar' : ' militares');
       elements.wingsUnassignedList.innerHTML = unassignedVisible.length
         ? unassignedVisible.map(function(person) { return wingsPersonHtml(person, false, { kind: 'pool', location: 'Sem função' }); }).join('')
-        : '<div class="map-unassigned-empty">' + (unassignedAll.length ? 'Nenhum militar sem função corresponde à busca.' : 'Distribuição completa.<br>Nenhum militar disponível sem função.') + '</div>';
+        : '<div class="map-unassigned-empty">' + (unassignedAll.length ? 'Nenhum militar sem função corresponde à busca.' : 'Nenhum militar nesta área.<br>Os disponíveis com Ala de origem aparecem nas respectivas colunas.') + '</div>';
 
       const showOffice = area === 'all' || area === 'expediente';
       elements.wingsOfficeSection.hidden = !showOffice;
@@ -9106,9 +9176,7 @@
 
       const movements = (payload.movements || []).filter(function(item) {
         if (item && item.person && wingsIsFormerPerson(item.person)) return false;
-        const isDedicatedCeded = item.group === 'CEDIDOS/APOIO OPERACIONAL' &&
-          Number(item.sourceRow) >= 35 && Number(item.sourceRow) <= 37 &&
-          [3, 4, 5, 6].indexOf(Number(item.sourceColumn)) !== -1;
+        const isDedicatedCeded = wingsIsDedicatedCededMovement(payload, item);
         if (isDedicatedCeded && Array.isArray(payload.ceded)) return false;
         const isCurrentAway = item.restriction24hOnly !== true && normalize(item.group).indexOf('afastamento') >= 0 &&
           item.person && item.person.currentLeaveAffectsScale === true;
@@ -20330,7 +20398,7 @@ installCallPlanOptions();
     return selected;
   }
   function groupSelected(group, sections) {
-    const key = ({ 'CEDIDOS / APOIO OPERACIONAL': 'ceded', 'AFASTAMENTOS': 'away', 'RESTRIÇÕES DE SERVIÇO': 'restrictions', 'OUTROS VÍNCULOS': 'other' })[group.title];
+    const key = ({ 'CEDIDOS / APOIO OPERACIONAL': 'ceded', 'AFASTAMENTOS': 'away', 'RESTRIÇÕES DE SERVIÇO': 'restrictions', 'OUTROS VÍNCULOS': 'other', 'DISPONÍVEIS DA ALA • DISTRIBUIÇÃO PENDENTE': 'unassigned' })[group.title];
     return !key || sections[key];
   }
   function isoDate(value) {
@@ -20430,8 +20498,22 @@ installCallPlanOptions();
       else if (group.includes('afastamento')) add(away, movement.person, movement.location, movement.person && movement.person.returnDate ? 'Retorno previsto: ' + shortDate(movement.person.returnDate) : 'Retorno não informado');
       else add(other, movement.person, movement.location, '');
     });
-    model.groups = [ceded, away, restrictions, other].filter(group => group.columns.some(column => column.length));
-    model.unassigned = list(payload.unassigned).filter(function(person) { return person && person.externalHealth !== true; }).map(personModel).filter(Boolean);
+    const available = { title: 'DISPONÍVEIS DA ALA • DISTRIBUIÇÃO PENDENTE', columns: [[], [], [], [], []] };
+    const poolSeen = new Set();
+    model.unassigned = [];
+    list(payload.unassigned).forEach(function(person) {
+      if (!person || person.externalHealth === true) return;
+      const data = personModel(person);
+      if (!data) return;
+      const key = clean(data.rg).replace(/\D/g, '') || data.identity;
+      if (poolSeen.has(key)) return;
+      poolSeen.add(key);
+      const raw = person.originWing;
+      const origin = typeof raw === 'number' || typeof raw === 'string' && /^[1-4]$/.test(raw) ? Number(raw) : 0;
+      if (Number.isInteger(origin) && origin >= 1 && origin <= 4) add(available, person, 'Ala ' + origin, '');
+      else model.unassigned.push(data);
+    });
+    model.groups = [available, ceded, away, restrictions, other].filter(group => group.columns.some(column => column.length));
     const eventSeen = new Set();
     list(options.events || planning.events).forEach(function (event) {
       const name = clean(event.name || event.displayName || (event.person || {}).displayName || 'MILITAR').toUpperCase();
