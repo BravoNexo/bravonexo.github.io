@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.9</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.10</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.9">v2.0.9</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.10">v2.0.10</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4519,7 +4519,7 @@
 
       <dialog id="ras-admin-applicants-dialog" class="ras-history-observation-dialog" aria-labelledby="ras-admin-applicants-title" aria-describedby="ras-admin-applicants-service">
         <div class="decision-head"><strong id="ras-admin-applicants-title">Inscritos na oportunidade</strong><span id="ras-admin-applicants-service"></span></div>
-        <div class="decision-body"><div class="ras-admin-applicants-order"><label for="ras-admin-applicants-order">Ordenar por</label><select id="ras-admin-applicants-order" aria-describedby="ras-admin-applicants-help"><option value="preference">Preferência</option><option value="queue">Prioridade da fila</option><option value="seniority">Antiguidade</option><option value="registration" title="Data da versão ativa das preferências; reenviar preferências atualiza essa data.">Ordem de inscrição</option></select></div><p id="ras-admin-applicants-help">Preferência é a prioridade escolhida pelo militar. Prioridade da fila segue a posição atual na Fila contínua consultada, não uma garantia de concessão. A inscrição considera a versão ativa das preferências.</p><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
+        <div class="decision-body"><div class="ras-admin-applicants-order"><label for="ras-admin-applicants-order">Ordenar por</label><select id="ras-admin-applicants-order" aria-describedby="ras-admin-applicants-help"><option value="preference">Preferência</option><option value="queue" selected>Prioridade da fila</option><option value="seniority">Antiguidade</option><option value="registration" title="Data da versão ativa das preferências; reenviar preferências atualiza essa data.">Ordem de inscrição</option></select></div><p id="ras-admin-applicants-help">Preferência é a prioridade escolhida pelo militar. Prioridade da fila segue a posição atual na Fila contínua consultada, não uma garantia de concessão. A inscrição considera a versão ativa das preferências.</p><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
         <div class="decision-footer"><button id="ras-admin-applicants-close" class="secondary" type="button" autofocus>Fechar</button></div>
       </dialog>
 
@@ -7246,7 +7246,7 @@
         complete ? count + (count === 1 ? ' inscrito nesta oportunidade.' : ' inscritos nesta oportunidade.') :
         'A lista de inscritos não está disponível nesta consulta. Atualize a Administração para conferir.';
       rasAdminApplicantsCurrent_ = { complete: complete, applicants: applicants.slice() };
-      selector.value = 'preference';
+      selector.value = 'queue';
       selector.disabled = !complete || count === 0;
       renderRasAdminApplicantsList_();
       rasAdminApplicantsReturnFocus_ = trigger || document.activeElement;
@@ -7268,7 +7268,7 @@
       dialog.addEventListener('close', function() {
         document.getElementById('ras-admin-applicants-list').innerHTML = '';
         rasAdminApplicantsCurrent_ = null;
-        document.getElementById('ras-admin-applicants-order').value = 'preference';
+        document.getElementById('ras-admin-applicants-order').value = 'queue';
         const target = rasAdminApplicantsReturnFocus_;
         rasAdminApplicantsReturnFocus_ = null;
         if (target && target.isConnected && rasAdminApplicantsAllowed_()) target.focus();
