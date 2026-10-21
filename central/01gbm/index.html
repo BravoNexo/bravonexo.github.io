@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.8</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.9</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.8">v2.0.8</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.9">v2.0.9</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4519,7 +4519,7 @@
 
       <dialog id="ras-admin-applicants-dialog" class="ras-history-observation-dialog" aria-labelledby="ras-admin-applicants-title" aria-describedby="ras-admin-applicants-service">
         <div class="decision-head"><strong id="ras-admin-applicants-title">Inscritos na oportunidade</strong><span id="ras-admin-applicants-service"></span></div>
-        <div class="decision-body"><div class="ras-admin-applicants-order"><label for="ras-admin-applicants-order">Ordenar por</label><select id="ras-admin-applicants-order" aria-describedby="ras-admin-applicants-help"><option value="preference">Preferência</option><option value="seniority">Antiguidade</option><option value="registration" title="Data da versão ativa das preferências; reenviar preferências atualiza essa data.">Ordem de inscrição</option></select></div><p id="ras-admin-applicants-help">Preferência é a prioridade escolhida pelo militar, não a ordem de concessão. A inscrição considera a versão ativa das preferências.</p><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
+        <div class="decision-body"><div class="ras-admin-applicants-order"><label for="ras-admin-applicants-order">Ordenar por</label><select id="ras-admin-applicants-order" aria-describedby="ras-admin-applicants-help"><option value="preference">Preferência</option><option value="queue">Prioridade da fila</option><option value="seniority">Antiguidade</option><option value="registration" title="Data da versão ativa das preferências; reenviar preferências atualiza essa data.">Ordem de inscrição</option></select></div><p id="ras-admin-applicants-help">Preferência é a prioridade escolhida pelo militar. Prioridade da fila segue a posição atual na Fila contínua consultada, não uma garantia de concessão. A inscrição considera a versão ativa das preferências.</p><p id="ras-admin-applicants-summary" role="status"></p><ul id="ras-admin-applicants-list" class="ras-admin-applicants-list"></ul></div>
         <div class="decision-footer"><button id="ras-admin-applicants-close" class="secondary" type="button" autofocus>Fechar</button></div>
       </dialog>
 
@@ -7116,7 +7116,56 @@
         Number.isFinite(new Date(value).getTime()) ? value : null;
     }
 
-    function rasAdminSortedApplicants_(applicants, mode) {
+    const rasAdminApplicantsQueue_ = (function createRasApplicantQueueUi() {
+  var queueOrders = new WeakMap();
+  function identity(value) {
+    var raw = String(value == null ? '' : value).trim();
+    return /^\d[\d\s./-]*$/.test(raw) ? raw.replace(/\D/g, '').replace(/^0+(?=\d)/, '') : '';
+  }
+  function positions(queue) {
+    var index = Object.create(null), conflicts = Object.create(null), sequence = Object.create(null);
+    (Array.isArray(queue) ? queue : []).forEach(function(item, order) {
+      var rg = identity(item && item.rg), position = item && item.position;
+      if (!rg || typeof position !== 'number' || !Number.isSafeInteger(position) || position <= 0) return;
+      if (index[rg] !== undefined && index[rg] !== position) conflicts[rg] = true;
+      if (index[rg] === undefined) sequence[rg] = order;
+      index[rg] = position;
+    });
+    Object.keys(conflicts).forEach(function(rg) { delete index[rg]; delete sequence[rg]; });
+    queueOrders.set(index, sequence);
+    return index;
+  }
+  function position(person, index) {
+    var rg = identity(person && person.rg), value = index && index[rg];
+    return rg && typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null;
+  }
+  function sort(applicants, index) {
+    var sequence = index && queueOrders.get(index);
+    return (Array.isArray(applicants) ? applicants : []).map(function(person, order) {
+      return { person: person, position: position(person, index), queueOrder: sequence && sequence[identity(person && person.rg)], order: order };
+    }).sort(function(a, b) {
+      if (a.position !== b.position) {
+        if (a.position === null) return 1;
+        if (b.position === null) return -1;
+        return a.position - b.position;
+      }
+      if (a.position !== null && Number.isSafeInteger(a.queueOrder) && Number.isSafeInteger(b.queueOrder) && a.queueOrder !== b.queueOrder) return a.queueOrder - b.queueOrder;
+      return a.order - b.order;
+    }).map(function(row) { return row.person; });
+  }
+  function label(person, index) {
+    var value = position(person, index);
+    return value === null ? 'Sem posição na fila consultada' : value + 'º na fila';
+  }
+  return Object.freeze({ positions: positions, position: position, sort: sort, label: label });
+})();
+
+    function rasAdminApplicantQueuePositions_() {
+      return rasAdminApplicantsQueue_.positions(state.rasData && state.rasData.queue);
+    }
+
+    function rasAdminSortedApplicants_(applicants, mode, queuePositions) {
+      if (mode === 'queue') return rasAdminApplicantsQueue_.sort(applicants, queuePositions || rasAdminApplicantQueuePositions_());
       const order = mode === 'seniority' || mode === 'registration' ? mode : 'preference';
       const rows = (Array.isArray(applicants) ? applicants : []).map(function(person, index) {
         const preference = rasAdminApplicantPosition_(person && person.preferenceOrder);
@@ -7146,7 +7195,8 @@
       const current = rasAdminApplicantsCurrent_;
       if (!rasAdminApplicantsAllowed_() || !current || !current.complete) { list.innerHTML = ''; return; }
       const mode = document.getElementById('ras-admin-applicants-order').value;
-      list.innerHTML = rasAdminSortedApplicants_(current.applicants, mode).map(function(person) {
+      const queuePositions = mode === 'queue' ? rasAdminApplicantQueuePositions_() : null;
+      list.innerHTML = rasAdminSortedApplicants_(current.applicants, mode, queuePositions).map(function(person) {
         const rank = callPlanRank(person && person.rank);
         const name = String(person && person.name || '').trim();
         const rg = String(person && person.rg || '').trim();
@@ -7154,8 +7204,9 @@
         const preference = rasAdminApplicantPosition_(person && person.preferenceOrder);
         const preferenceLabel = preference == null ? 'Preferência não informada' : preference + 'ª preferência';
         const registration = mode === 'registration' ? '<small>' + escapeHtml(rasAdminApplicantRegistrationLabel_(person && person.subscribedAt)) + '</small>' : '';
+        const queueLabel = mode === 'queue' ? '<small>' + escapeHtml(rasAdminApplicantsQueue_.label(person, queuePositions)) + '</small>' : '';
         return '<li><strong>' + escapeHtml(identity) + '</strong><span>RG ' + escapeHtml(rg || 'não informado') +
-          ' · <small>' + escapeHtml(preferenceLabel) + '</small></span>' + registration + '</li>';
+          ' · <small>' + escapeHtml(preferenceLabel) + '</small></span>' + queueLabel + registration + '</li>';
       }).join('');
     }
 
