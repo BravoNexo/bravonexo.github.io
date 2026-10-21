@@ -2911,7 +2911,9 @@
     const fields = [['origin', 'serviceUnit'], ['location', 'serviceLocation'], ['role', 'serviceRole']];
     if (fields.some(([field, recordField]) => !text(request[field]) || text(opportunity[field]) !== text(request[field]) || text(record[recordField]) !== text(request[field]))) return unknown;
     const justification = text(opportunity.observations).replace(/^Concessão direta(?: da oportunidade [^.]+)?\.\s*Justificativa:\s*/i, '').trim();
-    if (justification !== text(request.justification).slice(0, 500)) return unknown;
+    const expectedJustification = text(request.justification) + (request.leaveOverride && request.leaveOverride.confirmed === true
+      ? '\nExceção administrativa retroativa por afastamento: ' + text(request.leaveOverride.reason) : '');
+    if (justification !== expectedJustification.slice(0, 500)) return unknown;
     return { status: 'confirmed', record };
   }
   return Object.freeze({ expectedRecordId, classifyResult });
@@ -3139,12 +3141,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.5</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.6</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.5">v2.0.5</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.6">v2.0.6</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4483,6 +4485,10 @@
               <div class="field"><label for="ras-direct-location">Local/viatura</label><input id="ras-direct-location" type="text" maxlength="120"></div>
               <div class="field"><label for="ras-direct-role">Função</label><input id="ras-direct-role" type="text" maxlength="120" value="Guarnição"></div>
               <div class="field wide"><label for="ras-direct-justification">Justificativa administrativa</label><textarea id="ras-direct-justification" maxlength="500" placeholder="Explique por que a concessão está sendo feita diretamente"></textarea></div>
+              <div id="ras-direct-leave-exception" class="field wide" hidden>
+                <div class="ras-admin-warning"><strong>Exceção administrativa: RAS já realizado durante afastamento</strong><p>Use somente para registrar um RAS já realizado que coincide com um afastamento. O afastamento será mantido e a exceção ficará registrada na auditoria.</p><label for="ras-direct-leave-confirmed"><input id="ras-direct-leave-confirmed" type="checkbox" style="width:auto"> Confirmo o registro excepcional do RAS realizado durante afastamento.</label></div>
+                <div id="ras-direct-leave-reason-field" hidden><label for="ras-direct-leave-reason">Motivo da exceção administrativa (5 a 240 caracteres)</label><textarea id="ras-direct-leave-reason" minlength="5" maxlength="240" disabled placeholder="Explique por que o RAS realizado deve ser registrado apesar do afastamento"></textarea></div>
+              </div>
             </div>
             <div id="ras-direct-error" class="decision-error" hidden></div>
           </div>
@@ -5482,6 +5488,10 @@
       rasDirectLocation: document.getElementById('ras-direct-location'),
       rasDirectRole: document.getElementById('ras-direct-role'),
       rasDirectJustification: document.getElementById('ras-direct-justification'),
+      rasDirectLeaveException: document.getElementById('ras-direct-leave-exception'),
+      rasDirectLeaveConfirmed: document.getElementById('ras-direct-leave-confirmed'),
+      rasDirectLeaveReasonField: document.getElementById('ras-direct-leave-reason-field'),
+      rasDirectLeaveReason: document.getElementById('ras-direct-leave-reason'),
       rasDirectError: document.getElementById('ras-direct-error'),
       rasDirectClose: document.getElementById('ras-direct-close'),
       rasDirectSave: document.getElementById('ras-direct-save'),
@@ -7849,6 +7859,26 @@
       return 'BNX-' + Date.now() + '-' + Math.random().toString(36).slice(2) + '-' + Math.random().toString(36).slice(2);
     }
 
+    function isRasDirectRetroactive_(date, startTime) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(startTime)) return false;
+      const localStart = date + 'T' + startTime;
+      const start = Date.parse(localStart + ':00-03:00');
+      if (!Number.isFinite(start)) return false;
+      return new Date(start - 3 * 60 * 60 * 1000).toISOString().slice(0, 16) === localStart && start < Date.now();
+    }
+
+    function updateRasDirectLeaveException_() {
+      const retroactive = isRasDirectRetroactive_(elements.rasDirectDate.value, elements.rasDirectTime.value);
+      elements.rasDirectLeaveException.hidden = !retroactive;
+      if (!retroactive) {
+        elements.rasDirectLeaveConfirmed.checked = false;
+        elements.rasDirectLeaveReason.value = '';
+      }
+      const selected = retroactive && elements.rasDirectLeaveConfirmed.checked;
+      elements.rasDirectLeaveReasonField.hidden = !selected;
+      elements.rasDirectLeaveReason.disabled = !selected;
+    }
+
     function openRasDirectGrantEditor() {
       const data = state.rasAdminData || {};
       const queue = (state.rasData && Array.isArray(state.rasData.queue)) ? state.rasData.queue : [];
@@ -7901,6 +7931,9 @@
       elements.rasDirectLocation.value = '';
       elements.rasDirectRole.value = 'Guarnição';
       elements.rasDirectJustification.value = '';
+      elements.rasDirectLeaveConfirmed.checked = false;
+      elements.rasDirectLeaveReason.value = '';
+      updateRasDirectLeaveException_();
       elements.rasDirectError.hidden = true;
       elements.rasDirectEditor.hidden = false;
       elements.rasDirectMilitary.focus();
@@ -8000,12 +8033,29 @@
         showRasDirectError('Informe uma justificativa administrativa com pelo menos 5 caracteres.');
         return;
       }
+      if (elements.rasDirectLeaveConfirmed.checked) {
+        if (!isRasDirectRetroactive_(request.date, request.startTime)) {
+          showRasDirectError('A exceção por afastamento só pode ser usada para um RAS com início já passado no horário de São Paulo.');
+          return;
+        }
+        const reason = elements.rasDirectLeaveReason.value.trim();
+        if (reason.length < 5 || reason.length > 240) {
+          showRasDirectError('Informe o motivo da exceção administrativa com 5 a 240 caracteres.');
+          return;
+        }
+        if ((request.justification + '\nExceção administrativa retroativa por afastamento: ' + reason).length > 500) {
+          showRasDirectError('A justificativa e o motivo da exceção, incluindo o registro administrativo, devem somar no máximo 500 caracteres.');
+          return;
+        }
+        request.leaveOverride = { confirmed: true, reason: reason };
+      }
       const militaryLabel = elements.rasDirectMilitary.options[elements.rasDirectMilitary.selectedIndex]
         ? elements.rasDirectMilitary.options[elements.rasDirectMilitary.selectedIndex].textContent
         : request.rg;
       const confirmation = 'Conceder diretamente o RAS a ' + militaryLabel + ' em ' + formatIsoDate(request.date) + ', às ' +
         request.startTime + ', por ' + request.hours + 'h?\n\nOrigem: ' + request.origin + '\nLocal: ' + request.location +
-        '\nFunção: ' + request.role + '\nJustificativa: ' + request.justification;
+        '\nFunção: ' + request.role + '\nJustificativa: ' + request.justification +
+        (request.leaveOverride ? '\n\nEXCEÇÃO ADMINISTRATIVA POR AFASTAMENTO: confirmo o registro de um RAS já realizado durante afastamento. O afastamento será mantido e esta exceção será registrada na auditoria.\nMotivo da exceção: ' + request.leaveOverride.reason : '');
       if (!window.confirm(confirmation)) return;
       elements.rasDirectError.hidden = true;
       elements.rasDirectSave.disabled = true;
@@ -17805,6 +17855,11 @@
     });
     elements.rasDirectClose.addEventListener('click', closeRasDirectGrantEditor);
     elements.rasDirectSave.addEventListener('click', saveRasDirectGrant);
+    elements.rasDirectDate.addEventListener('input', updateRasDirectLeaveException_);
+    elements.rasDirectDate.addEventListener('change', updateRasDirectLeaveException_);
+    elements.rasDirectTime.addEventListener('input', updateRasDirectLeaveException_);
+    elements.rasDirectTime.addEventListener('change', updateRasDirectLeaveException_);
+    elements.rasDirectLeaveConfirmed.addEventListener('change', updateRasDirectLeaveException_);
     elements.rasDirectEditor.addEventListener('click', function(event) {
       if (event.target === elements.rasDirectEditor) closeRasDirectGrantEditor();
     });
