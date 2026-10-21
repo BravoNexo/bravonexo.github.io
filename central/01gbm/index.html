@@ -5,6 +5,19 @@
   <meta charset="UTF-8">
   <style>
 
+
+    .ras-cycle-summary { margin:0 0 18px; }
+    .ras-cycle-summary h3 { margin:0 0 6px; font-size:15px; color:#173f5f; }
+    .ras-cycle-summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:10px; margin-top:10px; }
+    .ras-cycle-card { padding:12px; border:1px solid #d0dfe8; border-radius:10px; background:#f5f8fa; }
+    .ras-cycle-card[data-ongoing=true] { border-color:#86b9a6; background:#eff9f4; }
+    .ras-cycle-card header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:13px; }
+    .ras-cycle-card header span { font-size:11px; color:#526c7c; }
+    .ras-cycle-card[data-ongoing=true] header span { color:#226449; }
+    .ras-cycle-card dl { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:12px 0 0; }
+    .ras-cycle-card dt { font-size:11px; color:#526c7c; margin-bottom:4px; }
+    .ras-cycle-card dd { margin:0; color:#173f5f; font-size:12px; font-weight:600; overflow-wrap:anywhere; }
+
     .ras-reports-form { display:grid; gap:14px; padding:16px; border:1px solid #d0dfe8; border-radius:12px; background:#f5f9fb; }
     .ras-reports-period, .ras-reports-statuses { display:flex; flex-wrap:wrap; gap:10px 18px; margin:0; border:0; padding:0; }
     .ras-reports-period legend, .ras-reports-statuses legend { margin:0 0 8px; padding:0; font-size:13px; font-weight:700; }
@@ -3141,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.7</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.8</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.7">v2.0.7</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.8">v2.0.8</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4323,6 +4336,11 @@
 
           <section id="ras-view-reports" class="panel" role="region" aria-labelledby="ras-tab-reports" hidden>
             <div class="panel-head"><strong>Relatórios de RAS</strong><span id="ras-reports-count">Selecione o período</span></div>
+            <section class="ras-cycle-summary" aria-labelledby="ras-cycle-summary-title">
+              <h3 id="ras-cycle-summary-title">Resumo dos ciclos</h3>
+              <p class="ras-reports-help">Dias corridos entre o início e o encerramento, sem incluir o dia inicial. No ciclo aberto, a duração vai até hoje, no horário de Brasília.</p>
+              <div id="ras-reports-cycle-summary" class="ras-cycle-summary-grid"></div>
+            </section>
             <form id="ras-reports-form" class="ras-reports-form">
               <fieldset class="ras-reports-period"><legend>Período do relatório</legend><label class="ras-reports-check"><input type="radio" name="ras-report-period" value="dates" checked> Entre datas</label><label class="ras-reports-check"><input type="radio" name="ras-report-period" value="cycles"> Um ou mais ciclos</label></fieldset>
               <div id="ras-reports-dates" class="ras-reports-dates"><div class="field"><label for="ras-reports-from">Início</label><input id="ras-reports-from" type="date"></div><div class="field"><label for="ras-reports-to">Fim (inclusive)</label><input id="ras-reports-to" type="date"></div></div>
@@ -6080,6 +6098,39 @@
     return { cycles: cycles, membershipObms: field('membershipObmAtService'), postingObms: field('postingObmAtService'),
       serviceUnits: field('serviceUnit'), serviceLocations: field('serviceLocation'), unknownValue: UNKNOWN };
   }
+  function cycleSummary(source, reference) {
+    function brasiliaDay(value) {
+      var instant = value instanceof Date ? value : new Date(value);
+      if (!Number.isFinite(instant.getTime())) return null;
+      var parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(instant);
+      function part(type) { return parts.find(function(item) { return item.type === type; }).value; }
+      return date(part('year') + '-' + part('month') + '-' + part('day'));
+    }
+    function day(value) {
+      var raw = text(value);
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw)) return date(raw) && brasiliaDay(raw);
+      var civil = /^(?:\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(raw);
+      if (!civil || Number(civil[1] || 0) > 23 || Number(civil[2] || 0) > 59 || Number(civil[3] || 0) > 59) return null;
+      return date(raw);
+    }
+    function ordinal(value) { return Date.UTC(Number(value.iso.slice(0, 4)), Number(value.iso.slice(5, 7)) - 1, Number(value.iso.slice(8, 10))) / 86400000; }
+    var today = brasiliaDay(reference === undefined ? new Date() : reference), seen = Object.create(null);
+    return (source && Array.isArray(source.cycles) ? source.cycles : []).filter(function(item) {
+      var id = text(item && item.id); if (!id || seen[id]) return false; seen[id] = true; return true;
+    }).map(function(item, index) {
+      var openRaw = text(item.openDate) || text(item.openedAt), closeRaw = text(item.closeDate) || text(item.closedAt);
+      var start = day(openRaw), end = day(closeRaw), state = normal(item.status || item.situation);
+      var closed = Boolean(closeRaw) || ['ENCERRADO', 'ENCERRADA', 'FECHADO', 'FECHADA', 'CLOSED'].indexOf(state) >= 0;
+      var until = closed ? end : today, elapsed = start && until ? ordinal(until) - ordinal(start) : null;
+      var duration = elapsed !== null && elapsed >= 0 ? elapsed : null;
+      var future = !closed && elapsed !== null && elapsed < 0;
+      return { id: text(item.id), name: text(item.name) || text(item.id), startDate: start ? start.label : 'Não informado',
+        endDate: closed ? end ? end.label : 'Não informado' : future ? 'Ainda não iniciado' : 'Em andamento',
+        durationDays: duration, durationLabel: duration === null ? 'Não disponível' : duration + (duration === 1 ? ' dia' : ' dias'),
+        ongoing: !closed && !future && Boolean(start && today), statusLabel: closed ? 'Encerrado' : future ? 'Não iniciado' : start ? 'Em andamento' : 'Datas não informadas',
+        startIso: start ? start.iso : '', sourceOrder: index };
+    }).sort(function(a, b) { return b.startIso.localeCompare(a.startIso) || a.sourceOrder - b.sourceOrder; });
+  }
   function build(source, filters) {
     source = source || {}; filters = filters || {};
     if (source.cadastroReady === false) throw Error('Aguarde o carregamento do Cadastro de Militares para gerar o relatório com a OBM correta.');
@@ -6146,7 +6197,7 @@
       accountingNote: 'OBM: vínculo administrativo atual do Cadastro de Militares. Total do período = horas realizadas + agendadas selecionadas. Cancelados são exibidos separadamente e não somam ao total. Não é o saldo ajustado da fila contínua.' };
   }
   function hours(value) { return Number(value || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + 'h'; }
-  return Object.freeze({ build: build, options: options, date: date, status: status, hours: hours, UNKNOWN: UNKNOWN });
+  return Object.freeze({ build: build, options: options, cycleSummary: cycleSummary, date: date, status: status, hours: hours, UNKNOWN: UNKNOWN });
 })();
     var BNXRasReportsPrint = (function createRasReportsPrint() {
   function escape(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function(char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
@@ -6250,8 +6301,17 @@
   }
   function error(message) { node('error').textContent = message || ''; node('error').hidden = !message; }
   function contextMessage(message, failed) { node('context').textContent = message; node('context').dataset.state = failed ? 'error' : 'ready'; }
+  function renderCycleSummary() {
+    var cycles = BNXRasReportsModel.cycleSummary(source());
+    node('cycle-summary').innerHTML = cycles.length ? cycles.map(function(cycle) {
+      return '<article class="ras-cycle-card" data-ongoing="' + cycle.ongoing + '"><header><strong>' + escapeHtml(cycle.name) + '</strong><span>' + escapeHtml(cycle.statusLabel) + '</span></header><dl>' +
+        '<div><dt>Início</dt><dd>' + escapeHtml(cycle.startDate) + '</dd></div><div><dt>Fim</dt><dd>' + escapeHtml(cycle.endDate) + '</dd></div>' +
+        '<div><dt>' + (cycle.ongoing ? 'Em andamento há' : 'Duração') + '</dt><dd>' + escapeHtml(cycle.durationLabel) + '</dd></div></dl></article>';
+    }).join('') : '<p class="ras-reports-help">Nenhum ciclo encontrado.</p>';
+  }
   function render() {
     if (!allowed()) return;
+    renderCycleSummary();
     var selection = filters(); node('dates').hidden = selection.mode !== 'dates'; node('cycles-wrap').hidden = selection.mode !== 'cycles';
     node('context-refresh').disabled = state.rasReportsContextLoading === true;
     node('generate').disabled = state.rasReportsContextLoading === true || source().cadastroReady === false;
@@ -21261,3 +21321,4 @@ installCallPlanOptions();
 
 </div></body>
 </html>
+
