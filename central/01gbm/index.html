@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.10</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.0.11</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.10">v2.0.10</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.0.11">v2.0.11</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -6364,13 +6364,45 @@
         : 'mês não informado';
     }
 
+    var BNXRasCycleCarryoverUi = (function createRasCycleCarryoverUi() {
+  function number(value) {
+    return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
+  }
+  function text(value) { return String(value).replace('.', ','); }
+  function policy(cycle) {
+    if (!cycle || typeof cycle !== 'object') return { kind: 'hours', hours: 0 };
+    if (Object.prototype.hasOwnProperty.call(cycle, 'reductionPercent')) {
+      var percent = number(cycle.reductionPercent);
+      return percent !== null && percent <= 100 ? { kind: 'percent', percent: percent } : { kind: 'unknown' };
+    }
+    var raw = cycle.reduction == null || cycle.reduction === '' ? 0 : cycle.reduction;
+    var hours = number(typeof raw === 'string' && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : raw);
+    return hours === null ? { kind: 'unknown' } : { kind: 'hours', hours: hours };
+  }
+  function label(cycle) {
+    var value = policy(cycle);
+    if (value.kind === 'percent') return 'Abatimento na virada: ' + text(value.percent) + '% do saldo';
+    if (value.kind === 'hours') return 'Abatimento na virada: ' + text(value.hours) + 'h';
+    return 'Abatimento na virada: não informado';
+  }
+  function summary(cycle) {
+    var value = policy(cycle);
+    if (value.kind === 'percent') return value.percent === 50
+      ? 'Na virada, metade do saldo de horas passa para o próximo ciclo.'
+      : 'Na virada, o saldo de horas é reduzido em ' + text(value.percent) + '%.';
+    if (value.kind === 'hours') return 'Na virada, são abatidas ' + text(value.hours) + 'h do saldo, sem ficar negativo.';
+    return 'A regra de abatimento deste ciclo não foi informada.';
+  }
+  return Object.freeze({ policy: policy, label: label, summary: summary });
+})();
+
     function renderRas() {
       const data = state.rasData || {};
       const totals = data.totals || {};
       const cycle = data.activeCycle || null;
       elements.rasCycleName.textContent = cycle ? (cycle.name || cycle.id || 'Ciclo atual') : 'Nenhum ciclo aberto';
       elements.rasCycleMeta.textContent = cycle
-        ? ['Abertura: ' + (cycle.openedAt || cycle.openDate || 'não informada'), cycle.status || '', Number(cycle.granted || 0) + '/' + (Number(cycle.opportunityLimit) > 0 ? Number(cycle.opportunityLimit) : '—') + ' concessões', Number(cycle.remaining || 0) + ' restantes', 'Abatimento na virada: ' + Number(cycle.reduction || 0) + 'h', cycle.observations || ''].filter(Boolean).join(' • ')
+        ? ['Abertura: ' + (cycle.openedAt || cycle.openDate || 'não informada'), cycle.status || '', Number(cycle.granted || 0) + '/' + (Number(cycle.opportunityLimit) > 0 ? Number(cycle.opportunityLimit) : '—') + ' concessões', Number(cycle.remaining || 0) + ' restantes', BNXRasCycleCarryoverUi.label(cycle), cycle.observations || ''].filter(Boolean).join(' • ')
         : 'Nenhum ciclo aberto localizado na planilha de RAS.';
       elements.rasCycleStage.textContent = cycle ? 'Fila contínua' : '—';
       elements.rasStatEligible.textContent = Number(totals.eligible || 0);
