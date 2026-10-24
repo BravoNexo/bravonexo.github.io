@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.1.5</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.1.6</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.1.5">v2.1.5</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.1.6">v2.1.6</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -20110,19 +20110,50 @@ installCallPlanOptions();
     nodes.loading.hidden = Boolean(hasContent); nodes.content.hidden = !hasContent; showError(''); nodes.confirm.hidden = true;
     setStatus(hasContent ? 'Atualizando… Seus dados e rascunhos continuam visíveis.' : 'Consultando ' + month.split('-').reverse().join('/') + '…'); updateControls();
     if (previous) return;
-    const isCurrent = function() { return state.reads === reads && flight.sequence === state.sequence && month === state.month; };
-    BNX_rpc.run.withSuccessHandler(function(payload) {
+    const draftSignature = requestSignature(month, state.payload && state.payload.revision, state.draft);
+    const isCurrent = function() { return state.reads === reads && reads[month] === flight && flight.sequence === state.sequence && month === state.month; };
+    const canRetry = function() {
+      const page = get('oncall-page');
+      return isCurrent() && !state.saving && page && page.isConnected !== false && !page.hidden &&
+        (typeof page.closest !== 'function' || !page.closest('[hidden]')) &&
+        draftSignature === requestSignature(month, state.payload && state.payload.revision, state.draft);
+    };
+    const finish = function() {
+      if (flight.retryTimer != null) { global.clearTimeout(flight.retryTimer); flight.retryTimer = null; }
       if (reads[month] === flight) delete reads[month];
-      if (!isCurrent()) return;
-      state.loading = false; nodes.loading.hidden = true;
-      try { applyPayload(payload, Boolean(state.payload && state.payload.monthIso === month)); setStatus(dirtyCount() ? 'Consulta atualizada. Seu rascunho foi mantido; confira antes de salvar.' : 'Consulta atualizada. As alterações só são gravadas ao salvar.'); }
-      catch (error) { showError(error.message); nodes.content.hidden = !state.payload || state.payload.monthIso !== month; setStatus('Falha na consulta.'); }
-      updateControls();
-    }).withFailureHandler(function(error) {
-      if (reads[month] === flight) delete reads[month];
-      if (!isCurrent()) return;
-      state.loading = false; nodes.loading.hidden = true; nodes.content.hidden = !state.payload || state.payload.monthIso !== month; showError('Não foi possível consultar os sobreavisos: ' + text(error && error.message || error)); setStatus('Falha na consulta. Tente Atualizar.'); updateControls();
-    }).getOnCallMonth(month, Boolean(force));
+    };
+    const cancel = function() {
+      const current = isCurrent(); finish();
+      if (!current || state.saving) return;
+      state.loading = false; nodes.loading.hidden = true; nodes.content.hidden = !state.payload || state.payload.monthIso !== month;
+      setStatus('Consulta interrompida. Seu rascunho foi mantido.'); updateControls();
+    };
+    let busyRetried = false;
+    const send = function() {
+      BNX_rpc.run.withSuccessHandler(function(payload) {
+        const current = isCurrent(); finish();
+        if (!current) return;
+        state.loading = false; nodes.loading.hidden = true;
+        try { applyPayload(payload, Boolean(state.payload && state.payload.monthIso === month)); setStatus(dirtyCount() ? 'Consulta atualizada. Seu rascunho foi mantido; confira antes de salvar.' : 'Consulta atualizada. As alterações só são gravadas ao salvar.'); }
+        catch (error) { showError(error.message); nodes.content.hidden = !state.payload || state.payload.monthIso !== month; setStatus('Falha na consulta.'); }
+        updateControls();
+      }).withFailureHandler(function(error) {
+        if (!isCurrent()) { finish(); return; }
+        if (!busyRetried && error && error.code === 'CENTRAL_BROWSER_BUSY' && error.serverConfirmed === true && canRetry()) {
+          busyRetried = true;
+          setStatus('A Central está ocupada. Aguardando para consultar os sobreavisos novamente…');
+          flight.retryTimer = global.setTimeout(function() {
+            flight.retryTimer = null;
+            if (!canRetry()) { cancel(); return; }
+            send();
+          }, 1200);
+          return;
+        }
+        finish();
+        state.loading = false; nodes.loading.hidden = true; nodes.content.hidden = !state.payload || state.payload.monthIso !== month; showError('Não foi possível consultar os sobreavisos: ' + text(error && error.message || error)); setStatus('Falha na consulta. Tente Atualizar.'); updateControls();
+      }).getOnCallMonth(month, Boolean(force));
+    };
+    send();
   }
   function navigateMonth(month) {
     if (state.saving || !shiftMonth(month, 0)) { nodes.month.value = state.month; return; }
