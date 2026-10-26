@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-scale-sql-ui="1">
 <head>
   <base target="_top">
   <meta charset="UTF-8">
@@ -2853,7 +2853,7 @@
     disconnect: function() { activeTransport = undefined; medicalConnectionRevision++; },
     getConnectionRevision: function() { return activeTransport ? medicalConnectionRevision : null; }
   });
-  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_atualizarSaidasSqlAposSalvamento","BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin","updateRasMonthlyReceiptAdmin","getRasReportContextAdmin"],transport:function(request){
+  window.BNX_rpc = window.BNXCentralRpc.createRpc({methods:["BNX_atualizarSaidasSqlAposSalvamento","BNX_prepareCadastroEditor","BNX_readCadastroReceipt","BNX_recoverCadastroPending","BNX_releaseCadastroEdit","BNX_saveCadastroMilitary","BNX_sealCadastroPending","applyWingsMapChanges","approveWingsPlanning","archiveScaleFromPortal","buildScaleFromPortal","cancelLeave","cancelRasOpportunitiesAdmin","configureRasCycleAdmin","correctDirectRasGrantAdmin","createDirectRasGrantAdmin","createLeave","createRasOpportunitiesBatchAdmin","createRasOpportunityAdmin","createRasRecord","decidePermuta","decideRasCancellationRequestAdmin","executeRasDistributionAdmin","finalizeRasSchedule","getBootstrapData","getCallPlanForPrint","getExpediente24hAdmin","getGuardMovementDashboard","getLeaveForEdit","getMilitaryProfile","getOnCallMonth","getOtherLeavesDashboard","getPermutaDecisionReceipt","getPermutasDashboard","getRasAdminDashboard","getRasCancellationRequestsAdmin","getRasDashboard","getScaleNotes","readScaleSaveReceipt","getScaleOutputStatus","getScalePermutasForDate","getScalePreview","getScaleRasForDate","getScaleServiceOfficersForDate","getServiceOfficersDashboard","getSynchronizedWingsMap","getVacationDashboard","getVehicleControlDashboard","getWingsPlanning","moveWingsAwayLocation","previewRasDistributionAdmin","replaceVehicleMaster","resolveScaleVacancyCandidate","returnCededMilitaryToMainUnit","saveExpediente24hDistribution","saveMedicalOfficersMonth","saveOnCallMonth","saveScaleNote","saveVehicleMaster","saveWingsPlanning","setupExpediente24hSpreadsheet","suggestAdvancedScaleGuardFromPortal","suggestScaleGuardFromPortal","unapproveWingsPlanning","updateLeave","updateRasEligibility","getRasMonthlyBudgetAdmin","saveRasMonthlyReceiptAdmin","updateRasMonthlyReceiptAdmin","getRasReportContextAdmin"],transport:function(request){
     if (!activeTransport) {
       var error = new Error("A Central ainda não está conectada ao servidor autorizado. Esta operação não foi enviada.");
       error.code = "RPC_TRANSPORT_UNAVAILABLE"; request.failure(error); return;
@@ -2861,7 +2861,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><script src="./central-client.js?v=1c25396c8d71b13ef35b" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><script src="./central-client.js?v=73ee0ceb5ebb1e7a0aaf" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.10.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.11.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.10.0">v2.10.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.11.0">v2.11.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -12489,6 +12489,7 @@
       elements.scaleBuildAction.disabled = quotaBlocked || Boolean(state.scaleExpediente24hStaleDates[dateIso]) || state.scaleRasReadyDate !== dateIso || blocked || !previewReady || state.scaleChecklistBlocked || !permutasReady;
       elements.scaleArchiveAction.disabled = quotaBlocked || Boolean(state.scaleExpediente24hStaleDates[dateIso]) || state.scaleRasReadyDate !== dateIso || blocked || !previewReady || !permutasReady || state.scaleBuiltDate !== dateIso;
       renderScalePermutaRevisionReview_();
+      SB_gateOutputs_();
     }
 
     function findPermutaDecisionRecord_(requestKey, source) {
@@ -13401,6 +13402,7 @@
       bindScaleCrewOrdering();
       updateScaleApplyPermutasAction();
       updateScaleSuggestGuardAction();
+      SB_offerRecovery_();
     }
 
     function getScaleChecklistData(renderedFunctions) {
@@ -15242,6 +15244,191 @@
       buildScale();
     }
 
+    // Inserted into the native scale closure; its layout, draft and Google review
+    // flow stay native. SQL confirmation never pretends that an output is ready.
+    const SB_builds = Object.create(null);
+    let SB_active = null;
+    let SB_sequence = 0;
+    function SB_authorized_() { try { return Boolean(window.BNXScaleBuildRecovery && window.BNXScaleBuildRecovery.isOwner() === true); } catch (_) { return false; } }
+    function SB_canonical_(value) {
+      if (value === null || typeof value !== 'object') return JSON.stringify(value);
+      if (Array.isArray(value)) return '[' + value.map(function(item) { return item === undefined ? 'null' : SB_canonical_(item); }).join(',') + ']';
+      return '{' + Object.keys(value).filter(function(key) { return value[key] !== undefined; }).sort().map(function(key) { return JSON.stringify(key) + ':' + SB_canonical_(value[key]); }).join(',') + '}';
+    }
+    function SB_kind_(method) { return method === 'buildScaleFromPortal' ? 'build' : method === 'archiveScaleFromPortal' ? 'archive' : ''; }
+    function SB_descriptor_(value) {
+      return value && /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(value.requestId || '') && SB_kind_(value.method) && /^[a-f0-9]{64}$/.test(value.requestHash || '')
+        ? { requestId: value.requestId, method: value.method, requestHash: value.requestHash } : null;
+    }
+    function SB_buildPayload_() {
+      const assignments = getScaleAssignments();
+      return [elements.scaleDate.value, assignments, SG_guardPayload_(assignments), window.SN_fingerprint ? window.SN_fingerprint() : ''];
+    }
+    function SB_sameDraft_(record) {
+      try { return Boolean(record.signature && record.dateIso === elements.scaleDate.value && SB_builds[record.dateIso] === record && record.signature === SB_canonical_(SB_buildPayload_()) && record.rasRevision === scaleRasMutationRevision_(record.dateIso)); }
+      catch (_) { return false; }
+    }
+    function SB_removeControls_() {
+      const previous = document.getElementById('scale-sql-output-actions');
+      if (previous) previous.remove();
+    }
+    function SB_message_(title, message) {
+      elements.scaleError.hidden = true;
+      elements.scaleResult.hidden = false;
+      elements.scaleResult.textContent = '';
+      const heading = document.createElement('strong'); heading.textContent = title;
+      elements.scaleResult.appendChild(heading);
+      elements.scaleResult.appendChild(document.createElement('br'));
+      elements.scaleResult.appendChild(document.createTextNode(message));
+    }
+    function SB_gateOutputs_() {
+      const record = SB_active;
+      if (record && record.kind === 'archive' && record.dateIso === elements.scaleDate.value && (!record.ack || record.ack.output.status !== 'ready')) elements.scaleArchiveAction.disabled = true;
+    }
+    function SB_controls_(record) {
+      SB_removeControls_();
+      if (SB_active !== record) return;
+      const region = document.createElement('div'); region.id = 'scale-sql-output-actions'; region.className = 'scale-sql-output-actions'; region.setAttribute('role', 'group'); region.setAttribute('aria-label', 'Atualização da escala salva');
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'secondary'; button.textContent = record.phase === 'unknown' ? 'Conferir solicitação' : 'Conferir atualização'; button.disabled = Boolean(record.busy);
+      button.addEventListener('click', function() { SB_queryStatus_(record); }); region.appendChild(button);
+      const note = document.createElement('small'); note.textContent = (record.dateIso !== elements.scaleDate.value ? ' Solicitação de ' + record.dateIso.split('-').reverse().join('/') + '.' : '') + ' O salvamento não será repetido por esta consulta.'; region.appendChild(note);
+      elements.scaleResult.parentNode.insertBefore(region, elements.scaleResult.nextSibling);
+    }
+    function SB_nativeBuildReady_(record, result, silent) {
+      const sameDraft = SB_sameDraft_(record);
+      elements.scaleOpenAction.href = result.urlEscala || '#'; elements.scaleOpenAction.hidden = !result.urlEscala;
+      if (!sameDraft) {
+        state.scaleBuiltDate = '';
+        SB_message_('Escala salva e planilha atualizada.', 'Há ajustes posteriores ou diferentes no rascunho. Monte novamente para incluí-los; a versão salva continua disponível na planilha.');
+        return;
+      }
+      state.scaleBuiltDate = record.dateIso;
+      state.scaleOrderDirty = false;
+      updateScaleSortGuidance('Ordem aplicada na escala editável oficial.');
+      const guardText = result.guarda && result.guarda.ok
+        ? (String(result.guarda.modo || '').toLowerCase() === 'avancada'
+          ? ' A Guarda Avançada também foi aplicada aos ' + (result.guarda.totalHorarios || (state.scaleGuardSuggestion && state.scaleGuardSuggestion.periodos || []).length) + ' períodos.'
+          : ' A Guarda sugerida também foi aplicada aos 12 horários.') : '';
+      elements.scaleError.hidden = true; elements.scaleResult.hidden = false;
+      elements.scaleResult.innerHTML = '<strong>Escala editável montada.</strong><br>Confira a planilha antes de gerar o arquivo mensal e o PDF.' + guardText + ' ' + ((result.alertas || []).length ? (result.alertas.length + ' alerta(s) permanecem para conferência.') : 'Nenhum alerta adicional foi identificado.');
+      if (!silent) showToast('Escala editável montada para ' + record.dateIso + '.');
+    }
+    function SB_nativeArchiveReady_(record, result) {
+      const links = [
+        result.urlArquivoMensal ? '<a href="' + escapeHtml(result.urlArquivoMensal) + '" target="_blank" rel="noopener">Abrir arquivo mensal</a>' : '',
+        result.urlPdf ? '<a href="' + escapeHtml(result.urlPdf) + '" target="_blank" rel="noopener">Abrir PDF</a>' : ''
+      ].filter(Boolean).join(' • ');
+      elements.scaleError.hidden = true; elements.scaleResult.hidden = false;
+      elements.scaleResult.innerHTML = '<strong>' + escapeHtml(result.acao || 'Escala arquivada') + '.</strong><br>' + escapeHtml(result.nomeAba || '') + ' • ' + escapeHtml(result.nomePdf || '') + (links ? '<br>' + links : '');
+      if (!record.downloadOpened) { record.downloadOpened = true; openScaleDownloadDialog(result); showToast(result.acao || 'Escala arquivada.'); }
+    }
+    function SB_ackMatches_(record, result) {
+      const selected = SB_descriptor_(result && result.sqlOperation);
+      return Boolean(selected && selected.requestId === record.operation.requestId && selected.method === record.operation.method && selected.requestHash === record.operation.requestHash && result.ok === true && result.saved === true && result.dateIso === record.dateIso && Number.isSafeInteger(result.revision) && result.revision > 0 && typeof result.compositionId === 'string' && (!record.compositionId || result.compositionId === record.compositionId) && (!record.revision || result.revision === record.revision) && result.output && ['pending', 'ready', 'failed'].includes(result.output.status));
+    }
+    function SB_present_(record, result, silent) {
+      if (!SB_ackMatches_(record, result)) throw new Error('Não foi possível confirmar a versão desta saída. Seus ajustes foram preservados.');
+      record.phase = 'confirmed'; record.compositionId = result.compositionId; record.revision = result.revision; record.ack = result;
+      if (!SB_authorized_() || SB_active !== record) return;
+      if (record.dateIso !== elements.scaleDate.value) {
+        SB_message_('Solicitação anterior confirmada.', 'A escala de ' + record.dateIso.split('-').reverse().join('/') + ' está salva. O rascunho exibido não foi alterado.' + (result.output.status === 'ready' ? ' As saídas estão disponíveis.' : ' As saídas continuam em atualização ou conferência.'));
+        if (result.output.status === 'ready') {
+          SB_removeControls_();
+          const native = result.output.result;
+          [['urlEscala', 'Abrir planilha salva'], ['urlArquivoMensal', 'Abrir arquivo mensal'], ['urlPdf', 'Abrir PDF']].forEach(function(item) {
+            if (!native[item[0]]) return;
+            const link = document.createElement('a'); link.href = native[item[0]]; link.target = '_blank'; link.rel = 'noopener'; link.textContent = item[1]; elements.scaleResult.appendChild(document.createElement('br')); elements.scaleResult.appendChild(link);
+          });
+        } else SB_controls_(record);
+        return;
+      }
+      if (result.output.status === 'ready') {
+        SB_removeControls_();
+        if (record.kind === 'build' && SB_builds[record.dateIso] === record) SB_nativeBuildReady_(record, result.output.result, silent);
+        else if (record.kind === 'archive') SB_nativeArchiveReady_(record, result.output.result);
+      } else {
+        if (record.kind === 'build') { state.scaleBuiltDate = ''; elements.scaleOpenAction.hidden = true; }
+        const message = result.output.status === 'failed'
+          ? (result.output.error && result.output.error.message || 'A atualização das saídas precisa de conferência. A escala continua salva no sistema.')
+          : record.kind === 'build' ? 'A planilha está sendo atualizada em segundo plano. Seus ajustes continuam disponíveis.' : 'A cópia mensal e o PDF estão sendo gerados em segundo plano.';
+        SB_message_(record.kind === 'build' ? 'Escala salva no sistema.' : 'Geração dos arquivos solicitada.', message);
+        SB_controls_(record);
+      }
+      updateScaleActionsForPermutaBusy_();
+      SB_gateOutputs_();
+    }
+    function SB_acceptAck_(kind, dateIso, payload, result, rasRevision) {
+      if (!result || result.saved !== true) return false;
+      const operation = SB_descriptor_(result.sqlOperation);
+      if (!operation || SB_kind_(operation.method) !== kind || result.dateIso !== dateIso) { SB_message_('Confira a solicitação.', 'Não foi possível confirmar a versão desta saída. Seus ajustes foram preservados.'); return true; }
+      const record = { kind: kind, dateIso: dateIso, operation: operation, phase: 'confirmed', signature: kind === 'build' ? SB_canonical_(payload) : null, rasRevision: rasRevision, sequence: ++SB_sequence, busy: false };
+      SB_active = record; if (kind === 'build') SB_builds[dateIso] = record;
+      try { SB_present_(record, result); } catch (error) { SB_message_('Confira a solicitação.', error.message); SB_controls_(record); }
+      return true;
+    }
+    function SB_noteUnknown_(kind, dateIso, payload, error, rasRevision) {
+      const operation = SB_descriptor_(error && error.sqlOperation);
+      if (!operation || error.outcome !== 'uncertain') return false;
+      const previous = error.code === 'SCALE_BUILD_DIRECT_PREVIOUS_UNCONFIRMED';
+      const storedDate = error.sqlOperation.dateIso;
+      const recordDate = /^\d{4}-\d{2}-\d{2}$/.test(storedDate || '') ? storedDate : dateIso;
+      const actualKind = SB_kind_(operation.method);
+      const record = { kind: actualKind, dateIso: recordDate, operation: operation, phase: 'unknown', signature: !previous && actualKind === kind && kind === 'build' && recordDate === dateIso ? SB_canonical_(payload) : null, rasRevision: rasRevision, sequence: ++SB_sequence, busy: false };
+      SB_active = record; if (actualKind === 'build') SB_builds[recordDate] = record;
+      SB_message_('O salvamento ainda não foi confirmado.', error.message || 'Seus ajustes e o identificador foram preservados. Confira a solicitação antes de enviar outros dados.');
+      SB_controls_(record); updateScaleActionsForPermutaBusy_(); SB_gateOutputs_();
+      return true;
+    }
+    async function SB_queryStatus_(record) {
+      if (!SB_authorized_() || record.busy || SB_active !== record) return;
+      record.busy = true; SB_controls_(record);
+      const sequence = record.sequence;
+      try {
+        // After a reload, compare only a local hash. No saved military payload is
+        // persisted in this tab, and no business request is sent by this action.
+        if (record.kind === 'build' && !record.signature && window.BNXScaleBuildRecovery && typeof window.BNXScaleBuildRecovery.matchesIntent === 'function') {
+          const payload = SB_buildPayload_();
+          if (await window.BNXScaleBuildRecovery.matchesIntent(record.operation.method, payload, record.operation)) { record.signature = SB_canonical_(payload); record.rasRevision = scaleRasMutationRevision_(record.dateIso); }
+        }
+        if (!SB_authorized_() || SB_active !== record || record.sequence !== sequence) return;
+        const method = record.phase === 'unknown' ? 'readScaleSaveReceipt' : 'getScaleOutputStatus';
+        BNX_rpc.run.withSuccessHandler(function(result) {
+          if (!SB_authorized_() || SB_active !== record || record.sequence !== sequence) return;
+          record.busy = false;
+          try { SB_present_(record, result); } catch (error) { SB_message_('Confira a solicitação.', error.message); SB_controls_(record); }
+        }).withFailureHandler(function(error) {
+          if (!SB_authorized_() || SB_active !== record || record.sequence !== sequence) return;
+          record.busy = false;
+          SB_message_(record.phase === 'unknown' ? 'O salvamento ainda não foi confirmado.' : 'A escala permanece salva no sistema.', error && error.message ? error.message : 'Não foi possível conferir a atualização agora. Nenhum salvamento foi repetido.');
+          SB_controls_(record);
+        })[method](record.operation);
+      } catch (error) {
+        if (!SB_authorized_() || SB_active !== record || record.sequence !== sequence) return;
+        record.busy = false; SB_message_('Confira a solicitação.', error && error.message || 'Não foi possível conferir a atualização agora.'); SB_controls_(record);
+      }
+    }
+    function SB_offerRecovery_() {
+      if (!SB_authorized_()) { SB_active = null; Object.keys(SB_builds).forEach(function(dateIso) { delete SB_builds[dateIso]; }); SB_removeControls_(); return; }
+      if (SB_active) {
+        if (SB_active.dateIso !== elements.scaleDate.value) { SB_controls_(SB_active); return; }
+        if (SB_active.ack && !SB_active.busy) SB_present_(SB_active, SB_active.ack, true);
+        else {
+          if (!SB_active.busy) SB_message_(SB_active.phase === 'unknown' ? 'Há uma solicitação sem confirmação nesta aba.' : 'Há uma escala salva aguardando conferência da saída.', 'Use Conferir para consultar a solicitação salva. Nenhum lançamento será repetido por essa consulta.');
+          SB_controls_(SB_active);
+        }
+        return;
+      }
+      if (typeof window.BNXScaleBuildRecovery.getRecovery !== 'function') return;
+      try {
+        const value = window.BNXScaleBuildRecovery.getRecovery(), operation = SB_descriptor_(value);
+        if (!operation || value.dateIso !== elements.scaleDate.value) return;
+        const record = { kind: SB_kind_(operation.method), dateIso: value.dateIso, operation: operation, phase: value.phase, signature: null, rasRevision: null, sequence: ++SB_sequence, busy: false };
+        SB_active = record; if (record.kind === 'build') SB_builds[record.dateIso] = record;
+        SB_message_(value.phase === 'unknown' ? 'Há uma solicitação sem confirmação nesta aba.' : 'Há uma escala salva aguardando conferência da saída.', 'Use Conferir para consultar a solicitação salva. Nenhum lançamento será repetido por essa consulta.');
+        SB_controls_(record); SB_gateOutputs_();
+      } catch (error) { SB_message_('Confira a solicitação anterior.', error && error.message || 'Não foi possível recuperar a conferência desta aba. Seus ajustes foram preservados.'); }
+    }
+
     function buildScale() {
       if (blockScaleWriteForQuota_()) return;
       if (state.scaleExpediente24hStaleDates[elements.scaleDate.value]) { showToast('Use Carregar Escala para conferir a distribuição atualizada do Expediente.'); return; }
@@ -15291,10 +15478,12 @@
       elements.scaleError.hidden = true;
       elements.scaleResult.textContent = 'Montando a planilha editável oficial…';
       const assignments = getScaleAssignments();
+      const scaleSqlBuildPayload = [dateIso, assignments, SG_guardPayload_(assignments), window.SN_fingerprint ? window.SN_fingerprint() : ''];
 
       BNX_rpc.run
         .withSuccessHandler(function(result) {
           if (!releaseScaleOfficialWrite_('build', requestId, dateIso)) return;
+          if (SB_acceptAck_('build', dateIso, scaleSqlBuildPayload, result, rasMutationRevision)) return;
           if (!scaleRasRevisionStillCurrent_(dateIso, rasMutationRevision, true)) return;
           state.scaleBuiltDate = dateIso;
           state.scaleOrderDirty = false;
@@ -15313,13 +15502,14 @@
         })
         .withFailureHandler(function(error) {
           if (!releaseScaleOfficialWrite_('build', requestId, dateIso)) return;
+          if (SB_noteUnknown_('build', dateIso, scaleSqlBuildPayload, error, rasMutationRevision)) return;
           if (handleScaleQuotaError_(error, dateIso)) return;
           if (!scaleRasRevisionStillCurrent_(dateIso, rasMutationRevision, true)) return;
           elements.scaleResult.hidden = true;
           elements.scaleError.textContent = 'Não foi possível montar a escala: ' + (error && error.message ? error.message : error) + ' Seus ajustes foram mantidos; a gravação não foi confirmada.';
           elements.scaleError.hidden = false;
         })
-        .buildScaleFromPortal(dateIso, assignments, SG_guardPayload_(assignments), window.SN_fingerprint ? window.SN_fingerprint() : '');
+        .buildScaleFromPortal(scaleSqlBuildPayload[0], scaleSqlBuildPayload[1], scaleSqlBuildPayload[2], scaleSqlBuildPayload[3]);
     }
 
     function archiveScale() {
@@ -15368,6 +15558,7 @@
       BNX_rpc.run
         .withSuccessHandler(function(result) {
           if (!releaseScaleOfficialWrite_('archive', requestId, dateIso)) return;
+          if (SB_acceptAck_('archive', dateIso, [dateIso], result, rasMutationRevision)) return;
           if (!scaleRasRevisionStillCurrent_(dateIso, rasMutationRevision, true)) return;
           const links = [
             result.urlArquivoMensal ? '<a href="' + escapeHtml(result.urlArquivoMensal) + '" target="_blank" rel="noopener">Abrir arquivo mensal</a>' : '',
@@ -15380,6 +15571,7 @@
         })
         .withFailureHandler(function(error) {
           if (!releaseScaleOfficialWrite_('archive', requestId, dateIso)) return;
+          if (SB_noteUnknown_('archive', dateIso, [dateIso], error, rasMutationRevision)) return;
           if (handleScaleQuotaError_(error, dateIso)) return;
           if (!scaleRasRevisionStillCurrent_(dateIso, rasMutationRevision, true)) return;
           elements.scaleResult.hidden = true;
