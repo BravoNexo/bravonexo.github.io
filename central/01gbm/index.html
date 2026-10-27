@@ -3154,12 +3154,12 @@
 </script>
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.11.10</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.11.11</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.11.10">v2.11.10</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.11.11">v2.11.11</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
@@ -4657,6 +4657,7 @@
             <div id="wings-swap-error" class="decision-error" hidden></div>
           </div>
           <div class="decision-footer">
+            <button id="wings-swap-receipt-check" class="secondary" type="button" hidden>Consultar operação pendente</button>
             <button id="wings-swap-dialog-close" class="secondary" type="button">Voltar</button>
             <button id="wings-swap-dialog-confirm" class="primary" type="button">Aplicar alterações</button>
           </div>
@@ -8814,12 +8815,16 @@
       return Boolean(state.wingsReceiptReviewRequired || wingsPendingReceipt_());
     }
     function updateWingsReceiptUi_() {
-      const button = document.getElementById('wings-receipt-check');
-      if (!button) return;
       const pending = wingsPendingReceipt_();
-      button.hidden = !pending;
-      button.disabled = Boolean(state.wingsReceiptBusy || state.wingsMapBusy || state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsAwayMoveBusy || state.wingsReturnBusy);
-      button.textContent = state.wingsReceiptBusy ? 'Consultando resultado…' : 'Consultar operação pendente';
+      const busy = Boolean(state.wingsReceiptBusy || state.wingsMapBusy || state.wingsPlanningBusy || state.wingsCurrentWriteBusy || state.wingsAwayMoveBusy || state.wingsReturnBusy);
+      ['wings-receipt-check', 'wings-swap-receipt-check'].forEach(function(id) {
+        const button = document.getElementById(id);
+        if (!button) return;
+        button.hidden = !pending;
+        button.disabled = busy;
+        button.textContent = state.wingsReceiptBusy ? 'Consultando resultado…' : 'Consultar operação pendente';
+      });
+      elements.wingsSwapDialogConfirm.disabled = busy || wingsReceiptWriteBlocked_();
     }
     async function recoverWingsPendingReceipt_() {
       if (state.wingsReceiptBusy || !wingsPendingReceipt_()) return;
@@ -8855,6 +8860,10 @@
         elements.wingsMapError.hidden = false;
       } finally {
         state.wingsReceiptBusy = false;
+        if (!elements.wingsSwapDialog.hidden && !elements.wingsMapError.hidden) {
+          elements.wingsSwapError.textContent = elements.wingsMapError.textContent;
+          elements.wingsSwapError.hidden = false;
+        }
         updateWingsSwapUi();
       }
     }
@@ -10905,6 +10914,7 @@
         elements.wingsSwapSummary.innerHTML = '<div class="scale-warning">Esta ação salva apenas a cópia mensal. O mapa vigente não será alterado. A ativação depende de aprovação posterior.</div>' + elements.wingsSwapSummary.innerHTML;
       }
       elements.wingsSwapDialog.hidden = false;
+      updateWingsReceiptUi_();
     }
 
     function closeWingsSwapDialog() {
@@ -18083,6 +18093,7 @@
     });
     elements.wingsMapReturnMain.addEventListener('click', openWingsReturnDialog);
     document.getElementById('wings-receipt-check').addEventListener('click', recoverWingsPendingReceipt_);
+    document.getElementById('wings-swap-receipt-check').addEventListener('click', recoverWingsPendingReceipt_);
     elements.wingsMapRefresh.addEventListener('click', function() {
       if (state.wingsPendingMoves.length) {
         showToast('Aplique ou descarte as alterações pendentes antes de atualizar o mapa.');
