@@ -3,6 +3,47 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
+  <style data-scale-opening>#scale-opening{display:none}html[data-scale-opening] #central-access{visibility:hidden!important}html[data-scale-opening] #scale-opening{display:grid;place-items:center;position:fixed;inset:0;z-index:2147483000;padding:24px;box-sizing:border-box;background:#f3f6f8;color:#35576b;font:400 15px Inter,Arial,sans-serif;text-align:center}#scale-opening .scale-opening-card{max-width:420px}#scale-opening p{margin:0;line-height:1.6}#scale-opening button{margin-top:16px;padding:9px 16px;border:1px solid #b8cbd6;border-radius:8px;background:#fff;color:#234d65;font:inherit;cursor:pointer}#scale-opening button[hidden]{display:none!important}</style>
+  <script data-scale-opening>(function(window,document){
+  'use strict';
+  var url,date,parsed;
+  try {
+    url=new URL(window.location.href);
+    if(url.searchParams.getAll('scaleWorkspaceDate').length!==1)return;
+    date=url.searchParams.get('scaleWorkspaceDate');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
+    parsed=new Date(date+'T12:00:00Z');
+    if(!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date)return;
+  }catch(_){return;}
+  var root=document.documentElement,done=false,warning='',timer=null;
+  root.setAttribute('data-scale-opening','loading');
+  function paint(){
+    if(done)return;
+    var status=document.getElementById('scale-opening-status'),reload=document.getElementById('scale-opening-reload');
+    if(status && warning)status.textContent=warning;
+    if(reload)reload.hidden=!warning;
+  }
+  function warn(message){if(done)return;warning=message;root.setAttribute('data-scale-opening','waiting');paint();}
+  function release(phase){
+    if(done||['login','closed','ready','delegated','delegated-denied'].indexOf(phase)===-1)return;
+    done=true;window.clearTimeout(timer);root.removeAttribute('data-scale-opening');
+    window.removeEventListener('error',failed,true);
+  }
+  function failed(event){
+    var target=event && event.target;
+    if(target && String(target.tagName||'').toLowerCase()==='script' && /(?:^|\/)central-client\.js(?:[?#]|$)/.test(String(target.src||'')))warn('Não foi possível abrir a escala. Recarregue esta janela para tentar novamente.');
+    else if(target===window)warn('Não foi possível concluir a abertura da escala. Recarregue esta janela para tentar novamente.');
+  }
+  window.BNXScaleOpeningState=release;
+  window.addEventListener('error',failed,true);
+  document.addEventListener('DOMContentLoaded',function(){
+    var reload=document.getElementById('scale-opening-reload');
+    if(reload)reload.addEventListener('click',function(){window.location.reload();});
+    paint();
+  },{once:true});
+  timer=window.setTimeout(function(){warn('A abertura está demorando. Aguarde mais um pouco ou recarregue esta janela.');},30000);
+})(window,document);
+</script>
   <style>
 
 
@@ -2861,7 +2902,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><script src="./central-client.js?v=06c703054d3561757308" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><script src="./central-client.js?v=727a37a49bf0837a0419" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3155,12 +3196,12 @@
 <style data-central-version>.central-app-version{display:inline-block;vertical-align:middle;margin-left:6px;font:500 11px/1.4 Arial,sans-serif;opacity:.78;white-space:nowrap}.central-access-card .central-app-version{font-size:12px;color:#526779}</style>
 <style data-scale-workspace-loading>html[data-scale-workspace-ui="1"]:not([data-scale-workspace-mounted="1"]) #scale-view-build{display:none!important}#scale-workspace-loading{padding:18px;color:#3f5b6d;background:#fff;border:1px solid #ccdae5;border-radius:10px;margin:12px 0}</style>
 </head>
-<body><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.15.4</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.15.5</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">E-mail</label><input id="central-email" name="email" type="email" placeholder="E-mail cadastrado" autocomplete="username" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form></div></section><div id="central-session-bar" hidden><span>Central BravoNexo · Conta autorizada</span><button id="central-sign-out" type="button">Sair desta aba</button></div><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
         <div class="brand-mark">BN</div>
-        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.15.4">v2.15.4</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+        <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.15.5">v2.15.5</small></strong><span>1º GBM • Gestão de efetivo</span></div>
       </div>
       <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" type="button" class="active">Início</button>
