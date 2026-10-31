@@ -19712,7 +19712,15 @@ installCallPlanOptions();
         if(noticeOpen&&typeof noticeOpen.focus==='function')noticeOpen.focus();
         h.showToast('Janela fechada. O salvamento e os dados preenchidos foram preservados para conferência.');return controller.snapshot();
       }
-      try{const view=controller.close();openPromise=null;restoreOpenBusy();return view;}catch(cause){h.showToast('Confira o resultado do salvamento antes de fechar.');return null;}
+      try{const view=controller.close();openPromise=null;restoreOpenBusy();return view;}catch(cause){
+        const pending=controller.snapshot();
+        if(pending.selection&&pending.pendingCount>0){
+          suspended=true;changed(pending);openPromise=null;restoreOpenBusy();
+          if(noticeOpen&&typeof noticeOpen.focus==='function')noticeOpen.focus();
+          h.showToast('Janela fechada. As outras pendências de cadastro foram preservadas para conferência.');return pending;
+        }
+        h.showToast('Confira o resultado do salvamento antes de fechar.');return null;
+      }
     }
     function save(){
       const phase=controller.snapshot().phase;
