@@ -1,0 +1,17 @@
+{
+  "id": "/central/01gbm/",
+  "name": "Central BravoNexo - 1º GBM",
+  "short_name": "Central BravoNexo",
+  "description": "Administração do 1º GBM pela Central BravoNexo.",
+  "lang": "pt-BR",
+  "start_url": "/central/01gbm/",
+  "scope": "/central/01gbm/",
+  "display": "standalone",
+  "theme_color": "#16324b",
+  "background_color": "#eef2f6",
+  "icons": [
+    { "src": "./icons/central-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/central-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/central-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
