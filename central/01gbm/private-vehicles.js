@@ -146,17 +146,15 @@ function buildRoster(registry) {
   const panel = node('div', undefined, 'cpv-roster');
   panel.className = 'cpv-roster';
   panel.setAttribute('aria-labelledby', 'cpv-roster-title');
-  const head = node('div');
-  head.className = 'cpv-forecast-head';
   const heading = node('h2', 'Militares por OBM', 'cpv-roster-title');
-  head.appendChild(heading);
-  const refresh = button('Atualizar relação', () => loadRoster(true));
-  head.appendChild(refresh);
-  panel.appendChild(head);
+  panel.appendChild(heading);
   panel.appendChild(node('p', 'Relação por OBM de vínculo, com um registro por militar. Os totais consideram veículos particulares ativos e distinguem os veículos com tipo não informado.'));
-  const filters = node('div');
-  filters.className = 'cpv-roster-filters';
+  const ribbon = node('div', undefined, 'cpv-roster-ribbon');
+  ribbon.className = 'cpv-roster-ribbon';
+  ribbon.setAttribute('role', 'group');
+  ribbon.setAttribute('aria-label', 'Filtros e ordenação da relação');
   const obmFilter = node('fieldset');
+  obmFilter.hidden = true;
   const carFilter = node('fieldset');
   obmFilter.appendChild(node('legend', 'OBM'));
   carFilter.appendChild(node('legend', 'Carro cadastrado'));
@@ -168,9 +166,12 @@ function buildRoster(registry) {
   carFilter.appendChild(carChoices);
   const motoFilter = node('fieldset');
   motoFilter.appendChild(node('legend', 'Moto'));
-  filters.appendChild(obmFilter);
-  filters.appendChild(carFilter);
-  filters.appendChild(motoFilter);
+  const motoChoices = node('div');
+  motoChoices.className = 'cpv-roster-choices';
+  motoFilter.appendChild(motoChoices);
+  ribbon.appendChild(obmFilter);
+  ribbon.appendChild(carFilter);
+  ribbon.appendChild(motoFilter);
   const order = node('div');
   order.className = 'cpv-roster-sort';
   function selectOrder(parent, id, label, entries) {
@@ -190,8 +191,13 @@ function buildRoster(registry) {
     ['antiguidade', 'Antiguidade'], ['nome', 'Nome'], ['rg', 'RG'], ['carros', 'Carro'], ['motos', 'Moto']
   ]);
   const sortDirection = selectOrder(order, 'cpv-roster-direction', 'Ordem', [['asc', 'A a Z'], ['desc', 'Z a A']]);
-  filters.appendChild(order);
-  panel.appendChild(filters);
+  ribbon.appendChild(order);
+  const actions = node('div');
+  actions.className = 'cpv-roster-actions';
+  const refresh = button('Atualizar relação', () => loadRoster(true));
+  actions.appendChild(refresh);
+  ribbon.appendChild(actions);
+  panel.appendChild(ribbon);
   const notice = node('p');
   notice.className = 'cpv-status';
   notice.setAttribute('role', 'status');
@@ -220,7 +226,8 @@ function buildRoster(registry) {
   }
   const withCar = checkbox(carChoices, 'Com carro cadastrado', true);
   const withoutCar = checkbox(carChoices, 'Sem carro cadastrado', true);
-  const withMoto = checkbox(motoFilter, 'Com moto cadastrada', false);
+  const withMoto = checkbox(motoChoices, 'Com moto cadastrada', true);
+  const withoutMoto = checkbox(motoChoices, 'Sem moto cadastrada', true);
   function updateOrderLabels() {
     const [ascending, descending] = sortDirection.children;
     const [first, last] = sortBy.value === 'antiguidade' ? [' · mais antigos primeiro', ' · mais modernos primeiro'] :
@@ -266,7 +273,8 @@ function buildRoster(registry) {
     for (const [obm, members] of groups) {
       if (selectedObms.get(obm) === false) continue;
       const matching = members.filter(member =>
-        (member.carros > 0 ? withCar.checked : withoutCar.checked) && (!withMoto.checked || member.motos > 0)
+        (member.carros > 0 ? withCar.checked : withoutCar.checked) &&
+        (member.motos > 0 ? withMoto.checked : withoutMoto.checked)
       ).sort(compareMembers);
       if (!matching.length) continue;
       const tbody = node('tbody'), groupRow = node('tr');
@@ -301,7 +309,7 @@ function buildRoster(registry) {
     for (const [obm] of groups) {
       checkbox(obmChoices, obmLabel(obm), selectedObms.get(obm) !== false, checked => selectedObms.set(obm, checked));
     }
-    filters.hidden = !groups.length;
+    obmFilter.hidden = !groups.length;
     render();
   }
   function pause() {
@@ -309,7 +317,7 @@ function buildRoster(registry) {
     flight = null;
     groups = null;
     dataGeneration = null;
-    filters.hidden = true;
+    obmFilter.hidden = true;
     obmChoices.replaceChildren();
     wrap.replaceChildren();
     notice.textContent = '';
@@ -330,7 +338,7 @@ function buildRoster(registry) {
     active = false;
     selectedObms.clear();
     withCar.checked = withoutCar.checked = true;
-    withMoto.checked = false;
+    withMoto.checked = withoutMoto.checked = true;
     setDefaultOrder();
     pause();
   }
@@ -419,16 +427,29 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-roster{min-width:0}
 .cpv-roster h2{margin:0;font-size:18px}
 .cpv-roster>p{font-size:13px}
-.cpv-roster-filters{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
-.cpv-roster-filters fieldset{min-width:0;margin:0;border:1px solid #c5d9e5;border-radius:8px;padding:8px 12px}
-.cpv-roster-filters legend{font-size:13px;font-weight:700}
-.cpv-roster-choices{display:flex;flex-wrap:wrap;gap:6px 15px}
-.cpv-roster-check{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:26px;font-size:13px}
-.cpv-roster-check input{width:auto;margin:0}
-.cpv-roster-check span{min-width:0;overflow-wrap:anywhere}
-.cpv-roster-sort{display:flex;flex-wrap:wrap;align-items:end;gap:8px 12px;max-width:100%}
-.cpv-roster-sort label{display:grid;gap:4px;font-size:13px;font-weight:700;max-width:100%}
-.cpv-roster-sort select{min-width:116px;font-weight:400}
+.cpv-roster-ribbon{position:sticky;top:0;z-index:40;isolation:isolate;display:flex;align-items:stretch;min-width:0;max-width:100%;margin:8px 0;padding:4px 6px;overflow-x:auto;overflow-y:hidden;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312;scrollbar-width:thin}
+.cpv-roster-ribbon>fieldset,.cpv-roster-sort,.cpv-roster-actions{flex:none;min-width:0;margin:0;padding:1px 9px;border:0}
+.cpv-roster-ribbon>:not([hidden])~*{border-inline-start:1px solid #e1e8ed}
+.cpv-roster-ribbon legend{padding:0;font-size:12px;font-weight:700}
+.cpv-roster-choices{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:0 10px}
+.cpv-roster-check{display:inline-flex;align-items:center;gap:5px;min-height:24px;font-size:12px;white-space:nowrap;cursor:pointer}
+.cpv-roster-check input{flex:none;width:14px;height:14px;min-height:0;margin:0;padding:0}
+.cpv-roster-sort,.cpv-roster-actions{display:flex;align-items:center;gap:8px}
+.cpv-roster-sort label{display:grid;gap:3px;font-size:12px;font-weight:700}
+.cpv-roster-ribbon .cpv-roster-sort select{min-height:30px;padding:4px 6px;font-size:12px;font-weight:400}
+.cpv-roster-ribbon .cpv-roster-actions button{min-height:30px;margin:0;padding:5px 8px;font-size:12px;white-space:nowrap}
+.cpv-roster-ribbon :is(input,select,button):focus-visible{outline:2px solid #176ca1;outline-offset:1px}
+@media(pointer:coarse){.cpv-roster-check{min-height:28px}}
+@media(max-width:640px) and (min-height:461px){
+  .cpv-roster-ribbon{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:2px;overflow:visible}
+  .cpv-roster-ribbon>fieldset,.cpv-roster-ribbon .cpv-roster-sort,.cpv-roster-ribbon .cpv-roster-actions{padding-inline:5px;border-inline-start:0}
+  .cpv-roster-ribbon>fieldset:first-child,.cpv-roster-ribbon .cpv-roster-sort,.cpv-roster-ribbon .cpv-roster-actions{grid-column:1/-1}
+  .cpv-roster-ribbon>fieldset:first-child .cpv-roster-choices{display:flex;flex-wrap:wrap;gap:0 8px}
+  .cpv-roster-ribbon .cpv-roster-choices{grid-auto-columns:minmax(0,1fr)}
+  .cpv-roster-check{white-space:normal}
+  .cpv-roster-sort{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+  .cpv-roster-actions{justify-content:flex-end}
+}
 .cpv-roster .cpv-roster-table{min-width:430px;background:#fff}
 .cpv-roster-table tbody tr{cursor:default}
 .cpv-roster-table .cpv-roster-group th{background:#e7f0f5;color:#173f5f}
