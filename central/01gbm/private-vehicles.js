@@ -1,7 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BNXPrivateVehiclesV1=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const AREA='guarda.cadastros',UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const RPC=Object.freeze({forecast:'central_private_vehicles_forecast_v1',list:'central_private_vehicles_list_v3',roster:'central_private_vehicles_roster_v1',military:'central_private_vehicle_military_search_v2',save:'central_private_vehicle_save_v2',receipt:'central_private_vehicle_receipt_v2',preview:'central_private_vehicles_preview_v2',import:'central_private_vehicles_import_v2'});
+const RPC=Object.freeze({forecast:'central_private_vehicles_forecast_v1',list:'central_private_vehicles_list_v3',roster:'central_private_vehicles_roster_v2',military:'central_private_vehicle_military_search_v2',save:'central_private_vehicle_save_v2',receipt:'central_private_vehicle_receipt_v2',preview:'central_private_vehicles_preview_v2',import:'central_private_vehicles_import_v2'});
 function error(message,code='INVALID_DATA',uncertain=false){return Object.assign(new Error(message),{code,uncertain});}
 function fail(){throw error('Não foi possível conferir os dados dos veículos.');}
 function exact(o,keys){if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).length!==keys.length||keys.some(k=>!Object.prototype.hasOwnProperty.call(o,k)))fail();}
@@ -31,13 +31,15 @@ function forecastMetrics(value){exact(value,['militares','somenteCarro','somente
 function forecastDto(value){exact(value,['version','kind','area','alaFiltro','total','alas']);if(value.version!==1||value.kind!=='CENTRAL_PRIVATE_VEHICLES_FORECAST'||value.area!==AREA||!Array.isArray(value.alas)||value.alas.length!==5)fail();forecastWing(value.alaFiltro);forecastMetrics(value.total);value.alas.forEach((row,index)=>{exact(row,['ala','militares','somenteCarro','somenteMoto','ambos','tipoPendente','identidadePendente','veiculosAtivos','maxCarros','minCarros']);if(row.ala!==[1,2,3,4,null][index])fail();const {ala,...metrics}=row;forecastMetrics(metrics);if(value.alaFiltro!==null&&ala!==(value.alaFiltro===0?null:value.alaFiltro)&&metrics.veiculosAtivos!==0)fail();});for(const key of ['militares','somenteCarro','somenteMoto','ambos','tipoPendente','identidadePendente','veiculosAtivos'])if(value.total[key]!==value.alas.reduce((sum,row)=>sum+row[key],0))fail();for(const pair of ['maxCarros','minCarros'])for(const key of ['carros','motos'])if(value.total[pair][key]!==value.alas.reduce((sum,row)=>sum+row[pair][key],0))fail();return value;}
 function rosterDto(value) {
   exact(value, ['version', 'kind', 'area', 'items']);
-  if (value.version !== 1 || value.kind !== 'CENTRAL_PRIVATE_VEHICLES_ROSTER' || value.area !== AREA ||
+  if (value.version !== 2 || value.kind !== 'CENTRAL_PRIVATE_VEHICLES_ROSTER' || value.area !== AREA ||
       !Array.isArray(value.items) || value.items.length > 2000) fail();
   const ids = new Set();
   for (const item of value.items) {
-    exact(item, ['rg', 'nome', 'obm', 'carros', 'motos', 'semTipo']);
+    exact(item, ['rg', 'nome', 'nomeGuerra', 'antiguidade', 'obm', 'carros', 'motos', 'semTipo']);
     str(item.rg, 40);
     str(item.nome, 200);
+    str(item.nomeGuerra, 200);
+    integer(item.antiguidade, 1);
     if (item.obm !== null) str(item.obm, 160);
     for (const key of ['carros', 'motos', 'semTipo']) integer(item[key]);
     if (ids.has(item.rg)) fail();
@@ -166,6 +168,28 @@ function buildRoster(registry) {
   carFilter.appendChild(carChoices);
   filters.appendChild(obmFilter);
   filters.appendChild(carFilter);
+  const order = node('div');
+  order.className = 'cpv-roster-sort';
+  function selectOrder(parent, id, label, entries) {
+    const field = node('label');
+    const select = node('select', undefined, id);
+    field.appendChild(node('span', label));
+    for (const [value, description] of entries) {
+      const option = node('option', description);
+      option.value = value;
+      select.appendChild(option);
+    }
+    field.appendChild(select);
+    parent.appendChild(field);
+    return select;
+  }
+  const sortBy = selectOrder(order, 'cpv-roster-sort', 'Organizar por:', [
+    ['antiguidade', 'Antiguidade'], ['nome', 'Nome'], ['rg', 'RG'], ['carros', 'Carro'], ['motos', 'Moto']
+  ]);
+  const sortDirection = selectOrder(order, 'cpv-roster-direction', 'Ordem', [['asc', 'A a Z'], ['desc', 'Z a A']]);
+  sortBy.value = 'nome';
+  sortDirection.value = 'asc';
+  filters.appendChild(order);
   panel.appendChild(filters);
   const notice = node('p');
   notice.className = 'cpv-status';
@@ -195,6 +219,28 @@ function buildRoster(registry) {
   }
   const withCar = checkbox(carChoices, 'Com carro cadastrado', true);
   const withoutCar = checkbox(carChoices, 'Sem carro cadastrado', true);
+  function updateOrderLabels() {
+    const [ascending, descending] = sortDirection.children;
+    const [first, last] = sortBy.value === 'antiguidade' ? [' · mais antigos primeiro', ' · mais modernos primeiro'] :
+      sortBy.value === 'nome' ? ['', ''] : [' · menor para maior', ' · maior para menor'];
+    ascending.textContent = 'A a Z' + first;
+    descending.textContent = 'Z a A' + last;
+  }
+  sortBy.addEventListener('change', () => { updateOrderLabels(); render(); });
+  sortDirection.addEventListener('change', render);
+
+  const compareRg = (left, right) => collator.compare(left.rg.replace(/[.\s-]/g, ''), right.rg.replace(/[.\s-]/g, '')) ||
+    collator.compare(left.rg, right.rg) || (left.rg < right.rg ? -1 : left.rg > right.rg ? 1 : 0);
+  const compareName = (left, right) => collator.compare(left.nomeGuerra, right.nomeGuerra);
+  function compareMembers(left, right) {
+    const key = sortBy.value;
+    const direction = sortDirection.value === 'desc' ? -1 : 1;
+    let result;
+    if (key === 'rg') result = compareRg(left, right);
+    else if (key === 'antiguidade' || key === 'carros' || key === 'motos') result = left[key] - right[key];
+    else result = compareName(left, right);
+    return direction * result || compareName(left, right) || compareRg(left, right);
+  }
   function render() {
     if (!groups || !active || !access()) return;
     const table = node('table');
@@ -211,7 +257,7 @@ function buildRoster(registry) {
     let withCount = 0, withoutCount = 0;
     for (const [obm, members] of groups) {
       if (selectedObms.get(obm) === false) continue;
-      const matching = members.filter(member => member.carros > 0 ? withCar.checked : withoutCar.checked);
+      const matching = members.filter(member => member.carros > 0 ? withCar.checked : withoutCar.checked).sort(compareMembers);
       if (!matching.length) continue;
       const tbody = node('tbody'), groupRow = node('tr');
       groupRow.className = 'cpv-roster-group';
@@ -242,8 +288,7 @@ function buildRoster(registry) {
     }
     groups = [...byObm].sort(([left], [right]) => left === null ? 1 : right === null ? -1 : collator.compare(left, right));
     obmChoices.replaceChildren();
-    for (const [obm, members] of groups) {
-      members.sort((left, right) => collator.compare(left.nome, right.nome) || collator.compare(left.rg, right.rg));
+    for (const [obm] of groups) {
       checkbox(obmChoices, obmLabel(obm), selectedObms.get(obm) !== false, checked => selectedObms.set(obm, checked));
     }
     filters.hidden = !groups.length;
@@ -275,6 +320,9 @@ function buildRoster(registry) {
     active = false;
     selectedObms.clear();
     withCar.checked = withoutCar.checked = true;
+    sortBy.value = 'nome';
+    sortDirection.value = 'asc';
+    updateOrderLabels();
     pause();
   }
   async function loadRoster(force = false) {
@@ -369,6 +417,9 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-roster-check{display:inline-flex;align-items:center;gap:6px;max-width:100%;min-height:26px;font-size:13px}
 .cpv-roster-check input{width:auto;margin:0}
 .cpv-roster-check span{min-width:0;overflow-wrap:anywhere}
+.cpv-roster-sort{display:flex;flex-wrap:wrap;align-items:end;gap:8px 12px;max-width:100%}
+.cpv-roster-sort label{display:grid;gap:4px;font-size:13px;font-weight:700;max-width:100%}
+.cpv-roster-sort select{min-width:116px;font-weight:400}
 .cpv-roster .cpv-roster-table{min-width:430px;background:#fff}
 .cpv-roster-table tbody tr{cursor:default}
 .cpv-roster-table .cpv-roster-group th{background:#e7f0f5;color:#173f5f}
