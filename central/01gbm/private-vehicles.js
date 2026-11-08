@@ -155,27 +155,16 @@ function buildRoster(registry) {
   ribbon.setAttribute('aria-label', 'Filtros e ordenação da relação');
   const obmFilter = node('fieldset');
   obmFilter.hidden = true;
-  const carFilter = node('fieldset');
   obmFilter.appendChild(node('legend', 'OBM'));
-  carFilter.appendChild(node('legend', 'Carro cadastrado'));
   const obmChoices = node('div');
   obmChoices.className = 'cpv-roster-choices';
   obmFilter.appendChild(obmChoices);
-  const carChoices = node('div');
-  carChoices.className = 'cpv-roster-choices';
-  carFilter.appendChild(carChoices);
-  const motoFilter = node('fieldset');
-  motoFilter.appendChild(node('legend', 'Moto'));
-  const motoChoices = node('div');
-  motoChoices.className = 'cpv-roster-choices';
-  motoFilter.appendChild(motoChoices);
   ribbon.appendChild(obmFilter);
-  ribbon.appendChild(carFilter);
-  ribbon.appendChild(motoFilter);
   const order = node('div');
   order.className = 'cpv-roster-sort';
-  function selectOrder(parent, id, label, entries) {
+  function selectField(parent, id, label, entries) {
     const field = node('label');
+    field.className = 'cpv-roster-select-field';
     const select = node('select', undefined, id);
     field.appendChild(node('span', label));
     for (const [value, description] of entries) {
@@ -187,10 +176,16 @@ function buildRoster(registry) {
     parent.appendChild(field);
     return select;
   }
-  const sortBy = selectOrder(order, 'cpv-roster-sort', 'Organizar por:', [
+  const presenceOptions = [['all', 'Todos'], ['with', 'Com'], ['without', 'Sem']];
+  const carFilter = selectField(ribbon, 'cpv-roster-car', 'Carro', presenceOptions);
+  const motoFilter = selectField(ribbon, 'cpv-roster-moto', 'Moto', presenceOptions);
+  carFilter.value = motoFilter.value = 'all';
+  carFilter.addEventListener('change', render);
+  motoFilter.addEventListener('change', render);
+  const sortBy = selectField(order, 'cpv-roster-sort', 'Organizar por:', [
     ['antiguidade', 'Antiguidade'], ['nome', 'Nome'], ['rg', 'RG'], ['carros', 'Carro'], ['motos', 'Moto']
   ]);
-  const sortDirection = selectOrder(order, 'cpv-roster-direction', 'Ordem', [['asc', 'A a Z'], ['desc', 'Z a A']]);
+  const sortDirection = selectField(order, 'cpv-roster-direction', 'Ordem', [['asc', 'A a Z'], ['desc', 'Z a A']]);
   ribbon.appendChild(order);
   const actions = node('div');
   actions.className = 'cpv-roster-actions';
@@ -224,10 +219,7 @@ function buildRoster(registry) {
     parent.appendChild(choice);
     return input;
   }
-  const withCar = checkbox(carChoices, 'Com carro cadastrado', true);
-  const withoutCar = checkbox(carChoices, 'Sem carro cadastrado', true);
-  const withMoto = checkbox(motoChoices, 'Com moto cadastrada', true);
-  const withoutMoto = checkbox(motoChoices, 'Sem moto cadastrada', true);
+  const matchesVehicleFilter = (value, count) => value === 'all' || value === (count > 0 ? 'with' : 'without');
   function updateOrderLabels() {
     const [ascending, descending] = sortDirection.children;
     const [first, last] = sortBy.value === 'antiguidade' ? [' · mais antigos primeiro', ' · mais modernos primeiro'] :
@@ -273,8 +265,8 @@ function buildRoster(registry) {
     for (const [obm, members] of groups) {
       if (selectedObms.get(obm) === false) continue;
       const matching = members.filter(member =>
-        (member.carros > 0 ? withCar.checked : withoutCar.checked) &&
-        (member.motos > 0 ? withMoto.checked : withoutMoto.checked)
+        matchesVehicleFilter(carFilter.value, member.carros) &&
+        matchesVehicleFilter(motoFilter.value, member.motos)
       ).sort(compareMembers);
       if (!matching.length) continue;
       const tbody = node('tbody'), groupRow = node('tr');
@@ -337,8 +329,7 @@ function buildRoster(registry) {
   function reset() {
     active = false;
     selectedObms.clear();
-    withCar.checked = withoutCar.checked = true;
-    withMoto.checked = withoutMoto.checked = true;
+    carFilter.value = motoFilter.value = 'all';
     setDefaultOrder();
     pause();
   }
@@ -428,21 +419,21 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-roster h2{margin:0;font-size:18px}
 .cpv-roster>p{font-size:13px}
 .cpv-roster-ribbon{position:sticky;top:0;z-index:40;isolation:isolate;display:flex;align-items:stretch;min-width:0;max-width:100%;margin:8px 0;padding:4px 6px;overflow-x:auto;overflow-y:hidden;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312;scrollbar-width:thin}
-.cpv-roster-ribbon>fieldset,.cpv-roster-sort,.cpv-roster-actions{flex:none;min-width:0;margin:0;padding:1px 9px;border:0}
+.cpv-roster-ribbon>fieldset,.cpv-roster-ribbon>.cpv-roster-select-field,.cpv-roster-sort,.cpv-roster-actions{flex:none;min-width:0;margin:0;padding:1px 9px;border:0}
 .cpv-roster-ribbon>:not([hidden])~*{border-inline-start:1px solid #e1e8ed}
 .cpv-roster-ribbon legend{padding:0;font-size:12px;font-weight:700}
 .cpv-roster-choices{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);gap:0 10px}
 .cpv-roster-check{display:inline-flex;align-items:center;gap:5px;min-height:24px;font-size:12px;white-space:nowrap;cursor:pointer}
 .cpv-roster-check input{flex:none;width:14px;height:14px;min-height:0;margin:0;padding:0}
 .cpv-roster-sort,.cpv-roster-actions{display:flex;align-items:center;gap:8px}
-.cpv-roster-sort label{display:grid;gap:3px;font-size:12px;font-weight:700}
-.cpv-roster-ribbon .cpv-roster-sort select{min-height:30px;padding:4px 6px;font-size:12px;font-weight:400}
+.cpv-roster-select-field{display:grid;align-content:center;gap:3px;font-size:12px;font-weight:700}
+.cpv-roster-ribbon .cpv-roster-select-field select{min-height:30px;padding:4px 6px;font-size:12px;font-weight:400}
 .cpv-roster-ribbon .cpv-roster-actions button{min-height:30px;margin:0;padding:5px 8px;font-size:12px;white-space:nowrap}
 .cpv-roster-ribbon :is(input,select,button):focus-visible{outline:2px solid #176ca1;outline-offset:1px}
 @media(pointer:coarse){.cpv-roster-check{min-height:28px}}
 @media(max-width:640px) and (min-height:461px){
   .cpv-roster-ribbon{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:2px;overflow:visible}
-  .cpv-roster-ribbon>fieldset,.cpv-roster-ribbon .cpv-roster-sort,.cpv-roster-ribbon .cpv-roster-actions{padding-inline:5px;border-inline-start:0}
+  .cpv-roster-ribbon>fieldset,.cpv-roster-ribbon>.cpv-roster-select-field,.cpv-roster-ribbon .cpv-roster-sort,.cpv-roster-ribbon .cpv-roster-actions{padding-inline:5px;border-inline-start:0}
   .cpv-roster-ribbon>fieldset:first-child,.cpv-roster-ribbon .cpv-roster-sort,.cpv-roster-ribbon .cpv-roster-actions{grid-column:1/-1}
   .cpv-roster-ribbon>fieldset:first-child .cpv-roster-choices{display:flex;flex-wrap:wrap;gap:0 8px}
   .cpv-roster-ribbon .cpv-roster-choices{grid-auto-columns:minmax(0,1fr)}
