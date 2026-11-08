@@ -166,8 +166,11 @@ function buildRoster(registry) {
   const carChoices = node('div');
   carChoices.className = 'cpv-roster-choices';
   carFilter.appendChild(carChoices);
+  const motoFilter = node('fieldset');
+  motoFilter.appendChild(node('legend', 'Moto'));
   filters.appendChild(obmFilter);
   filters.appendChild(carFilter);
+  filters.appendChild(motoFilter);
   const order = node('div');
   order.className = 'cpv-roster-sort';
   function selectOrder(parent, id, label, entries) {
@@ -187,8 +190,6 @@ function buildRoster(registry) {
     ['antiguidade', 'Antiguidade'], ['nome', 'Nome'], ['rg', 'RG'], ['carros', 'Carro'], ['motos', 'Moto']
   ]);
   const sortDirection = selectOrder(order, 'cpv-roster-direction', 'Ordem', [['asc', 'A a Z'], ['desc', 'Z a A']]);
-  sortBy.value = 'nome';
-  sortDirection.value = 'asc';
   filters.appendChild(order);
   panel.appendChild(filters);
   const notice = node('p');
@@ -219,6 +220,7 @@ function buildRoster(registry) {
   }
   const withCar = checkbox(carChoices, 'Com carro cadastrado', true);
   const withoutCar = checkbox(carChoices, 'Sem carro cadastrado', true);
+  const withMoto = checkbox(motoFilter, 'Com moto cadastrada', false);
   function updateOrderLabels() {
     const [ascending, descending] = sortDirection.children;
     const [first, last] = sortBy.value === 'antiguidade' ? [' · mais antigos primeiro', ' · mais modernos primeiro'] :
@@ -226,6 +228,12 @@ function buildRoster(registry) {
     ascending.textContent = 'A a Z' + first;
     descending.textContent = 'Z a A' + last;
   }
+  function setDefaultOrder() {
+    sortBy.value = 'antiguidade';
+    sortDirection.value = 'asc';
+    updateOrderLabels();
+  }
+  setDefaultOrder();
   sortBy.addEventListener('change', () => { updateOrderLabels(); render(); });
   sortDirection.addEventListener('change', render);
 
@@ -257,7 +265,9 @@ function buildRoster(registry) {
     let withCount = 0, withoutCount = 0;
     for (const [obm, members] of groups) {
       if (selectedObms.get(obm) === false) continue;
-      const matching = members.filter(member => member.carros > 0 ? withCar.checked : withoutCar.checked).sort(compareMembers);
+      const matching = members.filter(member =>
+        (member.carros > 0 ? withCar.checked : withoutCar.checked) && (!withMoto.checked || member.motos > 0)
+      ).sort(compareMembers);
       if (!matching.length) continue;
       const tbody = node('tbody'), groupRow = node('tr');
       groupRow.className = 'cpv-roster-group';
@@ -320,9 +330,8 @@ function buildRoster(registry) {
     active = false;
     selectedObms.clear();
     withCar.checked = withoutCar.checked = true;
-    sortBy.value = 'nome';
-    sortDirection.value = 'asc';
-    updateOrderLabels();
+    withMoto.checked = false;
+    setDefaultOrder();
     pause();
   }
   async function loadRoster(force = false) {
