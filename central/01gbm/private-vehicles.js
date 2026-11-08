@@ -60,19 +60,56 @@ const embedded = host.tagName !== 'DIALOG';
 const client = createClient({...options, fetchImpl: options.fetchImpl || env.fetch.bind(env)});
 if (!embedded && host.parentNode !== doc.body) doc.body.appendChild(host);
 const rosterEnabled = embedded && typeof options.canViewRoster === 'function';
-let roster = null;
+let roster = null, newDialog = null, editHome = null, returnNewFocus = false;
 let ready=false,visible=false,actor=null,disposed=false,busy=false,activeAction=null,epoch=0,control=null,rows=[],cursor=null,loadedFilterKey='',editRecord=null,militarySelected=null,pending=null,bulkPreview=null,bulkSelections=new Map(),forecastEpoch=0,forecastControl=null,forecastFlight=null,forecastRequestedKey='',forecastRequestActor=null,forecastRequestGeneration=null,forecastLoadedKey='',forecastLoading=false,forecastData=null,forecastDataActor=null,forecastDataGeneration=null;const elements={},listeners=[];
 const node=(tag,text,idValue)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(idValue)n.id=idValue;return n;},on=(el,event,fn)=>{el.addEventListener(event,fn);listeners.push(()=>el.removeEventListener(event,fn));},button=(text,fn,css='secondary')=>{const n=node('button',text);n.type='button';n.className=css;on(n,'click',fn);return n;},status=(text,bad=false)=>{elements.status.textContent=text;elements.status.className=bad?'decision-error':'cpv-status';};
 function allowed(edit=false){return ready&&!disposed&&options.canView()===true&&(!edit||options.canEdit()===true);}
 function stop(){epoch++;control?.abort();control=null;busy=false;activeAction=null;}
-function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();}
-async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';elements.editStatus.textContent=message;elements.bulkStatus.textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
+function inNewEditor() {
+  return newDialog !== null && elements.edit.parentNode === newDialog;
+}
+function closeNewDialog(restoreFocus = false) {
+  if (!newDialog?.open) return;
+  newDialog.close();
+  returnNewFocus = restoreFocus;
+  if (restoreFocus) (elements.new.disabled ? elements.status : elements.new).focus?.();
+}
+function closeEditor() {
+  if (!newDialog?.open) {
+    elements.edit.hidden = true;
+    return;
+  }
+  if (activeAction === 'military') stop();
+  closeNewDialog(true);
+  update();
+}
+function updateNewDialog(view, edit) {
+  if (!newDialog) return;
+  if (!edit) {
+    closeNewDialog();
+    returnNewFocus = false;
+  }
+  const resumable = inNewEditor() && pending?.operation === 'save';
+  elements.newReceipt.hidden = !resumable;
+  elements.newReceipt.disabled = busy || !view;
+  if (resumable) elements.new.disabled = busy || !edit;
+  if (returnNewFocus && visible && !roster?.selected() && !elements.new.disabled) {
+    returnNewFocus = false;
+    if (doc.activeElement === elements.status || !doc.activeElement || doc.activeElement === doc.body) elements.new.focus?.();
+  }
+}
+function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateNewDialog(view,edit);}
+async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inNewEditor()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';elements.editStatus.textContent=message;elements.bulkStatus.textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
 function setVisible(show) {
   if (disposed) {
     host.hidden = true;
     return false;
   }
   const nextVisible = show === true && allowed();
+  if (!nextVisible) {
+    closeNewDialog();
+    returnNewFocus = false;
+  }
   if (embedded && nextVisible === visible) {
     host.hidden = !nextVisible;
     update();
@@ -118,29 +155,82 @@ function loadForecast(force=false){if(!visible||!allowed())return Promise.resolv
 function readFilters(){if(!['','true','false'].includes(elements.active.value)||!['','0','1','2','3','4'].includes(elements.wingFilter.value)||!['','carro','moto','nao_informado'].includes(elements.typeFilter.value))throw error('Confira os filtros de ala, tipo e situação.','INVALID_FILTER');const query=elements.search.value.trim();let search=query||null;try{search=plate(query);}catch{}return listFilterArgs({p_busca:search,p_ativo:elements.active.value===''?null:elements.active.value==='true',p_ala:elements.wingFilter.value===''?null:Number(elements.wingFilter.value),p_tipo:elements.typeFilter.value||null});}
 function resetList(){if(!allowed()||busy&&activeAction!=='list')return false;if(busy)stop();rows=[];cursor=null;loadedFilterKey='';renderTotals(null);renderRows();status('Filtros alterados. Use Atualizar ou pressione Enter para consultar.');update();return true;}
 async function load(more=false){if(!allowed() || embedded && !visible)return false;let filters;try{filters=readFilters();}catch(e){status(e.message,true);return false;}if(busy){if(activeAction!=='list')return false;stop();}const key=JSON.stringify(filters),append=more===true&&cursor!==null&&loadedFilterKey===key,selectedCursor=append?{...cursor}:null;if(!append){rows=[];cursor=null;loadedFilterKey='';renderTotals(null);renderRows();}void loadForecast();return run('list',async(signal,guard)=>{status('Consultando veículos…');const result=await client.list({...filters,p_apos_placa:selectedCursor?.placa||null,p_apos_id:selectedCursor?.id||null},signal);guard();let current;try{current=JSON.stringify(readFilters());}catch{}if(current!==key){status('Filtros alterados. Use Atualizar para consultar a lista.');return false;}const next=append?[...rows,...result.items]:result.items;if(new Set(next.map(r=>r.id)).size!==next.length||new Set(next.map(r=>r.placa)).size!==next.length)fail();rows=next;cursor=result.nextCursor;loadedFilterKey=key;renderTotals(result.resumo);renderRows();status(rows.length?'Cadastros consultados.':'Nenhum veículo encontrado.');return true;});}
-function openEdit(item=null){if(!allowed()||busy||pending)return;editRecord=item;militarySelected=item?.militar||null;elements.plate.value=item?.placa||'';elements.rg.value=item?.militar?.documento||'';elements.model.value=item?.modelo||'';elements.color.value=item?.cor||'';elements.type.value=item?.tipo||'';elements.wing.textContent=item?wingLabel(item.ala):'Escolha um militar para consultar sua ala no Mapa.';elements.recordActive.checked=item?item.ativo:true;elements.militaryResults.replaceChildren();elements.militaryName.textContent=militarySelected?.nome||'Busque e selecione o militar responsável.';elements.editStatus.textContent='';elements.edit.hidden=false;elements.bulk.hidden=true;update();elements.plate.focus?.();}
-async function findMilitary(){if(!allowed(true)||busy||pending)return;const term=elements.rg.value.trim();if(term.length<3){elements.editStatus.textContent='Informe o RG ou pelo menos três letras do nome.';return;}militarySelected=null;return run('military',async(signal,guard)=>{const result=await client.military(term,signal);guard();elements.militaryResults.replaceChildren();for(const person of result.items){const choice=button(person.nome+(person.documento?' · RG '+person.documento:''),()=>{if(!allowed(true)||busy||pending||elements.rg.value.trim()!==term)return;militarySelected=person;elements.militaryName.textContent=person.nome+(person.documento?' · RG '+person.documento:'');elements.wing.textContent=wingLabel(person.ala);elements.militaryResults.replaceChildren();update();});elements.militaryResults.appendChild(choice);}elements.editStatus.textContent=result.items.length?(result.truncated?'Há mais resultados. Refine a busca pelo RG.':'Selecione o militar correspondente.'):'Nenhum militar apto encontrado.';status('Busca de militar concluída.');return true;});}
+function showNewDialog() {
+  try { newDialog.showModal(); } catch {
+    status('Não foi possível abrir o cadastro de veículo.', true);
+    return;
+  }
+  returnNewFocus = false;
+  if (pending) elements.newReceipt.focus?.();
+  else elements.plate.focus?.();
+}
+function openEdit(item=null){
+  if (!allowed(!item) || busy || (embedded && (!visible || roster?.selected()))) return;
+  const modal = !item && newDialog !== null;
+  if (modal && inNewEditor()) {
+    elements.edit.hidden = false;
+    elements.bulk.hidden = true;
+    showNewDialog();
+    return;
+  }
+  if (pending || newDialog?.open) return;
+  if (modal) newDialog.appendChild(elements.edit);
+  else if (inNewEditor()) editHome.appendChild(elements.edit);
+  elements.editTitle.textContent = modal ? 'Novo veículo' : 'Cadastro do veículo';
+  editRecord=item;militarySelected=item?.militar||null;elements.plate.value=item?.placa||'';elements.rg.value=item?.militar?.documento||'';elements.model.value=item?.modelo||'';elements.color.value=item?.cor||'';elements.type.value=item?.tipo||'';elements.wing.textContent=item?wingLabel(item.ala):'Escolha um militar para consultar sua ala no Mapa.';elements.recordActive.checked=item?item.ativo:true;elements.militaryResults.replaceChildren();elements.militaryName.textContent=militarySelected?.nome||'Busque e selecione o militar responsável.';elements.editStatus.textContent='';elements.edit.hidden=false;elements.bulk.hidden=true;update();if(modal)showNewDialog();else elements.plate.focus?.();}
+async function findMilitary(){if(!allowed(true)||busy||pending||(inNewEditor()&&!newDialog.open))return;const term=elements.rg.value.trim();if(term.length<3){elements.editStatus.textContent='Informe o RG ou pelo menos três letras do nome.';return;}militarySelected=null;if(inNewEditor())elements.editStatus.textContent='Buscando militar…';return run('military',async(signal,guard)=>{const result=await client.military(term,signal);guard();elements.militaryResults.replaceChildren();for(const person of result.items){const choice=button(person.nome+(person.documento?' · RG '+person.documento:''),()=>{if(!allowed(true)||busy||pending||elements.rg.value.trim()!==term)return;militarySelected=person;elements.militaryName.textContent=person.nome+(person.documento?' · RG '+person.documento:'');elements.wing.textContent=wingLabel(person.ala);elements.militaryResults.replaceChildren();update();});elements.militaryResults.appendChild(choice);}elements.editStatus.textContent=result.items.length?(result.truncated?'Há mais resultados. Refine a busca pelo RG.':'Selecione o militar correspondente.'):'Nenhum militar apto encontrado.';status('Busca de militar concluída.');return true;});}
 function verifyReceipt(result,attempt){if(result.requestId!==attempt.id||result.operation!==attempt.operation)fail();if(result.status!=='saved')return;if(attempt.operation==='save'){const v=result.items[0],data=attempt.payload;if(result.count!==1||!v||data.id!==null&&v.id!==data.id||v.placa!==data.placa||v.modelo!==data.modelo||v.cor!==data.cor||v.tipo!==data.tipo||v.ativo!==data.ativo||v.revisao!==data.revisao+1||v.entidadeId!==data.entidadeId)fail();}else{if(result.count!==attempt.rows.length)fail();for(const row of attempt.rows)if(!result.items.some(v=>v.placa===row.placa&&v.entidadeId===row.entidadeId&&v.tipo===row.tipo))fail();}}
-async function finish(result,attempt){verifyReceipt(result,attempt);pending=null;if(result.status==='conflict'){elements.editStatus.textContent='O cadastro mudou ou há conflito de placa. Confira os dados atuais antes de salvar novamente.';status('Nenhuma alteração desta tentativa foi aplicada. Confira os dados.',true);if(result.problems.length)elements.bulkStatus.textContent=result.problems.map(p=>'Linha '+p.index+': '+p.message).join('\n');return false;}if(attempt.operation==='save'){elements.edit.hidden=true;editRecord=null;militarySelected=null;}else{elements.bulk.hidden=true;elements.bulkText.value='';bulkPreview=null;elements.bulkRows.replaceChildren();}status(attempt.operation==='save'?'Veículo salvo com confirmação.':result.count+' veículo(s) importado(s) com confirmação.');rows=[];cursor=null;renderRows();void loadForecast(true);return true;}
-async function saveRecord(){if(!allowed(true)||busy||pending||!militarySelected&&(!editRecord||elements.recordActive.checked))return;let payload;try{payload={id:editRecord?.id||null,placa:plate(elements.plate.value),entidadeId:militarySelected?.id||editRecord.entidadeId,modelo:elements.model.value.trim()||null,cor:elements.color.value.trim()||null,tipo:inputType(elements.type.value),ativo:elements.recordActive.checked,revisao:editRecord?.revisao||0};nullable(payload.modelo,100);nullable(payload.cor,60);}catch(e){elements.editStatus.textContent=e.message;return;}const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'save',payload};const success=await run('save',async(signal,guard)=>{pending=attempt;update();elements.editStatus.textContent='Salvando uma única vez…';const result=await client.save(attempt.id,payload,signal);guard();return finish(result,attempt);});if(success)void load();}
-async function checkPending(){if(!pending||busy||!allowed())return;const attempt=pending,success=await run('receipt',async(signal,guard)=>{status('Consultando o resultado sem reenviar…');const result=await client.receipt(attempt.id,signal);guard();if(result===null){status('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.',true);return false;}return finish(result,attempt);});if(success)void load();}
-function openBulk(){if(!allowed(true)||busy||pending)return;elements.edit.hidden=true;elements.bulk.hidden=false;elements.bulkStatus.textContent='Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';update();elements.bulkText.focus?.();}
+async function finish(result,attempt){verifyReceipt(result,attempt);pending=null;if(result.status==='conflict'){elements.editStatus.textContent='O cadastro mudou ou há conflito de placa. Confira os dados atuais antes de salvar novamente.';status('Nenhuma alteração desta tentativa foi aplicada. Confira os dados.',true);if(result.problems.length)elements.bulkStatus.textContent=result.problems.map(p=>'Linha '+p.index+': '+p.message).join('\n');return false;}if(attempt.operation==='save'){
+  if (inNewEditor()) {
+    closeNewDialog(true);
+    editHome.appendChild(elements.edit);
+  }
+  elements.edit.hidden=true;editRecord=null;militarySelected=null;
+}else{elements.bulk.hidden=true;elements.bulkText.value='';bulkPreview=null;elements.bulkRows.replaceChildren();}status(attempt.operation==='save'?'Veículo salvo com confirmação.':result.count+' veículo(s) importado(s) com confirmação.');rows=[];cursor=null;renderRows();void loadForecast(true);return true;}
+async function saveRecord(){if(!allowed(true)||busy||pending||(inNewEditor()&&!newDialog.open)||!militarySelected&&(!editRecord||elements.recordActive.checked))return;let payload;try{payload={id:editRecord?.id||null,placa:plate(elements.plate.value),entidadeId:militarySelected?.id||editRecord.entidadeId,modelo:elements.model.value.trim()||null,cor:elements.color.value.trim()||null,tipo:inputType(elements.type.value),ativo:elements.recordActive.checked,revisao:editRecord?.revisao||0};nullable(payload.modelo,100);nullable(payload.cor,60);}catch(e){elements.editStatus.textContent=e.message;return;}const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'save',payload};const success=await run('save',async(signal,guard)=>{pending=attempt;update();elements.editStatus.textContent='Salvando uma única vez…';const result=await client.save(attempt.id,payload,signal);guard();return finish(result,attempt);});if(success)void load();}
+async function checkPending(){if(!pending||busy||!allowed())return;const attempt=pending,success=await run('receipt',async(signal,guard)=>{status('Consultando o resultado sem reenviar…');if(inNewEditor()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;const result=await client.receipt(attempt.id,signal);guard();if(result===null){status('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.',true);if(inNewEditor()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;return false;}return finish(result,attempt);});if(success)void load();}
+function openBulk(){if(!allowed(true)||busy||pending||newDialog?.open)return;elements.edit.hidden=true;elements.bulk.hidden=false;elements.bulkStatus.textContent='Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';update();elements.bulkText.focus?.();}
 function renderPreview(report){elements.bulkRows.replaceChildren();const labels={ready:'Novo',existing:'Já cadastrado · não duplicar',ambiguous:'Escolher militar',not_found:'Militar não encontrado',invalid:'Dados inválidos',duplicate:'Placa repetida',conflict:'Conflito de vínculo'};for(const row of report.rows){const tr=node('tr');for(const text of[row.index,row.rg,row.placa,row.modelo||'—',row.cor||'—',typeLabel(row.tipo),wingLabel(row.ala)])tr.appendChild(node('td',String(text)));const owner=node('td');if(row.status==='ambiguous'){const select=node('select');select.appendChild(node('option','Selecione o militar'));for(const person of row.militares){const option=node('option',person.nome+(person.documento?' · RG '+person.documento:''));option.value=person.id;select.appendChild(option);}on(select,'change',()=>{row.entidadeId=select.value||null;bulkSelections.set(row.rg+'|'+row.placa,row.entidadeId);bulkPreview=null;elements.bulkStatus.textContent='Clique em Conferir colagem novamente para validar a escolha.';update();});owner.appendChild(select);}else owner.textContent=row.militares.find(p=>p.id===row.entidadeId)?.nome||'—';tr.appendChild(owner);const state=node('td',labels[row.status]+(row.message?' · '+row.message:''));if(!['ready','existing'].includes(row.status))state.className='decision-error';tr.appendChild(state);elements.bulkRows.appendChild(tr);}const n=report.rows.filter(r=>r.status==='ready').length,existing=report.rows.filter(r=>r.status==='existing').length,bad=report.rows.length-n-existing;elements.bulkStatus.textContent=n+' novo(s), '+existing+' já cadastrado(s), '+bad+' pendência(s). Nenhum cadastro foi enviado.';}
 async function previewBulk(){if(!allowed(true)||busy||pending)return;const parsed=parseClipboard(elements.bulkText.value);if(parsed.problems.length){bulkPreview=null;elements.bulkStatus.textContent=parsed.problems.map(p=>(p.line?'Linha '+p.line+': ':'')+p.message).join('\n');update();return;}return run('preview',async(signal,guard)=>{const report=await client.preview(parsed.rows.map(r=>({...r,entidadeId:bulkSelections.get(r.rg+'|'+r.placa)||null})),signal);guard();if(report.rows.length!==parsed.rows.length)fail();bulkPreview=report;renderPreview(report);status('Colagem conferida. Nenhum cadastro foi enviado.');return true;});}
 async function importBulk(){if(!allowed(true)||busy||pending||!bulkPreview)return;let data;try{data=readyRows(bulkPreview);}catch(e){elements.bulkStatus.textContent=e.message;return;}const preparedPreview=bulkPreview,preparedActor=actor,preparedGeneration=options.getGeneration(),skipped=bulkPreview.rows.filter(r=>r.status==='existing').length;if(!await Promise.resolve((options.confirm||env.confirm?.bind(env)||(()=>false))('Cadastrar '+data.length+' veículo(s) particular(es)?'+(skipped?' '+skipped+' já cadastrado(s) serão preservados, sem duplicação.':''))))return;if(!allowed(true)||embedded&&!visible||busy||pending||bulkPreview!==preparedPreview||actor!==preparedActor||options.getGeneration()!==preparedGeneration)return;const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'import',rows:data};const success=await run('import',async(signal,guard)=>{pending=attempt;update();elements.bulkStatus.textContent='Enviando um único lote…';const result=await client.import(attempt.id,data,signal);guard();return finish(result,attempt);});if(success)void load();}
 function field(parent,label,tag='input'){const wrap=node('label');wrap.className='cpv-field';wrap.appendChild(node('span',label));const input=node(tag);wrap.appendChild(input);parent.appendChild(wrap);return input;}
-function buildRoster(registry) {
-  const modes = node('div');
-  modes.className = 'cpv-view-modes';
-  modes.setAttribute('role', 'group');
-  modes.setAttribute('aria-label', 'Visualização de veículos particulares');
-  const listMode = button('Cadastro de veículos', () => choose(false));
-  const rosterMode = button('Militares por OBM', () => choose(true));
+function commandGroup(label, className, ...controls) {
+  const group = node('div');
+  group.className = 'cpv-command-group ' + className;
+  group.setAttribute('role', 'group');
+  group.setAttribute('aria-label', label);
+  const content = node('div');
+  content.className = 'cpv-command-content';
+  for (const control of controls) content.appendChild(control);
+  group.appendChild(content);
+  const caption = node('span', label);
+  caption.className = 'cpv-command-caption';
+  caption.setAttribute('aria-hidden', 'true');
+  group.appendChild(caption);
+  return group;
+}
+function commandButton(control, pathData) {
+  const namespace = 'http://www.w3.org/2000/svg';
+  const icon = doc.createElementNS(namespace, 'svg');
+  icon.setAttribute('viewBox', '0 0 24 24');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.setAttribute('focusable', 'false');
+  const shape = doc.createElementNS(namespace, 'path');
+  shape.setAttribute('d', pathData);
+  icon.appendChild(shape);
+  control.classList.add('cpv-command-button');
+  control.replaceChildren(icon, node('span', control.textContent));
+  return control;
+}
+function buildRoster(registry, commandRibbon, inventoryCommands) {
+  const listMode = commandButton(button('Cadastro de veículos', () => choose(false)),
+    'M5 15v3m14-3v3M4 15h16v-4l-2-4H6l-2 4v4Zm0-4h16M7 13h1m8 0h1');
+  const rosterMode = commandButton(button('Militares por OBM', () => choose(true)),
+    'M12 21H4v-3a4 4 0 0 1 4-4h4m-1-4a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm4 4h5m-5 4h5');
   listMode.setAttribute('aria-controls', registry.id);
   rosterMode.setAttribute('aria-controls', 'cpv-roster');
-  modes.appendChild(listMode);
-  modes.appendChild(rosterMode);
-  host.appendChild(modes);
+  const modes = commandGroup('Visualização', 'cpv-view-modes', listMode, rosterMode);
+  commandRibbon.appendChild(modes);
   host.appendChild(registry);
 
   const panel = node('div', undefined, 'cpv-roster');
@@ -324,6 +414,7 @@ function buildRoster(registry) {
     rosterMode.setAttribute('aria-pressed', String(active));
     panel.hidden = !active;
     registry.hidden = active;
+    inventoryCommands.hidden = active;
     refresh.disabled = !visible || !allowedHere || !!flight;
   }
   function reset() {
@@ -361,6 +452,10 @@ function buildRoster(registry) {
   }
   function choose(showRoster) {
     if (!visible || showRoster === active || (showRoster && (!access() || rosterMode.disabled))) return;
+    if (showRoster) {
+      closeNewDialog();
+      returnNewFocus = false;
+    }
     active = showRoster;
     if (active) {
       if (activeAction === 'list') {
@@ -387,6 +482,10 @@ function build() {
   style.textContent = shellStyle + `
 ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-top{display:flex;justify-content:space-between;gap:15px;align-items:center}
+.cpv-page .cpv-new-dialog{position:fixed;inset:0;margin:auto;width:min(720px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;box-sizing:border-box;border:1px solid #c5d5df;border-radius:14px;padding:20px;color:#17374e;background:#fff;box-shadow:0 16px 40px #0f172a40}
+.cpv-page .cpv-new-dialog::backdrop{background:rgba(15,23,42,.55)}
+.cpv-page .cpv-new-dialog .cpv-edit-form{border:0;margin:0;padding:0}
+.cpv-page .cpv-new-dialog h3{margin:0 0 12px}
 .cpv-ribbon,.cpv-fields{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:16px 0}
 .cpv-field{display:grid;gap:5px;min-width:150px;flex:1;font-size:13px}${scope} input,${scope} select,${scope} textarea{border:1px solid #afc2ce;border-radius:7px;padding:9px;color:#17374e;background:white;box-sizing:border-box;width:100%}${scope} table{border-collapse:collapse;width:100%;font-size:13px}${scope} td,${scope} th{padding:10px;text-align:left;border-bottom:1px solid #dbe4ea;vertical-align:top}
 .cpv-scroll{overflow:auto}${scope} section{border-top:1px solid #d9e4eb;margin-top:20px;padding-top:15px}
@@ -413,8 +512,26 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-forecast th:nth-child(5){width:25%}
 .cpv-forecast-pair,.cpv-forecast-pending{white-space:pre-line}
 .cpv-forecast-summary{font-weight:700}
-.cpv-view-modes{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
-.cpv-view-modes button[aria-pressed=true]{background:#e6f0f5;border-color:#9dbacb;color:#173f5f;font-weight:700}
+.cpv-page .cpv-command-ribbon{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px 0;min-width:0;margin:12px 0;padding:5px;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312}
+.cpv-page .cpv-inventory-commands{display:contents}
+.cpv-page .cpv-command-group{display:flex;flex-direction:column;justify-content:space-between;gap:4px;min-width:0;padding:3px 6px;border-inline-end:1px solid #d8e0e6}
+.cpv-page .cpv-command-content{display:flex;flex-wrap:wrap;gap:4px}
+.cpv-page .cpv-command-caption{align-self:center;font-size:10px;font-weight:700;color:#536b7b}
+.cpv-page .cpv-command-ribbon .cpv-command-button{display:flex;flex:0 0 72px;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:72px;min-height:72px;box-sizing:border-box;margin:0;padding:4px;border:1px solid #d6e1e7;border-radius:5px;background:#fff;color:#263f50;font:inherit;font-size:10.5px;font-weight:700;line-height:1.2;text-align:center;white-space:normal}
+.cpv-page .cpv-command-button>svg{width:26px;height:26px;flex:none;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.cpv-page .cpv-command-ribbon .cpv-command-button[aria-pressed=true],.cpv-page .cpv-command-ribbon .cpv-command-button:not(:disabled):hover{border-color:#9dbacb;background:#e6f0f5;color:#173f5f}
+.cpv-page .cpv-command-ribbon .cpv-command-button.primary:not(:disabled){border-color:#175b4e;background:#175b4e;color:#fff}
+.cpv-page .cpv-command-ribbon .cpv-command-button.primary:not(:disabled):hover{border-color:#104639;background:#104639}
+.cpv-page .cpv-command-ribbon .cpv-command-button:disabled{border-color:#e2e7ea;background:#f4f6f7;color:#687984;opacity:1;cursor:default}
+.cpv-page .cpv-command-ribbon :is(button,input,select):focus-visible{outline:2px solid #2477a7;outline-offset:2px}
+.cpv-page .cpv-command-filters{flex:1 1 400px;justify-content:flex-end;border-inline-end:0}
+.cpv-page .cpv-command-filters .cpv-ribbon{display:grid;grid-template-columns:minmax(140px,1.5fr) repeat(3,minmax(72px,1fr));align-items:end;gap:5px 8px;width:100%;margin:0}
+.cpv-page .cpv-command-filters .cpv-field{min-width:0;font-size:11px;font-weight:700;color:#536b7b}
+.cpv-page .cpv-command-filters :is(input,select){min-width:0;min-height:36px;padding:5px;font-size:12px}
+@media(max-width:720px){
+  .cpv-page .cpv-command-filters .cpv-ribbon{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media print{.cpv-page .cpv-command-ribbon{display:none!important}}
 .cpv-roster{min-width:0}
 .cpv-roster h2{margin:0;font-size:18px}
 .cpv-roster>p{font-size:13px}
@@ -456,13 +573,47 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
   top.appendChild(title);
   if (!embedded) top.appendChild(button('Fechar', () => setVisible(false)));
   host.appendChild(top);
+  const commandRibbon = embedded ? node('div', undefined, 'cpv-command-ribbon') : null;
+  const inventoryCommands = embedded ? node('div', undefined, 'cpv-inventory-commands') : null;
+  if (commandRibbon) {
+    commandRibbon.className = 'cpv-command-ribbon';
+    commandRibbon.setAttribute('role', 'group');
+    commandRibbon.setAttribute('aria-label', 'Opções de Veículos Particulares');
+    inventoryCommands.className = 'cpv-inventory-commands';
+    host.appendChild(commandRibbon);
+  }
   const registry = rosterEnabled ? node('div', undefined, 'cpv-registration') : host;
-  if (rosterEnabled) roster = buildRoster(registry);
+  if (rosterEnabled) roster = buildRoster(registry, commandRibbon, inventoryCommands);
   const description = node('p', 'Cadastro vinculado aos militares para identificação pela placa no Controle de Acesso. Os veículos não integram a frota do quartel.');
   description.className = 'cpv-description';
   registry.appendChild(description);
-const ribbon=node('div');ribbon.className='cpv-ribbon';elements.search=field(ribbon,'Localizar por placa, RG ou militar');elements.search.maxLength=100;elements.search.placeholder='Digite para localizar';elements.active=field(ribbon,'Situação','select');for(const[v,text]of[['true','Ativos'],['','Todos'],['false','Inativos']]){const op=node('option',text);op.value=v;elements.active.appendChild(op);}elements.wingFilter=field(ribbon,'Ala no Mapa','select');for(const [value,label] of [['','Todas'],['1','Ala 1'],['2','Ala 2'],['3','Ala 3'],['4','Ala 4'],['0','Sem ala no Mapa']]){const option=node('option',label);option.value=value;elements.wingFilter.appendChild(option);}elements.wingFilter.value='';elements.typeFilter=field(ribbon,'Tipo do veículo','select');for(const [value,label] of [['','Todos'],['carro','Carro'],['moto','Moto'],['nao_informado','Não informado']]){const option=node('option',label);option.value=value;elements.typeFilter.appendChild(option);}elements.typeFilter.value='';elements.refresh=button('Atualizar',()=>{void loadForecast(true);return load();});elements.new=button('Novo veículo',()=>openEdit(), 'primary');elements.paste=button('Colar da planilha',openBulk);ribbon.appendChild(elements.refresh);ribbon.appendChild(elements.new);ribbon.appendChild(elements.paste);registry.appendChild(ribbon);elements.status=node('p','','cpv-status');elements.status.setAttribute('role','status');elements.status.setAttribute('aria-live','polite');registry.appendChild(elements.status);elements.check=button('Consultar resultado do envio',checkPending);elements.check.hidden=true;registry.appendChild(elements.check);elements.forecast=node('section');elements.forecast.className='cpv-forecast';const forecastHead=node('div');forecastHead.className='cpv-forecast-head';forecastHead.appendChild(node('h3','Previsão por ala'));elements.forecastRefresh=button('Atualizar previsão',()=>loadForecast(true));forecastHead.appendChild(elements.forecastRefresh);elements.forecast.appendChild(forecastHead);elements.forecast.appendChild(node('p','1 veículo por militar. Considera todos os tipos ativos da ala selecionada.'));elements.forecast.appendChild(node('p','Os cenários consideram as mesmas pessoas. Estimativa por ala, sem consultar a escala ou a presença do dia.'));elements.forecastStatus=node('p');elements.forecastStatus.className='cpv-status';elements.forecastStatus.setAttribute('role','status');elements.forecastStatus.setAttribute('aria-live','polite');elements.forecast.appendChild(elements.forecastStatus);elements.forecastResult=node('div');elements.forecastResult.hidden=true;elements.forecastSummary=node('p');elements.forecastSummary.className='cpv-forecast-summary';elements.forecastAlternatives=node('p');elements.forecastPending=node('p');elements.forecastResult.appendChild(elements.forecastSummary);elements.forecastResult.appendChild(elements.forecastAlternatives);const forecastTable=node('table'),forecastThead=node('thead'),forecastHeader=node('tr');for(const text of ['Ala','Militares','Máximo de carros','Mínimo de carros','A confirmar'])forecastHeader.appendChild(node('th',text));forecastThead.appendChild(forecastHeader);forecastTable.appendChild(forecastThead);elements.forecastRows=node('tbody');forecastTable.appendChild(elements.forecastRows);elements.forecastResult.appendChild(forecastTable);elements.forecastResult.appendChild(elements.forecastPending);elements.forecastPendingNote=node('p','Militares sem tipo e vínculos pendentes ficam fora dos cenários.');elements.forecastResult.appendChild(elements.forecastPendingNote);elements.forecast.appendChild(elements.forecastResult);registry.appendChild(elements.forecast);elements.totals=node('details');elements.totals.className='cpv-totals';elements.totals.hidden=true;elements.totals.appendChild(node('summary','Placas cadastradas'));elements.totalText=node('p');elements.totals.appendChild(elements.totalText);elements.totals.appendChild(node('p','Quantitativo dos veículos ativos conforme os filtros de ala e tipo. A busca, a situação da lista e a página carregada não alteram este quadro. Não representa os veículos que estão dentro do quartel. A ala vem do Mapa das Alas.'));const totalScroll=node('div');totalScroll.className='cpv-scroll';const totalTable=node('table'),totalHead=node('thead'),totalHeader=node('tr');for(const title of ['Ala no Mapa','Total','Carros','Motos','Sem tipo'])totalHeader.appendChild(node('th',title));totalHead.appendChild(totalHeader);totalTable.appendChild(totalHead);elements.totalRows=node('tbody');totalTable.appendChild(elements.totalRows);totalScroll.appendChild(totalTable);elements.totals.appendChild(totalScroll);registry.appendChild(elements.totals);const scroll=node('div');scroll.className='cpv-scroll';const table=node('table'),thead=node('thead'),headrow=node('tr');for(const text of['Placa','Militar','Ala no Mapa','Tipo','Modelo','Cor','Situação','Ação'])headrow.appendChild(node('th',text));thead.appendChild(headrow);table.appendChild(thead);elements.table=node('tbody');table.appendChild(elements.table);scroll.appendChild(table);registry.appendChild(scroll);elements.empty=node('p','Nenhum veículo encontrado.');registry.appendChild(elements.empty);elements.summary=node('p');elements.summary.className='cpv-summary';registry.appendChild(elements.summary);elements.more=button('Carregar mais',()=>load(true));registry.appendChild(elements.more);
-elements.edit=node('section');elements.edit.hidden=true;elements.edit.appendChild(node('h3','Cadastro do veículo'));const fields=node('div');fields.className='cpv-fields';elements.plate=field(fields,'Placa');elements.plate.maxLength=20;elements.plate.setAttribute('autocapitalize','characters');elements.rg=field(fields,'RG ou nome do militar');elements.rg.maxLength=100;elements.militarySearch=button('Buscar militar',findMilitary);fields.appendChild(elements.militarySearch);elements.model=field(fields,'Modelo (opcional)');elements.model.maxLength=100;elements.color=field(fields,'Cor (opcional)');elements.color.maxLength=60;elements.type=field(fields,'Tipo','select');for(const [value,label] of [['','Não informado'],['carro','Carro'],['moto','Moto']]){const option=node('option',label);option.value=value;elements.type.appendChild(option);}elements.type.value='';const activeLabel=node('label');elements.recordActive=node('input');elements.recordActive.type='checkbox';activeLabel.appendChild(elements.recordActive);activeLabel.appendChild(node('span','Cadastro ativo'));fields.appendChild(activeLabel);elements.edit.appendChild(fields);elements.militaryName=node('p');elements.edit.appendChild(elements.militaryName);elements.wing=node('p');elements.wing.className='cpv-wing';elements.edit.appendChild(elements.wing);elements.militaryResults=node('div');elements.militaryResults.className='cpv-military';elements.edit.appendChild(elements.militaryResults);elements.editStatus=node('p');elements.editStatus.className='cpv-status';elements.editStatus.setAttribute('role','status');elements.edit.appendChild(elements.editStatus);elements.save=button('Salvar veículo',saveRecord,'primary');elements.edit.appendChild(elements.save);elements.edit.appendChild(button('Fechar cadastro',()=>{elements.edit.hidden=true;}));registry.appendChild(elements.edit);
+const ribbon=node('div');ribbon.className='cpv-ribbon';elements.search=field(ribbon,'Localizar por placa, RG ou militar');elements.search.maxLength=100;elements.search.placeholder='Digite para localizar';elements.active=field(ribbon,'Situação','select');for(const[v,text]of[['true','Ativos'],['','Todos'],['false','Inativos']]){const op=node('option',text);op.value=v;elements.active.appendChild(op);}elements.wingFilter=field(ribbon,'Ala no Mapa','select');for(const [value,label] of [['','Todas'],['1','Ala 1'],['2','Ala 2'],['3','Ala 3'],['4','Ala 4'],['0','Sem ala no Mapa']]){const option=node('option',label);option.value=value;elements.wingFilter.appendChild(option);}elements.wingFilter.value='';elements.typeFilter=field(ribbon,'Tipo do veículo','select');for(const [value,label] of [['','Todos'],['carro','Carro'],['moto','Moto'],['nao_informado','Não informado']]){const option=node('option',label);option.value=value;elements.typeFilter.appendChild(option);}elements.typeFilter.value='';elements.refresh=button('Atualizar',()=>{void loadForecast(true);return load();});elements.new=button('Novo veículo',()=>openEdit(), 'primary');elements.paste=button('Colar da planilha',openBulk);ribbon.appendChild(elements.refresh);ribbon.appendChild(elements.new);ribbon.appendChild(elements.paste);registry.appendChild(ribbon);
+  if (commandRibbon) {
+    inventoryCommands.appendChild(commandGroup('Cadastro', 'cpv-command-actions',
+      commandButton(elements.new, 'M12 5v14M5 12h14'),
+      commandButton(elements.paste, 'M9 5H6a1 1 0 0 0-1 1v14h14V6a1 1 0 0 0-1-1h-3M9 3h6v4H9zM8 11h8m-8 4h8'),
+      commandButton(elements.refresh, 'M20 10a8 8 0 1 0-2 8m2-13v5h-5')));
+    inventoryCommands.appendChild(commandGroup('Filtros', 'cpv-command-filters', ribbon));
+    commandRibbon.appendChild(inventoryCommands);
+  }
+  elements.status=node('p','','cpv-status');elements.status.setAttribute('role','status');elements.status.setAttribute('aria-live','polite');registry.appendChild(elements.status);elements.check=button('Consultar resultado do envio',checkPending);elements.check.hidden=true;registry.appendChild(elements.check);elements.forecast=node('section');elements.forecast.className='cpv-forecast';const forecastHead=node('div');forecastHead.className='cpv-forecast-head';forecastHead.appendChild(node('h3','Previsão por ala'));elements.forecastRefresh=button('Atualizar previsão',()=>loadForecast(true));forecastHead.appendChild(elements.forecastRefresh);elements.forecast.appendChild(forecastHead);elements.forecast.appendChild(node('p','1 veículo por militar. Considera todos os tipos ativos da ala selecionada.'));elements.forecast.appendChild(node('p','Os cenários consideram as mesmas pessoas. Estimativa por ala, sem consultar a escala ou a presença do dia.'));elements.forecastStatus=node('p');elements.forecastStatus.className='cpv-status';elements.forecastStatus.setAttribute('role','status');elements.forecastStatus.setAttribute('aria-live','polite');elements.forecast.appendChild(elements.forecastStatus);elements.forecastResult=node('div');elements.forecastResult.hidden=true;elements.forecastSummary=node('p');elements.forecastSummary.className='cpv-forecast-summary';elements.forecastAlternatives=node('p');elements.forecastPending=node('p');elements.forecastResult.appendChild(elements.forecastSummary);elements.forecastResult.appendChild(elements.forecastAlternatives);const forecastTable=node('table'),forecastThead=node('thead'),forecastHeader=node('tr');for(const text of ['Ala','Militares','Máximo de carros','Mínimo de carros','A confirmar'])forecastHeader.appendChild(node('th',text));forecastThead.appendChild(forecastHeader);forecastTable.appendChild(forecastThead);elements.forecastRows=node('tbody');forecastTable.appendChild(elements.forecastRows);elements.forecastResult.appendChild(forecastTable);elements.forecastResult.appendChild(elements.forecastPending);elements.forecastPendingNote=node('p','Militares sem tipo e vínculos pendentes ficam fora dos cenários.');elements.forecastResult.appendChild(elements.forecastPendingNote);elements.forecast.appendChild(elements.forecastResult);registry.appendChild(elements.forecast);elements.totals=node('details');elements.totals.className='cpv-totals';elements.totals.hidden=true;elements.totals.appendChild(node('summary','Placas cadastradas'));elements.totalText=node('p');elements.totals.appendChild(elements.totalText);elements.totals.appendChild(node('p','Quantitativo dos veículos ativos conforme os filtros de ala e tipo. A busca, a situação da lista e a página carregada não alteram este quadro. Não representa os veículos que estão dentro do quartel. A ala vem do Mapa das Alas.'));const totalScroll=node('div');totalScroll.className='cpv-scroll';const totalTable=node('table'),totalHead=node('thead'),totalHeader=node('tr');for(const title of ['Ala no Mapa','Total','Carros','Motos','Sem tipo'])totalHeader.appendChild(node('th',title));totalHead.appendChild(totalHeader);totalTable.appendChild(totalHead);elements.totalRows=node('tbody');totalTable.appendChild(elements.totalRows);totalScroll.appendChild(totalTable);elements.totals.appendChild(totalScroll);registry.appendChild(elements.totals);const scroll=node('div');scroll.className='cpv-scroll';const table=node('table'),thead=node('thead'),headrow=node('tr');for(const text of['Placa','Militar','Ala no Mapa','Tipo','Modelo','Cor','Situação','Ação'])headrow.appendChild(node('th',text));thead.appendChild(headrow);table.appendChild(thead);elements.table=node('tbody');table.appendChild(elements.table);scroll.appendChild(table);registry.appendChild(scroll);elements.empty=node('p','Nenhum veículo encontrado.');registry.appendChild(elements.empty);elements.summary=node('p');elements.summary.className='cpv-summary';registry.appendChild(elements.summary);elements.more=button('Carregar mais',()=>load(true));registry.appendChild(elements.more);
+elements.edit=node('section');elements.edit.className='cpv-edit-form';elements.edit.hidden=true;elements.editTitle=node('h3','Cadastro do veículo');elements.edit.appendChild(elements.editTitle);const fields=node('div');fields.className='cpv-fields';elements.plate=field(fields,'Placa');elements.plate.maxLength=20;elements.plate.setAttribute('autocapitalize','characters');elements.rg=field(fields,'RG ou nome do militar');elements.rg.maxLength=100;elements.militarySearch=button('Buscar militar',findMilitary);fields.appendChild(elements.militarySearch);elements.model=field(fields,'Modelo (opcional)');elements.model.maxLength=100;elements.color=field(fields,'Cor (opcional)');elements.color.maxLength=60;elements.type=field(fields,'Tipo','select');for(const [value,label] of [['','Não informado'],['carro','Carro'],['moto','Moto']]){const option=node('option',label);option.value=value;elements.type.appendChild(option);}elements.type.value='';const activeLabel=node('label');elements.recordActive=node('input');elements.recordActive.type='checkbox';activeLabel.appendChild(elements.recordActive);activeLabel.appendChild(node('span','Cadastro ativo'));fields.appendChild(activeLabel);elements.edit.appendChild(fields);elements.militaryName=node('p');elements.edit.appendChild(elements.militaryName);elements.wing=node('p');elements.wing.className='cpv-wing';elements.edit.appendChild(elements.wing);elements.militaryResults=node('div');elements.militaryResults.className='cpv-military';elements.edit.appendChild(elements.militaryResults);elements.editStatus=node('p');elements.editStatus.className='cpv-status';elements.editStatus.setAttribute('role','status');elements.edit.appendChild(elements.editStatus);elements.save=button('Salvar veículo',saveRecord,'primary');elements.edit.appendChild(elements.save);elements.edit.appendChild(button('Fechar cadastro',closeEditor));
+  editHome = registry;
+  editHome.appendChild(elements.edit);
+  if (embedded) {
+    elements.status.setAttribute('tabindex', '-1');
+    newDialog = node('dialog', undefined, 'cpv-new-dialog');
+    newDialog.className = 'cpv-new-dialog';
+    newDialog.setAttribute('aria-labelledby', 'cpv-editTitle');
+    elements.newReceipt = button('Consultar resultado do envio', checkPending);
+    elements.newReceipt.hidden = true;
+    elements.edit.appendChild(elements.newReceipt);
+    registry.appendChild(newDialog);
+    on(newDialog, 'cancel', event => {
+      event.preventDefault();
+      closeEditor();
+    });
+  }
 elements.bulk=node('section');elements.bulk.hidden=true;elements.bulk.appendChild(node('h3','Cadastrar a partir da planilha'));elements.bulk.appendChild(node('p','Copie até 100 linhas nas colunas RG, Placa, Modelo, Cor e Tipo. Modelo, cor e tipo são opcionais. A primeira linha de títulos é opcional. Confira antes de cadastrar.'));elements.bulkText=node('textarea');elements.bulkText.setAttribute('aria-label','Colagem da planilha');elements.bulkText.placeholder='RG\tPlaca\tModelo\tCor\tTipo\n49058\tABC1D23\tModelo\tBranco\tCarro';elements.bulk.appendChild(elements.bulkText);elements.preview=button('Conferir colagem',previewBulk);elements.bulk.appendChild(elements.preview);elements.import=button('Cadastrar veículos conferidos',importBulk,'primary');elements.bulk.appendChild(elements.import);elements.bulk.appendChild(button('Fechar colagem',()=>{elements.bulk.hidden=true;}));elements.bulkStatus=node('p');elements.bulkStatus.className='cpv-status';elements.bulkStatus.setAttribute('role','status');elements.bulk.appendChild(elements.bulkStatus);const bulkScroll=node('div');bulkScroll.className='cpv-scroll';const bulkTable=node('table'),bulkHead=node('thead'),bhr=node('tr');for(const text of['Linha','RG','Placa','Modelo','Cor','Tipo','Ala no Mapa','Militar','Conferência'])bhr.appendChild(node('th',text));bulkHead.appendChild(bhr);bulkTable.appendChild(bulkHead);elements.bulkRows=node('tbody');bulkTable.appendChild(elements.bulkRows);bulkScroll.appendChild(bulkTable);elements.bulk.appendChild(bulkScroll);registry.appendChild(elements.bulk);
 for(const[key,el]of Object.entries(elements))if(el&&typeof el.setAttribute==='function'&&!['style'].includes(key))el.id='cpv-'+key;on(elements.search,'keydown',e=>{if(e.key==='Enter'){e.preventDefault();void load();}});on(elements.search,'input',resetList);on(elements.active,'change',()=>{if(resetList())void load();});on(elements.wingFilter,'change',()=>{if(resetList())void load();});on(elements.typeFilter,'change',()=>{if(resetList())void load();});on(elements.plate,'input',()=>{elements.plate.value=elements.plate.value.toUpperCase();});on(elements.rg,'input',()=>{militarySelected=null;elements.militaryResults.replaceChildren();elements.militaryName.textContent='Busque e selecione o militar responsável.';elements.wing.textContent='Escolha um militar para consultar sua ala no Mapa.';update();});on(elements.rg,'keydown',e=>{if(e.key==='Enter'){e.preventDefault();void findMilitary();}});on(elements.recordActive,'change',update);on(elements.bulkText,'input',()=>{bulkPreview=null;bulkSelections.clear();elements.bulkRows.replaceChildren();elements.bulkStatus.textContent='Colagem alterada. Confira os dados antes de cadastrar.';update();});if (!embedded) on(host, 'cancel', event => { event.preventDefault(); setVisible(false); });
   if (options.bindTrigger === true && trigger) on(trigger, 'click', () => setVisible(true));
@@ -471,7 +622,7 @@ for(const[key,el]of Object.entries(elements))if(el&&typeof el.setAttribute==='fu
     if (embedded && busy) stop();
   });
 }
-function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
+function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){closeNewDialog();returnNewFocus=false;if(inNewEditor())editHome.appendChild(elements.edit);elements.editTitle.textContent='Cadastro do veículo';elements.editStatus.textContent='';elements.militaryName.textContent='';stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
 build();host.hidden=true;update();return Object.freeze({setReady,setVisible,load,loadForecast,dispose(){if(disposed)return;setVisible(false);disposed=true;stop();client.dispose();listeners.forEach(fn=>fn());elements.style.remove?.();host.replaceChildren();}});
 }
 return Object.freeze({mount,createClient,parseClipboard,readyRows,plate,rg,validateList:list,validateReceipt:receipt,validatePreview:preview,validateMilitary:militaryResult,validateForecast:forecastDto});
