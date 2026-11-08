@@ -60,46 +60,51 @@ const embedded = host.tagName !== 'DIALOG';
 const client = createClient({...options, fetchImpl: options.fetchImpl || env.fetch.bind(env)});
 if (!embedded && host.parentNode !== doc.body) doc.body.appendChild(host);
 const rosterEnabled = embedded && typeof options.canViewRoster === 'function';
-let roster = null, newDialog = null, editHome = null, returnNewFocus = false;
+let roster = null, editorDialog = null, editHome = null;
+let editorTrigger = null, returnEditorFocus = null, editorWasEditable = false, newDraft = null;
 let ready=false,visible=false,actor=null,disposed=false,busy=false,activeAction=null,epoch=0,control=null,rows=[],cursor=null,loadedFilterKey='',editRecord=null,militarySelected=null,pending=null,bulkPreview=null,bulkSelections=new Map(),forecastEpoch=0,forecastControl=null,forecastFlight=null,forecastRequestedKey='',forecastRequestActor=null,forecastRequestGeneration=null,forecastLoadedKey='',forecastLoading=false,forecastData=null,forecastDataActor=null,forecastDataGeneration=null;const elements={},listeners=[];
 const node=(tag,text,idValue)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(idValue)n.id=idValue;return n;},on=(el,event,fn)=>{el.addEventListener(event,fn);listeners.push(()=>el.removeEventListener(event,fn));},button=(text,fn,css='secondary')=>{const n=node('button',text);n.type='button';n.className=css;on(n,'click',fn);return n;},status=(text,bad=false)=>{elements.status.textContent=text;elements.status.className=bad?'decision-error':'cpv-status';};
 function allowed(edit=false){return ready&&!disposed&&options.canView()===true&&(!edit||options.canEdit()===true);}
 function stop(){epoch++;control?.abort();control=null;busy=false;activeAction=null;}
-function inNewEditor() {
-  return newDialog !== null && elements.edit.parentNode === newDialog;
+function inEditorDialog() {
+  return editorDialog !== null && elements.edit.parentNode === editorDialog;
 }
-function closeNewDialog(restoreFocus = false) {
-  if (!newDialog?.open) return;
-  newDialog.close();
-  returnNewFocus = restoreFocus;
-  if (restoreFocus) (elements.new.disabled ? elements.status : elements.new).focus?.();
+function closeEditorDialog(restoreFocus = false, replacingRows = false) {
+  if (!editorDialog?.open) return;
+  const target = replacingRows && editRecord ? elements.status : editorTrigger;
+  editorDialog.close();
+  editorTrigger = null;
+  returnEditorFocus = restoreFocus && target?.disabled ? target : null;
+  if (restoreFocus) (target && !target.disabled ? target : elements.status).focus?.();
 }
 function closeEditor() {
-  if (!newDialog?.open) {
+  if (!editorDialog?.open) {
     elements.edit.hidden = true;
     return;
   }
   if (activeAction === 'military') stop();
-  closeNewDialog(true);
+  closeEditorDialog(true);
   update();
 }
-function updateNewDialog(view, edit) {
-  if (!newDialog) return;
-  if (!edit) {
-    closeNewDialog();
-    returnNewFocus = false;
+function updateEditorDialog(view, edit) {
+  if (!editorDialog) return;
+  if (!view || editorWasEditable && !edit) {
+    closeEditorDialog();
+    returnEditorFocus = null;
   }
-  const resumable = inNewEditor() && pending?.operation === 'save';
+  editorWasEditable = editorDialog.open && edit;
+  const resumable = inEditorDialog() && pending?.operation === 'save';
   elements.newReceipt.hidden = !resumable;
   elements.newReceipt.disabled = busy || !view;
-  if (resumable) elements.new.disabled = busy || !edit;
-  if (returnNewFocus && visible && !roster?.selected() && !elements.new.disabled) {
-    returnNewFocus = false;
-    if (doc.activeElement === elements.status || !doc.activeElement || doc.activeElement === doc.body) elements.new.focus?.();
+  if (resumable && !editRecord) elements.new.disabled = busy || !edit;
+  if (returnEditorFocus && visible && !roster?.selected() && !returnEditorFocus.disabled) {
+    const target = returnEditorFocus;
+    returnEditorFocus = null;
+    if (doc.activeElement === elements.status || !doc.activeElement || doc.activeElement === doc.body) target.focus?.();
   }
 }
-function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateNewDialog(view,edit);}
-async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inNewEditor()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';elements.editStatus.textContent=message;elements.bulkStatus.textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
+function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateEditorDialog(view,edit);}
+async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inEditorDialog()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';elements.editStatus.textContent=message;elements.bulkStatus.textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
 function setVisible(show) {
   if (disposed) {
     host.hidden = true;
@@ -107,8 +112,8 @@ function setVisible(show) {
   }
   const nextVisible = show === true && allowed();
   if (!nextVisible) {
-    closeNewDialog();
-    returnNewFocus = false;
+    closeEditorDialog();
+    returnEditorFocus = null;
   }
   if (embedded && nextVisible === visible) {
     host.hidden = !nextVisible;
@@ -142,7 +147,7 @@ function setVisible(show) {
   update();
   return visible;
 }
-function renderRows(){elements.table.replaceChildren();for(const item of rows){const tr=node('tr');for(const text of [item.placa,item.militar?item.militar.nome+(item.militar.documento?' · RG '+item.militar.documento:''):'Militar indisponível no cadastro',wingLabel(item.ala),typeLabel(item.tipo),item.modelo||'—',item.cor||'—',item.ativo?'Ativo':'Inativo'])tr.appendChild(node('td',text));const action=node('td');action.appendChild(button(allowed(true)?'Editar':'Consultar',()=>openEdit(item)));tr.appendChild(action);elements.table.appendChild(tr);}elements.empty.hidden=rows.length>0;elements.summary.textContent=rows.length+' veículo(s) carregado(s)'+(cursor?' · há mais registros':'');}
+function renderRows(){elements.table.replaceChildren();for(const item of rows){const tr=node('tr');for(const text of [item.placa,item.militar?item.militar.nome+(item.militar.documento?' · RG '+item.militar.documento:''):'Militar indisponível no cadastro',wingLabel(item.ala),typeLabel(item.tipo),item.modelo||'—',item.cor||'—',item.ativo?'Ativo':'Inativo'])tr.appendChild(node('td',text));const action=node('td');const control=button(allowed(true)?'Editar':'Consultar',()=>openEdit(item,control));action.appendChild(control);tr.appendChild(action);elements.table.appendChild(tr);}elements.empty.hidden=rows.length>0;elements.summary.textContent=rows.length+' veículo(s) carregado(s)'+(cursor?' · há mais registros':'');}
 function renderTotals(value){elements.totals.hidden=!value;elements.totalRows.replaceChildren();if(!value)return;elements.totalText.textContent=value.total+' veículos cadastrados ativos · '+value.carro+' carros · '+value.moto+' motos · '+value.naoInformado+' com tipo não informado';for(const item of value.alas){const tr=node('tr');for(const text of [wingLabel(item.ala),item.total,item.carro,item.moto,item.naoInformado])tr.appendChild(node('td',String(text)));elements.totalRows.appendChild(tr);}}
 function forecastAla(){const value=elements.wingFilter.value;if(!['','0','1','2','3','4'].includes(value))throw error('Confira a ala selecionada para a previsão.','INVALID_FILTER');return value===''?null:Number(value);}
 function forecastKeyFor(ala){return ala===null?'all':String(ala);}
@@ -155,41 +160,83 @@ function loadForecast(force=false){if(!visible||!allowed())return Promise.resolv
 function readFilters(){if(!['','true','false'].includes(elements.active.value)||!['','0','1','2','3','4'].includes(elements.wingFilter.value)||!['','carro','moto','nao_informado'].includes(elements.typeFilter.value))throw error('Confira os filtros de ala, tipo e situação.','INVALID_FILTER');const query=elements.search.value.trim();let search=query||null;try{search=plate(query);}catch{}return listFilterArgs({p_busca:search,p_ativo:elements.active.value===''?null:elements.active.value==='true',p_ala:elements.wingFilter.value===''?null:Number(elements.wingFilter.value),p_tipo:elements.typeFilter.value||null});}
 function resetList(){if(!allowed()||busy&&activeAction!=='list')return false;if(busy)stop();rows=[];cursor=null;loadedFilterKey='';renderTotals(null);renderRows();status('Filtros alterados. Use Atualizar ou pressione Enter para consultar.');update();return true;}
 async function load(more=false){if(!allowed() || embedded && !visible)return false;let filters;try{filters=readFilters();}catch(e){status(e.message,true);return false;}if(busy){if(activeAction!=='list')return false;stop();}const key=JSON.stringify(filters),append=more===true&&cursor!==null&&loadedFilterKey===key,selectedCursor=append?{...cursor}:null;if(!append){rows=[];cursor=null;loadedFilterKey='';renderTotals(null);renderRows();}void loadForecast();return run('list',async(signal,guard)=>{status('Consultando veículos…');const result=await client.list({...filters,p_apos_placa:selectedCursor?.placa||null,p_apos_id:selectedCursor?.id||null},signal);guard();let current;try{current=JSON.stringify(readFilters());}catch{}if(current!==key){status('Filtros alterados. Use Atualizar para consultar a lista.');return false;}const next=append?[...rows,...result.items]:result.items;if(new Set(next.map(r=>r.id)).size!==next.length||new Set(next.map(r=>r.placa)).size!==next.length)fail();rows=next;cursor=result.nextCursor;loadedFilterKey=key;renderTotals(result.resumo);renderRows();status(rows.length?'Cadastros consultados.':'Nenhum veículo encontrado.');return true;});}
-function showNewDialog() {
-  try { newDialog.showModal(); } catch {
+const vehicleFields = ['plate', 'rg', 'model', 'color', 'type'];
+function captureNewDraft() {
+  return {
+    values: vehicleFields.map(field => elements[field].value),
+    active: elements.recordActive.checked,
+    military: militarySelected,
+    militaryName: elements.militaryName.textContent,
+    wing: elements.wing.textContent,
+    status: elements.editStatus.textContent,
+    matches: Array.from(elements.militaryResults.children)
+  };
+}
+function restoreNewDraft() {
+  vehicleFields.forEach((field, index) => { elements[field].value = newDraft.values[index]; });
+  elements.recordActive.checked = newDraft.active;
+  militarySelected = newDraft.military;
+  elements.militaryName.textContent = newDraft.militaryName;
+  elements.wing.textContent = newDraft.wing;
+  elements.editStatus.textContent = newDraft.status;
+  elements.militaryResults.replaceChildren(...newDraft.matches);
+  newDraft = null;
+}
+function fillEditor(item) {
+  militarySelected = item?.militar || null;
+  elements.plate.value = item?.placa || '';
+  elements.rg.value = item?.militar?.documento || '';
+  elements.model.value = item?.modelo || '';
+  elements.color.value = item?.cor || '';
+  elements.type.value = item?.tipo || '';
+  elements.wing.textContent = item ? wingLabel(item.ala) : 'Escolha um militar para consultar sua ala no Mapa.';
+  elements.recordActive.checked = item ? item.ativo : true;
+  elements.militaryResults.replaceChildren();
+  elements.militaryName.textContent = militarySelected?.nome || 'Busque e selecione o militar responsável.';
+  elements.editStatus.textContent = '';
+}
+function showEditorDialog(trigger) {
+  try { editorDialog.showModal(); } catch {
     status('Não foi possível abrir o cadastro de veículo.', true);
     return;
   }
-  returnNewFocus = false;
-  if (pending) elements.newReceipt.focus?.();
+  editorTrigger = trigger;
+  returnEditorFocus = null;
+  editorWasEditable = allowed(true);
+  const focusTarget = pending ? elements.newReceipt : editorWasEditable ? elements.plate : elements.closeEdit;
+  focusTarget.focus?.();
+}
+function openEdit(item = null, trigger = elements.new) {
+  if (!allowed(!item) || busy || editorDialog?.open || (embedded && (!visible || roster?.selected()))) return;
+  const sameForm = inEditorDialog() && (editRecord?.id ?? null) === (item?.id ?? null);
+  if (pending && (!sameForm || pending.operation !== 'save')) return;
+  const resume = sameForm && (!item || pending);
+  if (!resume) {
+    if (item && inEditorDialog() && !editRecord) newDraft = captureNewDraft();
+    if (editorDialog && !inEditorDialog()) editorDialog.appendChild(elements.edit);
+    editRecord = item;
+    if (!item && newDraft) restoreNewDraft();
+    else fillEditor(item);
+  }
+  elements.editTitle.textContent = !editorDialog ? 'Cadastro do veículo' : !item ? 'Novo veículo' : allowed(true) ? 'Editar veículo' : 'Consultar veículo';
+  elements.edit.hidden = false;
+  elements.bulk.hidden = true;
+  update();
+  if (editorDialog) showEditorDialog(trigger);
   else elements.plate.focus?.();
 }
-function openEdit(item=null){
-  if (!allowed(!item) || busy || (embedded && (!visible || roster?.selected()))) return;
-  const modal = !item && newDialog !== null;
-  if (modal && inNewEditor()) {
-    elements.edit.hidden = false;
-    elements.bulk.hidden = true;
-    showNewDialog();
-    return;
-  }
-  if (pending || newDialog?.open) return;
-  if (modal) newDialog.appendChild(elements.edit);
-  else if (inNewEditor()) editHome.appendChild(elements.edit);
-  elements.editTitle.textContent = modal ? 'Novo veículo' : 'Cadastro do veículo';
-  editRecord=item;militarySelected=item?.militar||null;elements.plate.value=item?.placa||'';elements.rg.value=item?.militar?.documento||'';elements.model.value=item?.modelo||'';elements.color.value=item?.cor||'';elements.type.value=item?.tipo||'';elements.wing.textContent=item?wingLabel(item.ala):'Escolha um militar para consultar sua ala no Mapa.';elements.recordActive.checked=item?item.ativo:true;elements.militaryResults.replaceChildren();elements.militaryName.textContent=militarySelected?.nome||'Busque e selecione o militar responsável.';elements.editStatus.textContent='';elements.edit.hidden=false;elements.bulk.hidden=true;update();if(modal)showNewDialog();else elements.plate.focus?.();}
-async function findMilitary(){if(!allowed(true)||busy||pending||(inNewEditor()&&!newDialog.open))return;const term=elements.rg.value.trim();if(term.length<3){elements.editStatus.textContent='Informe o RG ou pelo menos três letras do nome.';return;}militarySelected=null;if(inNewEditor())elements.editStatus.textContent='Buscando militar…';return run('military',async(signal,guard)=>{const result=await client.military(term,signal);guard();elements.militaryResults.replaceChildren();for(const person of result.items){const choice=button(person.nome+(person.documento?' · RG '+person.documento:''),()=>{if(!allowed(true)||busy||pending||elements.rg.value.trim()!==term)return;militarySelected=person;elements.militaryName.textContent=person.nome+(person.documento?' · RG '+person.documento:'');elements.wing.textContent=wingLabel(person.ala);elements.militaryResults.replaceChildren();update();});elements.militaryResults.appendChild(choice);}elements.editStatus.textContent=result.items.length?(result.truncated?'Há mais resultados. Refine a busca pelo RG.':'Selecione o militar correspondente.'):'Nenhum militar apto encontrado.';status('Busca de militar concluída.');return true;});}
+async function findMilitary(){if(!allowed(true)||busy||pending||(inEditorDialog()&&!editorDialog.open))return;const term=elements.rg.value.trim();if(term.length<3){elements.editStatus.textContent='Informe o RG ou pelo menos três letras do nome.';return;}militarySelected=null;if(inEditorDialog())elements.editStatus.textContent='Buscando militar…';return run('military',async(signal,guard)=>{const result=await client.military(term,signal);guard();elements.militaryResults.replaceChildren();for(const person of result.items){const choice=button(person.nome+(person.documento?' · RG '+person.documento:''),()=>{if(!allowed(true)||busy||pending||elements.rg.value.trim()!==term)return;militarySelected=person;elements.militaryName.textContent=person.nome+(person.documento?' · RG '+person.documento:'');elements.wing.textContent=wingLabel(person.ala);elements.militaryResults.replaceChildren();update();});elements.militaryResults.appendChild(choice);}elements.editStatus.textContent=result.items.length?(result.truncated?'Há mais resultados. Refine a busca pelo RG.':'Selecione o militar correspondente.'):'Nenhum militar apto encontrado.';status('Busca de militar concluída.');return true;});}
 function verifyReceipt(result,attempt){if(result.requestId!==attempt.id||result.operation!==attempt.operation)fail();if(result.status!=='saved')return;if(attempt.operation==='save'){const v=result.items[0],data=attempt.payload;if(result.count!==1||!v||data.id!==null&&v.id!==data.id||v.placa!==data.placa||v.modelo!==data.modelo||v.cor!==data.cor||v.tipo!==data.tipo||v.ativo!==data.ativo||v.revisao!==data.revisao+1||v.entidadeId!==data.entidadeId)fail();}else{if(result.count!==attempt.rows.length)fail();for(const row of attempt.rows)if(!result.items.some(v=>v.placa===row.placa&&v.entidadeId===row.entidadeId&&v.tipo===row.tipo))fail();}}
 async function finish(result,attempt){verifyReceipt(result,attempt);pending=null;if(result.status==='conflict'){elements.editStatus.textContent='O cadastro mudou ou há conflito de placa. Confira os dados atuais antes de salvar novamente.';status('Nenhuma alteração desta tentativa foi aplicada. Confira os dados.',true);if(result.problems.length)elements.bulkStatus.textContent=result.problems.map(p=>'Linha '+p.index+': '+p.message).join('\n');return false;}if(attempt.operation==='save'){
-  if (inNewEditor()) {
-    closeNewDialog(true);
+  if (inEditorDialog()) {
+    closeEditorDialog(true, true);
     editHome.appendChild(elements.edit);
   }
   elements.edit.hidden=true;editRecord=null;militarySelected=null;
 }else{elements.bulk.hidden=true;elements.bulkText.value='';bulkPreview=null;elements.bulkRows.replaceChildren();}status(attempt.operation==='save'?'Veículo salvo com confirmação.':result.count+' veículo(s) importado(s) com confirmação.');rows=[];cursor=null;renderRows();void loadForecast(true);return true;}
-async function saveRecord(){if(!allowed(true)||busy||pending||(inNewEditor()&&!newDialog.open)||!militarySelected&&(!editRecord||elements.recordActive.checked))return;let payload;try{payload={id:editRecord?.id||null,placa:plate(elements.plate.value),entidadeId:militarySelected?.id||editRecord.entidadeId,modelo:elements.model.value.trim()||null,cor:elements.color.value.trim()||null,tipo:inputType(elements.type.value),ativo:elements.recordActive.checked,revisao:editRecord?.revisao||0};nullable(payload.modelo,100);nullable(payload.cor,60);}catch(e){elements.editStatus.textContent=e.message;return;}const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'save',payload};const success=await run('save',async(signal,guard)=>{pending=attempt;update();elements.editStatus.textContent='Salvando uma única vez…';const result=await client.save(attempt.id,payload,signal);guard();return finish(result,attempt);});if(success)void load();}
-async function checkPending(){if(!pending||busy||!allowed())return;const attempt=pending,success=await run('receipt',async(signal,guard)=>{status('Consultando o resultado sem reenviar…');if(inNewEditor()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;const result=await client.receipt(attempt.id,signal);guard();if(result===null){status('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.',true);if(inNewEditor()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;return false;}return finish(result,attempt);});if(success)void load();}
-function openBulk(){if(!allowed(true)||busy||pending||newDialog?.open)return;elements.edit.hidden=true;elements.bulk.hidden=false;elements.bulkStatus.textContent='Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';update();elements.bulkText.focus?.();}
+async function saveRecord(){if(!allowed(true)||busy||pending||(inEditorDialog()&&!editorDialog.open)||!militarySelected&&(!editRecord||elements.recordActive.checked))return;let payload;try{payload={id:editRecord?.id||null,placa:plate(elements.plate.value),entidadeId:militarySelected?.id||editRecord.entidadeId,modelo:elements.model.value.trim()||null,cor:elements.color.value.trim()||null,tipo:inputType(elements.type.value),ativo:elements.recordActive.checked,revisao:editRecord?.revisao||0};nullable(payload.modelo,100);nullable(payload.cor,60);}catch(e){elements.editStatus.textContent=e.message;return;}const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'save',payload};const success=await run('save',async(signal,guard)=>{pending=attempt;update();elements.editStatus.textContent='Salvando uma única vez…';const result=await client.save(attempt.id,payload,signal);guard();return finish(result,attempt);});if(success)void load();}
+async function checkPending(){if(!pending||busy||!allowed())return;const attempt=pending,success=await run('receipt',async(signal,guard)=>{status('Consultando o resultado sem reenviar…');if(inEditorDialog()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;const result=await client.receipt(attempt.id,signal);guard();if(result===null){status('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.',true);if(inEditorDialog()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;return false;}return finish(result,attempt);});if(success)void load();}
+function openBulk(){if(!allowed(true)||busy||pending||editorDialog?.open)return;elements.edit.hidden=true;elements.bulk.hidden=false;elements.bulkStatus.textContent='Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';update();elements.bulkText.focus?.();}
 function renderPreview(report){elements.bulkRows.replaceChildren();const labels={ready:'Novo',existing:'Já cadastrado · não duplicar',ambiguous:'Escolher militar',not_found:'Militar não encontrado',invalid:'Dados inválidos',duplicate:'Placa repetida',conflict:'Conflito de vínculo'};for(const row of report.rows){const tr=node('tr');for(const text of[row.index,row.rg,row.placa,row.modelo||'—',row.cor||'—',typeLabel(row.tipo),wingLabel(row.ala)])tr.appendChild(node('td',String(text)));const owner=node('td');if(row.status==='ambiguous'){const select=node('select');select.appendChild(node('option','Selecione o militar'));for(const person of row.militares){const option=node('option',person.nome+(person.documento?' · RG '+person.documento:''));option.value=person.id;select.appendChild(option);}on(select,'change',()=>{row.entidadeId=select.value||null;bulkSelections.set(row.rg+'|'+row.placa,row.entidadeId);bulkPreview=null;elements.bulkStatus.textContent='Clique em Conferir colagem novamente para validar a escolha.';update();});owner.appendChild(select);}else owner.textContent=row.militares.find(p=>p.id===row.entidadeId)?.nome||'—';tr.appendChild(owner);const state=node('td',labels[row.status]+(row.message?' · '+row.message:''));if(!['ready','existing'].includes(row.status))state.className='decision-error';tr.appendChild(state);elements.bulkRows.appendChild(tr);}const n=report.rows.filter(r=>r.status==='ready').length,existing=report.rows.filter(r=>r.status==='existing').length,bad=report.rows.length-n-existing;elements.bulkStatus.textContent=n+' novo(s), '+existing+' já cadastrado(s), '+bad+' pendência(s). Nenhum cadastro foi enviado.';}
 async function previewBulk(){if(!allowed(true)||busy||pending)return;const parsed=parseClipboard(elements.bulkText.value);if(parsed.problems.length){bulkPreview=null;elements.bulkStatus.textContent=parsed.problems.map(p=>(p.line?'Linha '+p.line+': ':'')+p.message).join('\n');update();return;}return run('preview',async(signal,guard)=>{const report=await client.preview(parsed.rows.map(r=>({...r,entidadeId:bulkSelections.get(r.rg+'|'+r.placa)||null})),signal);guard();if(report.rows.length!==parsed.rows.length)fail();bulkPreview=report;renderPreview(report);status('Colagem conferida. Nenhum cadastro foi enviado.');return true;});}
 async function importBulk(){if(!allowed(true)||busy||pending||!bulkPreview)return;let data;try{data=readyRows(bulkPreview);}catch(e){elements.bulkStatus.textContent=e.message;return;}const preparedPreview=bulkPreview,preparedActor=actor,preparedGeneration=options.getGeneration(),skipped=bulkPreview.rows.filter(r=>r.status==='existing').length;if(!await Promise.resolve((options.confirm||env.confirm?.bind(env)||(()=>false))('Cadastrar '+data.length+' veículo(s) particular(es)?'+(skipped?' '+skipped+' já cadastrado(s) serão preservados, sem duplicação.':''))))return;if(!allowed(true)||embedded&&!visible||busy||pending||bulkPreview!==preparedPreview||actor!==preparedActor||options.getGeneration()!==preparedGeneration)return;const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'import',rows:data};const success=await run('import',async(signal,guard)=>{pending=attempt;update();elements.bulkStatus.textContent='Enviando um único lote…';const result=await client.import(attempt.id,data,signal);guard();return finish(result,attempt);});if(success)void load();}
@@ -282,7 +329,7 @@ function buildRoster(registry, commandRibbon, inventoryCommands) {
   const refresh = button('Atualizar relação', () => loadRoster(true));
   actions.appendChild(refresh);
   ribbon.appendChild(actions);
-  panel.appendChild(ribbon);
+  commandRibbon.appendChild(ribbon);
   const notice = node('p');
   notice.className = 'cpv-status';
   notice.setAttribute('role', 'status');
@@ -415,6 +462,7 @@ function buildRoster(registry, commandRibbon, inventoryCommands) {
     panel.hidden = !active;
     registry.hidden = active;
     inventoryCommands.hidden = active;
+    ribbon.hidden = !active;
     refresh.disabled = !visible || !allowedHere || !!flight;
   }
   function reset() {
@@ -453,8 +501,8 @@ function buildRoster(registry, commandRibbon, inventoryCommands) {
   function choose(showRoster) {
     if (!visible || showRoster === active || (showRoster && (!access() || rosterMode.disabled))) return;
     if (showRoster) {
-      closeNewDialog();
-      returnNewFocus = false;
+      closeEditorDialog();
+      returnEditorFocus = null;
     }
     active = showRoster;
     if (active) {
@@ -512,7 +560,7 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-forecast th:nth-child(5){width:25%}
 .cpv-forecast-pair,.cpv-forecast-pending{white-space:pre-line}
 .cpv-forecast-summary{font-weight:700}
-.cpv-page .cpv-command-ribbon{display:flex;flex-wrap:wrap;align-items:stretch;gap:6px 0;min-width:0;margin:12px 0;padding:5px;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312}
+.cpv-page .cpv-command-ribbon{position:sticky;top:0;z-index:40;isolation:isolate;display:flex;flex-wrap:wrap;align-items:stretch;gap:6px 0;min-width:0;margin:12px 0;padding:5px;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312}
 .cpv-page .cpv-inventory-commands{display:contents}
 .cpv-page .cpv-command-group{display:flex;flex-direction:column;justify-content:space-between;gap:4px;min-width:0;padding:3px 6px;border-inline-end:1px solid #d8e0e6}
 .cpv-page .cpv-command-content{display:flex;flex-wrap:wrap;gap:4px}
@@ -531,11 +579,14 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
 @media(max-width:720px){
   .cpv-page .cpv-command-filters .cpv-ribbon{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+@media(max-width:720px),(max-height:520px){
+  .cpv-page .cpv-command-ribbon{max-height:50dvh;overflow:auto;scrollbar-width:thin}
+}
 @media print{.cpv-page .cpv-command-ribbon{display:none!important}}
 .cpv-roster{min-width:0}
 .cpv-roster h2{margin:0;font-size:18px}
 .cpv-roster>p{font-size:13px}
-.cpv-roster-ribbon{position:sticky;top:0;z-index:40;isolation:isolate;display:flex;align-items:stretch;min-width:0;max-width:100%;margin:8px 0;padding:4px 6px;overflow-x:auto;overflow-y:hidden;border:1px solid #d5dee5;border-radius:8px;background:linear-gradient(180deg,#fff,#f8fafb);box-shadow:0 4px 12px #12344312;scrollbar-width:thin}
+.cpv-roster-ribbon{display:flex;flex:1 1 540px;align-items:stretch;align-self:center;min-width:0;margin:0;padding:4px 6px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
 .cpv-roster-ribbon>fieldset,.cpv-roster-ribbon>.cpv-roster-select-field,.cpv-roster-sort,.cpv-roster-actions{flex:none;min-width:0;margin:0;padding:1px 9px;border:0}
 .cpv-roster-ribbon>:not([hidden])~*{border-inline-start:1px solid #e1e8ed}
 .cpv-roster-ribbon legend{padding:0;font-size:12px;font-weight:700}
@@ -597,19 +648,19 @@ const ribbon=node('div');ribbon.className='cpv-ribbon';elements.search=field(rib
     commandRibbon.appendChild(inventoryCommands);
   }
   elements.status=node('p','','cpv-status');elements.status.setAttribute('role','status');elements.status.setAttribute('aria-live','polite');registry.appendChild(elements.status);elements.check=button('Consultar resultado do envio',checkPending);elements.check.hidden=true;registry.appendChild(elements.check);elements.forecast=node('section');elements.forecast.className='cpv-forecast';const forecastHead=node('div');forecastHead.className='cpv-forecast-head';forecastHead.appendChild(node('h3','Previsão por ala'));elements.forecastRefresh=button('Atualizar previsão',()=>loadForecast(true));forecastHead.appendChild(elements.forecastRefresh);elements.forecast.appendChild(forecastHead);elements.forecast.appendChild(node('p','1 veículo por militar. Considera todos os tipos ativos da ala selecionada.'));elements.forecast.appendChild(node('p','Os cenários consideram as mesmas pessoas. Estimativa por ala, sem consultar a escala ou a presença do dia.'));elements.forecastStatus=node('p');elements.forecastStatus.className='cpv-status';elements.forecastStatus.setAttribute('role','status');elements.forecastStatus.setAttribute('aria-live','polite');elements.forecast.appendChild(elements.forecastStatus);elements.forecastResult=node('div');elements.forecastResult.hidden=true;elements.forecastSummary=node('p');elements.forecastSummary.className='cpv-forecast-summary';elements.forecastAlternatives=node('p');elements.forecastPending=node('p');elements.forecastResult.appendChild(elements.forecastSummary);elements.forecastResult.appendChild(elements.forecastAlternatives);const forecastTable=node('table'),forecastThead=node('thead'),forecastHeader=node('tr');for(const text of ['Ala','Militares','Máximo de carros','Mínimo de carros','A confirmar'])forecastHeader.appendChild(node('th',text));forecastThead.appendChild(forecastHeader);forecastTable.appendChild(forecastThead);elements.forecastRows=node('tbody');forecastTable.appendChild(elements.forecastRows);elements.forecastResult.appendChild(forecastTable);elements.forecastResult.appendChild(elements.forecastPending);elements.forecastPendingNote=node('p','Militares sem tipo e vínculos pendentes ficam fora dos cenários.');elements.forecastResult.appendChild(elements.forecastPendingNote);elements.forecast.appendChild(elements.forecastResult);registry.appendChild(elements.forecast);elements.totals=node('details');elements.totals.className='cpv-totals';elements.totals.hidden=true;elements.totals.appendChild(node('summary','Placas cadastradas'));elements.totalText=node('p');elements.totals.appendChild(elements.totalText);elements.totals.appendChild(node('p','Quantitativo dos veículos ativos conforme os filtros de ala e tipo. A busca, a situação da lista e a página carregada não alteram este quadro. Não representa os veículos que estão dentro do quartel. A ala vem do Mapa das Alas.'));const totalScroll=node('div');totalScroll.className='cpv-scroll';const totalTable=node('table'),totalHead=node('thead'),totalHeader=node('tr');for(const title of ['Ala no Mapa','Total','Carros','Motos','Sem tipo'])totalHeader.appendChild(node('th',title));totalHead.appendChild(totalHeader);totalTable.appendChild(totalHead);elements.totalRows=node('tbody');totalTable.appendChild(elements.totalRows);totalScroll.appendChild(totalTable);elements.totals.appendChild(totalScroll);registry.appendChild(elements.totals);const scroll=node('div');scroll.className='cpv-scroll';const table=node('table'),thead=node('thead'),headrow=node('tr');for(const text of['Placa','Militar','Ala no Mapa','Tipo','Modelo','Cor','Situação','Ação'])headrow.appendChild(node('th',text));thead.appendChild(headrow);table.appendChild(thead);elements.table=node('tbody');table.appendChild(elements.table);scroll.appendChild(table);registry.appendChild(scroll);elements.empty=node('p','Nenhum veículo encontrado.');registry.appendChild(elements.empty);elements.summary=node('p');elements.summary.className='cpv-summary';registry.appendChild(elements.summary);elements.more=button('Carregar mais',()=>load(true));registry.appendChild(elements.more);
-elements.edit=node('section');elements.edit.className='cpv-edit-form';elements.edit.hidden=true;elements.editTitle=node('h3','Cadastro do veículo');elements.edit.appendChild(elements.editTitle);const fields=node('div');fields.className='cpv-fields';elements.plate=field(fields,'Placa');elements.plate.maxLength=20;elements.plate.setAttribute('autocapitalize','characters');elements.rg=field(fields,'RG ou nome do militar');elements.rg.maxLength=100;elements.militarySearch=button('Buscar militar',findMilitary);fields.appendChild(elements.militarySearch);elements.model=field(fields,'Modelo (opcional)');elements.model.maxLength=100;elements.color=field(fields,'Cor (opcional)');elements.color.maxLength=60;elements.type=field(fields,'Tipo','select');for(const [value,label] of [['','Não informado'],['carro','Carro'],['moto','Moto']]){const option=node('option',label);option.value=value;elements.type.appendChild(option);}elements.type.value='';const activeLabel=node('label');elements.recordActive=node('input');elements.recordActive.type='checkbox';activeLabel.appendChild(elements.recordActive);activeLabel.appendChild(node('span','Cadastro ativo'));fields.appendChild(activeLabel);elements.edit.appendChild(fields);elements.militaryName=node('p');elements.edit.appendChild(elements.militaryName);elements.wing=node('p');elements.wing.className='cpv-wing';elements.edit.appendChild(elements.wing);elements.militaryResults=node('div');elements.militaryResults.className='cpv-military';elements.edit.appendChild(elements.militaryResults);elements.editStatus=node('p');elements.editStatus.className='cpv-status';elements.editStatus.setAttribute('role','status');elements.edit.appendChild(elements.editStatus);elements.save=button('Salvar veículo',saveRecord,'primary');elements.edit.appendChild(elements.save);elements.edit.appendChild(button('Fechar cadastro',closeEditor));
+elements.edit=node('section');elements.edit.className='cpv-edit-form';elements.edit.hidden=true;elements.editTitle=node('h3','Cadastro do veículo');elements.edit.appendChild(elements.editTitle);const fields=node('div');fields.className='cpv-fields';elements.plate=field(fields,'Placa');elements.plate.maxLength=20;elements.plate.setAttribute('autocapitalize','characters');elements.rg=field(fields,'RG ou nome do militar');elements.rg.maxLength=100;elements.militarySearch=button('Buscar militar',findMilitary);fields.appendChild(elements.militarySearch);elements.model=field(fields,'Modelo (opcional)');elements.model.maxLength=100;elements.color=field(fields,'Cor (opcional)');elements.color.maxLength=60;elements.type=field(fields,'Tipo','select');for(const [value,label] of [['','Não informado'],['carro','Carro'],['moto','Moto']]){const option=node('option',label);option.value=value;elements.type.appendChild(option);}elements.type.value='';const activeLabel=node('label');elements.recordActive=node('input');elements.recordActive.type='checkbox';activeLabel.appendChild(elements.recordActive);activeLabel.appendChild(node('span','Cadastro ativo'));fields.appendChild(activeLabel);elements.edit.appendChild(fields);elements.militaryName=node('p');elements.edit.appendChild(elements.militaryName);elements.wing=node('p');elements.wing.className='cpv-wing';elements.edit.appendChild(elements.wing);elements.militaryResults=node('div');elements.militaryResults.className='cpv-military';elements.edit.appendChild(elements.militaryResults);elements.editStatus=node('p');elements.editStatus.className='cpv-status';elements.editStatus.setAttribute('role','status');elements.edit.appendChild(elements.editStatus);elements.save=button('Salvar veículo',saveRecord,'primary');elements.edit.appendChild(elements.save);elements.closeEdit=button('Fechar cadastro',closeEditor);elements.edit.appendChild(elements.closeEdit);
   editHome = registry;
   editHome.appendChild(elements.edit);
   if (embedded) {
     elements.status.setAttribute('tabindex', '-1');
-    newDialog = node('dialog', undefined, 'cpv-new-dialog');
-    newDialog.className = 'cpv-new-dialog';
-    newDialog.setAttribute('aria-labelledby', 'cpv-editTitle');
+    editorDialog = node('dialog', undefined, 'cpv-new-dialog');
+    editorDialog.className = 'cpv-new-dialog';
+    editorDialog.setAttribute('aria-labelledby', 'cpv-editTitle');
     elements.newReceipt = button('Consultar resultado do envio', checkPending);
     elements.newReceipt.hidden = true;
     elements.edit.appendChild(elements.newReceipt);
-    registry.appendChild(newDialog);
-    on(newDialog, 'cancel', event => {
+    registry.appendChild(editorDialog);
+    on(editorDialog, 'cancel', event => {
       event.preventDefault();
       closeEditor();
     });
@@ -622,7 +673,7 @@ for(const[key,el]of Object.entries(elements))if(el&&typeof el.setAttribute==='fu
     if (embedded && busy) stop();
   });
 }
-function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){closeNewDialog();returnNewFocus=false;if(inNewEditor())editHome.appendChild(elements.edit);elements.editTitle.textContent='Cadastro do veículo';elements.editStatus.textContent='';elements.militaryName.textContent='';stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
+function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){closeEditorDialog();returnEditorFocus=null;newDraft=null;if(inEditorDialog())editHome.appendChild(elements.edit);elements.editTitle.textContent='Cadastro do veículo';elements.editStatus.textContent='';elements.militaryName.textContent='';stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
 build();host.hidden=true;update();return Object.freeze({setReady,setVisible,load,loadForecast,dispose(){if(disposed)return;setVisible(false);disposed=true;stop();client.dispose();listeners.forEach(fn=>fn());elements.style.remove?.();host.replaceChildren();}});
 }
 return Object.freeze({mount,createClient,parseClipboard,readyRows,plate,rg,validateList:list,validateReceipt:receipt,validatePreview:preview,validateMilitary:militaryResult,validateForecast:forecastDto});
