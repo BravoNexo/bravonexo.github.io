@@ -61,6 +61,7 @@ const client = createClient({...options, fetchImpl: options.fetchImpl || env.fet
 if (!embedded && host.parentNode !== doc.body) doc.body.appendChild(host);
 const rosterEnabled = embedded && typeof options.canViewRoster === 'function';
 let roster = null, editorDialog = null, editHome = null;
+let bulkDialog = null, bulkOpening = 0;
 let editorTrigger = null, returnEditorFocus = null, editorWasEditable = false, newDraft = null;
 let ready=false,visible=false,actor=null,disposed=false,busy=false,activeAction=null,epoch=0,control=null,rows=[],cursor=null,loadedFilterKey='',editRecord=null,militarySelected=null,pending=null,bulkPreview=null,bulkSelections=new Map(),forecastEpoch=0,forecastControl=null,forecastFlight=null,forecastRequestedKey='',forecastRequestActor=null,forecastRequestGeneration=null,forecastLoadedKey='',forecastLoading=false,forecastData=null,forecastDataActor=null,forecastDataGeneration=null;const elements={},listeners=[];
 const node=(tag,text,idValue)=>{const n=doc.createElement(tag);if(text!==undefined)n.textContent=text;if(idValue)n.id=idValue;return n;},on=(el,event,fn)=>{el.addEventListener(event,fn);listeners.push(()=>el.removeEventListener(event,fn));},button=(text,fn,css='secondary')=>{const n=node('button',text);n.type='button';n.className=css;on(n,'click',fn);return n;},status=(text,bad=false)=>{elements.status.textContent=text;elements.status.className=bad?'decision-error':'cpv-status';};
@@ -103,8 +104,34 @@ function updateEditorDialog(view, edit) {
     if (doc.activeElement === elements.status || !doc.activeElement || doc.activeElement === doc.body) target.focus?.();
   }
 }
-function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateEditorDialog(view,edit);}
-async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inEditorDialog()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';elements.editStatus.textContent=message;elements.bulkStatus.textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
+function closeBulkDialog(restoreFocus = false) {
+  if (!bulkDialog?.open) return;
+  bulkOpening++;
+  bulkDialog.close();
+  elements.bulk.hidden = true;
+  if (restoreFocus) (elements.paste.disabled ? elements.status : elements.paste).focus?.();
+}
+function closeBulk() {
+  if (!bulkDialog) {
+    elements.bulk.hidden = true;
+    return;
+  }
+  if (activeAction === 'preview') {
+    stop();
+    update();
+  }
+  closeBulkDialog(true);
+}
+function updateBulkDialog(view, edit) {
+  if (!bulkDialog) return;
+  if (!edit) closeBulkDialog();
+  const awaitingImport = pending?.operation === 'import';
+  elements.bulkReceipt.hidden = !awaitingImport;
+  elements.bulkReceipt.disabled = busy || !view;
+  if (awaitingImport) elements.paste.disabled = busy || !edit;
+}
+function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateEditorDialog(view,edit);updateBulkDialog(view,edit);}
+async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inEditorDialog()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(action==='preview'||action==='receipt'&&pending?.operation==='import')elements.bulkStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';(action==='save'?elements.editStatus:elements.bulkStatus).textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
 function setVisible(show) {
   if (disposed) {
     host.hidden = true;
@@ -112,6 +139,7 @@ function setVisible(show) {
   }
   const nextVisible = show === true && allowed();
   if (!nextVisible) {
+    closeBulkDialog();
     closeEditorDialog();
     returnEditorFocus = null;
   }
@@ -207,7 +235,7 @@ function showEditorDialog(trigger) {
   focusTarget.focus?.();
 }
 function openEdit(item = null, trigger = elements.new) {
-  if (!allowed(!item) || busy || editorDialog?.open || (embedded && (!visible || roster?.selected()))) return;
+  if (!allowed(!item) || busy || editorDialog?.open || bulkDialog?.open || (embedded && (!visible || roster?.selected()))) return;
   const sameForm = inEditorDialog() && (editRecord?.id ?? null) === (item?.id ?? null);
   if (pending && (!sameForm || pending.operation !== 'save')) return;
   const resume = sameForm && (!item || pending);
@@ -227,19 +255,66 @@ function openEdit(item = null, trigger = elements.new) {
 }
 async function findMilitary(){if(!allowed(true)||busy||pending||(inEditorDialog()&&!editorDialog.open))return;const term=elements.rg.value.trim();if(term.length<3){elements.editStatus.textContent='Informe o RG ou pelo menos três letras do nome.';return;}militarySelected=null;if(inEditorDialog())elements.editStatus.textContent='Buscando militar…';return run('military',async(signal,guard)=>{const result=await client.military(term,signal);guard();elements.militaryResults.replaceChildren();for(const person of result.items){const choice=button(person.nome+(person.documento?' · RG '+person.documento:''),()=>{if(!allowed(true)||busy||pending||elements.rg.value.trim()!==term)return;militarySelected=person;elements.militaryName.textContent=person.nome+(person.documento?' · RG '+person.documento:'');elements.wing.textContent=wingLabel(person.ala);elements.militaryResults.replaceChildren();update();});elements.militaryResults.appendChild(choice);}elements.editStatus.textContent=result.items.length?(result.truncated?'Há mais resultados. Refine a busca pelo RG.':'Selecione o militar correspondente.'):'Nenhum militar apto encontrado.';status('Busca de militar concluída.');return true;});}
 function verifyReceipt(result,attempt){if(result.requestId!==attempt.id||result.operation!==attempt.operation)fail();if(result.status!=='saved')return;if(attempt.operation==='save'){const v=result.items[0],data=attempt.payload;if(result.count!==1||!v||data.id!==null&&v.id!==data.id||v.placa!==data.placa||v.modelo!==data.modelo||v.cor!==data.cor||v.tipo!==data.tipo||v.ativo!==data.ativo||v.revisao!==data.revisao+1||v.entidadeId!==data.entidadeId)fail();}else{if(result.count!==attempt.rows.length)fail();for(const row of attempt.rows)if(!result.items.some(v=>v.placa===row.placa&&v.entidadeId===row.entidadeId&&v.tipo===row.tipo))fail();}}
-async function finish(result,attempt){verifyReceipt(result,attempt);pending=null;if(result.status==='conflict'){elements.editStatus.textContent='O cadastro mudou ou há conflito de placa. Confira os dados atuais antes de salvar novamente.';status('Nenhuma alteração desta tentativa foi aplicada. Confira os dados.',true);if(result.problems.length)elements.bulkStatus.textContent=result.problems.map(p=>'Linha '+p.index+': '+p.message).join('\n');return false;}if(attempt.operation==='save'){
+async function finish(result,attempt){verifyReceipt(result,attempt);pending=null;if(result.status==='conflict'){if(attempt.operation==='save')elements.editStatus.textContent='O cadastro mudou ou há conflito de placa. Confira os dados atuais antes de salvar novamente.';status('Nenhuma alteração desta tentativa foi aplicada. Confira os dados.',true);if(attempt.operation==='import'){
+  bulkPreview=null;
+  elements.bulkStatus.textContent=result.problems.length?result.problems.map(p=>'Linha '+p.index+': '+p.message).join('\n'):'Nenhum veículo foi cadastrado. Confira a colagem antes de tentar novamente.';
+}return false;}if(attempt.operation==='save'){
   if (inEditorDialog()) {
     closeEditorDialog(true, true);
     editHome.appendChild(elements.edit);
   }
   elements.edit.hidden=true;editRecord=null;militarySelected=null;
-}else{elements.bulk.hidden=true;elements.bulkText.value='';bulkPreview=null;elements.bulkRows.replaceChildren();}status(attempt.operation==='save'?'Veículo salvo com confirmação.':result.count+' veículo(s) importado(s) com confirmação.');rows=[];cursor=null;renderRows();void loadForecast(true);return true;}
+}else{
+  closeBulkDialog(true);
+  elements.bulk.hidden=true;
+  elements.bulkText.value='';
+  elements.bulkStatus.textContent='';
+  bulkPreview=null;
+  bulkSelections.clear();
+  elements.bulkRows.replaceChildren();
+}status(attempt.operation==='save'?'Veículo salvo com confirmação.':result.count+' veículo(s) importado(s) com confirmação.');rows=[];cursor=null;renderRows();void loadForecast(true);return true;}
 async function saveRecord(){if(!allowed(true)||busy||pending||(inEditorDialog()&&!editorDialog.open)||!militarySelected&&(!editRecord||elements.recordActive.checked))return;let payload;try{payload={id:editRecord?.id||null,placa:plate(elements.plate.value),entidadeId:militarySelected?.id||editRecord.entidadeId,modelo:elements.model.value.trim()||null,cor:elements.color.value.trim()||null,tipo:inputType(elements.type.value),ativo:elements.recordActive.checked,revisao:editRecord?.revisao||0};nullable(payload.modelo,100);nullable(payload.cor,60);}catch(e){elements.editStatus.textContent=e.message;return;}const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'save',payload};const success=await run('save',async(signal,guard)=>{pending=attempt;update();elements.editStatus.textContent='Salvando uma única vez…';const result=await client.save(attempt.id,payload,signal);guard();return finish(result,attempt);});if(success)void load();}
-async function checkPending(){if(!pending||busy||!allowed())return;const attempt=pending,success=await run('receipt',async(signal,guard)=>{status('Consultando o resultado sem reenviar…');if(inEditorDialog()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;const result=await client.receipt(attempt.id,signal);guard();if(result===null){status('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.',true);if(inEditorDialog()&&attempt.operation==='save')elements.editStatus.textContent=elements.status.textContent;return false;}return finish(result,attempt);});if(success)void load();}
-function openBulk(){if(!allowed(true)||busy||pending||editorDialog?.open)return;elements.edit.hidden=true;elements.bulk.hidden=false;elements.bulkStatus.textContent='Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';update();elements.bulkText.focus?.();}
+async function checkPending() {
+  if (!pending || busy || !allowed()) return;
+  const attempt = pending;
+  const announce = (message, bad = false) => {
+    status(message, bad);
+    if (attempt.operation === 'import') elements.bulkStatus.textContent = message;
+    else if (inEditorDialog()) elements.editStatus.textContent = message;
+  };
+  const success = await run('receipt', async (signal, guard) => {
+    announce('Consultando o resultado sem reenviar…');
+    const result = await client.receipt(attempt.id, signal);
+    guard();
+    if (result === null) {
+      announce('O servidor ainda não confirmou esta tentativa. Seus dados continuam preservados.', true);
+      return false;
+    }
+    return finish(result, attempt);
+  });
+  if (success) void load();
+}
+function openBulk() {
+  if (!allowed(true) || busy || editorDialog?.open || bulkDialog?.open || (pending && !(bulkDialog && pending.operation === 'import'))) return;
+  if (embedded && (!visible || roster?.selected())) return;
+  elements.edit.hidden = true;
+  elements.bulk.hidden = false;
+  if (!elements.bulkStatus.textContent) {
+    elements.bulkStatus.textContent = 'Cole RG, Placa, Modelo, Cor e Tipo. As três últimas colunas são opcionais; Tipo aceita Carro ou Moto.';
+  }
+  if (bulkDialog) {
+    try { bulkDialog.showModal(); } catch {
+      elements.bulk.hidden = true;
+      status('Não foi possível abrir a colagem da planilha.', true);
+      return;
+    }
+  }
+  update();
+  (pending ? elements.bulkReceipt : elements.bulkText).focus?.();
+}
 function renderPreview(report){elements.bulkRows.replaceChildren();const labels={ready:'Novo',existing:'Já cadastrado · não duplicar',ambiguous:'Escolher militar',not_found:'Militar não encontrado',invalid:'Dados inválidos',duplicate:'Placa repetida',conflict:'Conflito de vínculo'};for(const row of report.rows){const tr=node('tr');for(const text of[row.index,row.rg,row.placa,row.modelo||'—',row.cor||'—',typeLabel(row.tipo),wingLabel(row.ala)])tr.appendChild(node('td',String(text)));const owner=node('td');if(row.status==='ambiguous'){const select=node('select');select.appendChild(node('option','Selecione o militar'));for(const person of row.militares){const option=node('option',person.nome+(person.documento?' · RG '+person.documento:''));option.value=person.id;select.appendChild(option);}on(select,'change',()=>{row.entidadeId=select.value||null;bulkSelections.set(row.rg+'|'+row.placa,row.entidadeId);bulkPreview=null;elements.bulkStatus.textContent='Clique em Conferir colagem novamente para validar a escolha.';update();});owner.appendChild(select);}else owner.textContent=row.militares.find(p=>p.id===row.entidadeId)?.nome||'—';tr.appendChild(owner);const state=node('td',labels[row.status]+(row.message?' · '+row.message:''));if(!['ready','existing'].includes(row.status))state.className='decision-error';tr.appendChild(state);elements.bulkRows.appendChild(tr);}const n=report.rows.filter(r=>r.status==='ready').length,existing=report.rows.filter(r=>r.status==='existing').length,bad=report.rows.length-n-existing;elements.bulkStatus.textContent=n+' novo(s), '+existing+' já cadastrado(s), '+bad+' pendência(s). Nenhum cadastro foi enviado.';}
-async function previewBulk(){if(!allowed(true)||busy||pending)return;const parsed=parseClipboard(elements.bulkText.value);if(parsed.problems.length){bulkPreview=null;elements.bulkStatus.textContent=parsed.problems.map(p=>(p.line?'Linha '+p.line+': ':'')+p.message).join('\n');update();return;}return run('preview',async(signal,guard)=>{const report=await client.preview(parsed.rows.map(r=>({...r,entidadeId:bulkSelections.get(r.rg+'|'+r.placa)||null})),signal);guard();if(report.rows.length!==parsed.rows.length)fail();bulkPreview=report;renderPreview(report);status('Colagem conferida. Nenhum cadastro foi enviado.');return true;});}
-async function importBulk(){if(!allowed(true)||busy||pending||!bulkPreview)return;let data;try{data=readyRows(bulkPreview);}catch(e){elements.bulkStatus.textContent=e.message;return;}const preparedPreview=bulkPreview,preparedActor=actor,preparedGeneration=options.getGeneration(),skipped=bulkPreview.rows.filter(r=>r.status==='existing').length;if(!await Promise.resolve((options.confirm||env.confirm?.bind(env)||(()=>false))('Cadastrar '+data.length+' veículo(s) particular(es)?'+(skipped?' '+skipped+' já cadastrado(s) serão preservados, sem duplicação.':''))))return;if(!allowed(true)||embedded&&!visible||busy||pending||bulkPreview!==preparedPreview||actor!==preparedActor||options.getGeneration()!==preparedGeneration)return;const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'import',rows:data};const success=await run('import',async(signal,guard)=>{pending=attempt;update();elements.bulkStatus.textContent='Enviando um único lote…';const result=await client.import(attempt.id,data,signal);guard();return finish(result,attempt);});if(success)void load();}
+async function previewBulk(){if(!allowed(true)||busy||pending||(bulkDialog&&!bulkDialog.open))return;const parsed=parseClipboard(elements.bulkText.value);if(parsed.problems.length){bulkPreview=null;elements.bulkStatus.textContent=parsed.problems.map(p=>(p.line?'Linha '+p.line+': ':'')+p.message).join('\n');update();return;}return run('preview',async(signal,guard)=>{const report=await client.preview(parsed.rows.map(r=>({...r,entidadeId:bulkSelections.get(r.rg+'|'+r.placa)||null})),signal);guard();if(report.rows.length!==parsed.rows.length)fail();bulkPreview=report;renderPreview(report);status('Colagem conferida. Nenhum cadastro foi enviado.');return true;});}
+async function importBulk(){if(!allowed(true)||busy||pending||!bulkPreview||(bulkDialog&&!bulkDialog.open))return;let data;try{data=readyRows(bulkPreview);}catch(e){elements.bulkStatus.textContent=e.message;return;}const preparedPreview=bulkPreview,preparedOpening=bulkOpening,preparedActor=actor,preparedGeneration=options.getGeneration(),skipped=bulkPreview.rows.filter(r=>r.status==='existing').length;if(!await Promise.resolve((options.confirm||env.confirm?.bind(env)||(()=>false))('Cadastrar '+data.length+' veículo(s) particular(es)?'+(skipped?' '+skipped+' já cadastrado(s) serão preservados, sem duplicação.':''))))return;if(!allowed(true)||embedded&&!visible||busy||pending||bulkPreview!==preparedPreview||bulkOpening!==preparedOpening||actor!==preparedActor||options.getGeneration()!==preparedGeneration)return;const attempt={id:env.crypto.randomUUID(),apiVersion:2,operation:'import',rows:data};const success=await run('import',async(signal,guard)=>{pending=attempt;update();elements.bulkStatus.textContent='Enviando um único lote…';const result=await client.import(attempt.id,data,signal);guard();return finish(result,attempt);});if(success)void load();}
 function field(parent,label,tag='input'){const wrap=node('label');wrap.className='cpv-field';wrap.appendChild(node('span',label));const input=node(tag);wrap.appendChild(input);parent.appendChild(wrap);return input;}
 function commandGroup(label, className, ...controls) {
   const group = node('div');
@@ -501,6 +576,7 @@ function buildRoster(registry, commandRibbon, inventoryCommands) {
   function choose(showRoster) {
     if (!visible || showRoster === active || (showRoster && (!access() || rosterMode.disabled))) return;
     if (showRoster) {
+      closeBulkDialog();
       closeEditorDialog();
       returnEditorFocus = null;
     }
@@ -530,10 +606,16 @@ function build() {
   style.textContent = shellStyle + `
 ${scope}[hidden],${scope} [hidden]{display:none!important}
 .cpv-top{display:flex;justify-content:space-between;gap:15px;align-items:center}
-.cpv-page .cpv-new-dialog{position:fixed;inset:0;margin:auto;width:min(720px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;box-sizing:border-box;border:1px solid #c5d5df;border-radius:14px;padding:20px;color:#17374e;background:#fff;box-shadow:0 16px 40px #0f172a40}
-.cpv-page .cpv-new-dialog::backdrop{background:rgba(15,23,42,.55)}
-.cpv-page .cpv-new-dialog .cpv-edit-form{border:0;margin:0;padding:0}
-.cpv-page .cpv-new-dialog h3{margin:0 0 12px}
+.cpv-page :is(.cpv-new-dialog,.cpv-bulk-dialog){position:fixed;inset:0;margin:auto;width:min(720px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;box-sizing:border-box;border:1px solid #c5d5df;border-radius:14px;padding:20px;color:#17374e;background:#fff;box-shadow:0 16px 40px #0f172a40}
+.cpv-page :is(.cpv-new-dialog,.cpv-bulk-dialog)::backdrop{background:rgba(15,23,42,.55)}
+.cpv-page :is(.cpv-new-dialog .cpv-edit-form,.cpv-bulk-dialog section){border:0;margin:0;padding:0}
+.cpv-page :is(.cpv-new-dialog,.cpv-bulk-dialog) h3{margin:0 0 12px}
+.cpv-page .cpv-bulk-dialog{width:min(1040px,calc(100% - 24px))}
+.cpv-page .cpv-bulk-dialog .cpv-scroll{max-height:44dvh}
+.cpv-page .cpv-bulk-dialog table{min-width:700px}
+.cpv-page .cpv-bulk-dialog textarea{resize:vertical}
+.cpv-page .cpv-bulk-dialog .cpv-bulk-actions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.cpv-page .cpv-bulk-dialog .cpv-scroll:has(tbody:empty){display:none}
 .cpv-ribbon,.cpv-fields{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:16px 0}
 .cpv-field{display:grid;gap:5px;min-width:150px;flex:1;font-size:13px}${scope} input,${scope} select,${scope} textarea{border:1px solid #afc2ce;border-radius:7px;padding:9px;color:#17374e;background:white;box-sizing:border-box;width:100%}${scope} table{border-collapse:collapse;width:100%;font-size:13px}${scope} td,${scope} th{padding:10px;text-align:left;border-bottom:1px solid #dbe4ea;vertical-align:top}
 .cpv-scroll{overflow:auto}${scope} section{border-top:1px solid #d9e4eb;margin-top:20px;padding-top:15px}
@@ -665,7 +747,24 @@ elements.edit=node('section');elements.edit.className='cpv-edit-form';elements.e
       closeEditor();
     });
   }
-elements.bulk=node('section');elements.bulk.hidden=true;elements.bulk.appendChild(node('h3','Cadastrar a partir da planilha'));elements.bulk.appendChild(node('p','Copie até 100 linhas nas colunas RG, Placa, Modelo, Cor e Tipo. Modelo, cor e tipo são opcionais. A primeira linha de títulos é opcional. Confira antes de cadastrar.'));elements.bulkText=node('textarea');elements.bulkText.setAttribute('aria-label','Colagem da planilha');elements.bulkText.placeholder='RG\tPlaca\tModelo\tCor\tTipo\n49058\tABC1D23\tModelo\tBranco\tCarro';elements.bulk.appendChild(elements.bulkText);elements.preview=button('Conferir colagem',previewBulk);elements.bulk.appendChild(elements.preview);elements.import=button('Cadastrar veículos conferidos',importBulk,'primary');elements.bulk.appendChild(elements.import);elements.bulk.appendChild(button('Fechar colagem',()=>{elements.bulk.hidden=true;}));elements.bulkStatus=node('p');elements.bulkStatus.className='cpv-status';elements.bulkStatus.setAttribute('role','status');elements.bulk.appendChild(elements.bulkStatus);const bulkScroll=node('div');bulkScroll.className='cpv-scroll';const bulkTable=node('table'),bulkHead=node('thead'),bhr=node('tr');for(const text of['Linha','RG','Placa','Modelo','Cor','Tipo','Ala no Mapa','Militar','Conferência'])bhr.appendChild(node('th',text));bulkHead.appendChild(bhr);bulkTable.appendChild(bulkHead);elements.bulkRows=node('tbody');bulkTable.appendChild(elements.bulkRows);bulkScroll.appendChild(bulkTable);elements.bulk.appendChild(bulkScroll);registry.appendChild(elements.bulk);
+elements.bulk=node('section');elements.bulk.hidden=true;elements.bulkTitle=node('h3','Cadastrar a partir da planilha');elements.bulk.appendChild(elements.bulkTitle);elements.bulk.appendChild(node('p','Copie até 100 linhas nas colunas RG, Placa, Modelo, Cor e Tipo. Modelo, cor e tipo são opcionais. A primeira linha de títulos é opcional. Confira antes de cadastrar.'));elements.bulkText=node('textarea');elements.bulkText.setAttribute('aria-label','Colagem da planilha');elements.bulkText.placeholder='RG\tPlaca\tModelo\tCor\tTipo\n49058\tABC1D23\tModelo\tBranco\tCarro';elements.bulk.appendChild(elements.bulkText);elements.preview=button('Conferir colagem',previewBulk);const bulkActions=node('div');bulkActions.className='cpv-bulk-actions';bulkActions.appendChild(elements.preview);elements.import=button('Cadastrar veículos conferidos',importBulk,'primary');bulkActions.appendChild(elements.import);elements.bulk.appendChild(bulkActions);elements.bulkStatus=node('p');elements.bulkStatus.className='cpv-status';elements.bulkStatus.setAttribute('role','status');elements.bulk.appendChild(elements.bulkStatus);const bulkScroll=node('div');bulkScroll.className='cpv-scroll';const bulkTable=node('table'),bulkHead=node('thead'),bhr=node('tr');for(const text of['Linha','RG','Placa','Modelo','Cor','Tipo','Ala no Mapa','Militar','Conferência'])bhr.appendChild(node('th',text));bulkHead.appendChild(bhr);bulkTable.appendChild(bulkHead);elements.bulkRows=node('tbody');bulkTable.appendChild(elements.bulkRows);bulkScroll.appendChild(bulkTable);elements.bulk.appendChild(bulkScroll);
+  if (embedded) {
+    bulkDialog = node('dialog', undefined, 'cpv-bulk-dialog');
+    bulkDialog.className = 'cpv-bulk-dialog';
+    bulkDialog.setAttribute('aria-labelledby', 'cpv-bulkTitle');
+    elements.paste.setAttribute('aria-haspopup', 'dialog');
+    elements.paste.setAttribute('aria-controls', bulkDialog.id);
+    elements.bulkReceipt = button('Consultar resultado do envio', checkPending);
+    elements.bulkReceipt.hidden = true;
+    bulkActions.appendChild(elements.bulkReceipt);
+    bulkDialog.appendChild(elements.bulk);
+    registry.appendChild(bulkDialog);
+    on(bulkDialog, 'cancel', event => {
+      event.preventDefault();
+      closeBulk();
+    });
+  } else registry.appendChild(elements.bulk);
+  bulkActions.appendChild(button('Fechar colagem',closeBulk));
 for(const[key,el]of Object.entries(elements))if(el&&typeof el.setAttribute==='function'&&!['style'].includes(key))el.id='cpv-'+key;on(elements.search,'keydown',e=>{if(e.key==='Enter'){e.preventDefault();void load();}});on(elements.search,'input',resetList);on(elements.active,'change',()=>{if(resetList())void load();});on(elements.wingFilter,'change',()=>{if(resetList())void load();});on(elements.typeFilter,'change',()=>{if(resetList())void load();});on(elements.plate,'input',()=>{elements.plate.value=elements.plate.value.toUpperCase();});on(elements.rg,'input',()=>{militarySelected=null;elements.militaryResults.replaceChildren();elements.militaryName.textContent='Busque e selecione o militar responsável.';elements.wing.textContent='Escolha um militar para consultar sua ala no Mapa.';update();});on(elements.rg,'keydown',e=>{if(e.key==='Enter'){e.preventDefault();void findMilitary();}});on(elements.recordActive,'change',update);on(elements.bulkText,'input',()=>{bulkPreview=null;bulkSelections.clear();elements.bulkRows.replaceChildren();elements.bulkStatus.textContent='Colagem alterada. Confira os dados antes de cadastrar.';update();});if (!embedded) on(host, 'cancel', event => { event.preventDefault(); setVisible(false); });
   if (options.bindTrigger === true && trigger) on(trigger, 'click', () => setVisible(true));
   on(env, 'pagehide', () => {
@@ -673,7 +772,7 @@ for(const[key,el]of Object.entries(elements))if(el&&typeof el.setAttribute==='fu
     if (embedded && busy) stop();
   });
 }
-function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){closeEditorDialog();returnEditorFocus=null;newDraft=null;if(inEditorDialog())editHome.appendChild(elements.edit);elements.editTitle.textContent='Cadastro do veículo';elements.editStatus.textContent='';elements.militaryName.textContent='';stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
+function setReady(next){if(disposed)return;const nextActor=next.actorId||null;if(actor&&actor!==nextActor){closeBulkDialog();elements.bulkStatus.textContent='';closeEditorDialog();returnEditorFocus=null;newDraft=null;if(inEditorDialog())editHome.appendChild(elements.edit);elements.editTitle.textContent='Cadastro do veículo';elements.editStatus.textContent='';elements.militaryName.textContent='';stopForecast(true);stop();roster?.reset();rows=[];cursor=null;loadedFilterKey='';pending=null;editRecord=null;militarySelected=null;bulkPreview=null;bulkSelections.clear();for(const input of [elements.search,elements.wingFilter,elements.typeFilter,elements.plate,elements.rg,elements.model,elements.color,elements.type,elements.bulkText])input.value='';elements.edit.hidden=elements.bulk.hidden=true;elements.bulkRows.replaceChildren();elements.militaryResults.replaceChildren();elements.wing.textContent='';renderTotals(null);renderRows();status('');}actor=nextActor;ready=next.ready===true&&!!actor;if(!allowed()){stopForecast(true);stop();if(visible)setVisible(false);}else if(visible){const previouslyRoster=roster?.selected();roster?.update();if(roster?.selected())void roster.load();else{void loadForecast();if(previouslyRoster&&!rows.length&&!busy)void load();}}update();}
 build();host.hidden=true;update();return Object.freeze({setReady,setVisible,load,loadForecast,dispose(){if(disposed)return;setVisible(false);disposed=true;stop();client.dispose();listeners.forEach(fn=>fn());elements.style.remove?.();host.replaceChildren();}});
 }
 return Object.freeze({mount,createClient,parseClipboard,readyRows,plate,rg,validateList:list,validateReceipt:receipt,validatePreview:preview,validateMilitary:militaryResult,validateForecast:forecastDto});
