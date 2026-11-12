@@ -181,7 +181,7 @@ function BNXMountScaleRibbonActionsV232({environment,controller,transport,editor
     destroy(){sqlPdfUi?.destroy();sheetNotice.remove();destroyed=true;ready=false;sequence++;checkSequence++;archive=null;pending=null;downloadGroup.remove();group.remove();notice.remove();}
   });
 }
-function Ot({environment:e=window,transport:t,pdfTransport:a=null,getActorId:s,getGeneration:i=()=>0}={}){let n=e.document,o=e.BNXCentralScaleEditor,p=na(e.location),h=n.getElementById("scale-page");if(!h||!o||!t)return{setReady(){}};let __driveTransport=t;t=Pt({legacy:t,native:a,getGeneration:i}),o.configure({captureScaleWorkspace:Et,applyScaleWorkspace:At});let r=(S,D)=>{let F=n.createElement(S);return D!==void 0&&(F.textContent=D),F},c=r("style");c.setAttribute("data-scale-workspace-style",""),c.textContent=oa,n.head.appendChild(c),n.documentElement.setAttribute("data-scale-workspace-mounted","1");let d=n.getElementById("scale-workspace-loading");d&&(d.hidden=!0);let l=!1,E=!1,_="",O=-1,m=0,k=[],u="",N=!1,f="",v="",y=new Map,A=new Map,b="";function x(){let S=new Date;return S.getFullYear()+"-"+String(S.getMonth()+1).padStart(2,"0")}if(p){let We=function(T){S.hidden=!T.ready,W.textContent=T.status==="finalized"?"Finalizada":T.status==="draft"?"Rascunho":"Nova escala",W.dataset.status=T.status,fe.textContent=T.message,Y.disabled=!T.editable||T.busy||T.pending||T.conflict||T.finalizing||!o.isReady()||o.isBusy(),ne.disabled=Y.disabled||o.isBusy(),Pe.hidden=!T.pending,Pe.disabled=T.busy,Pe.textContent=T.finalizing?"Conferir escala oficial":"Consultar tentativa",officialResumeButton.hidden=!T.resumeAllowed,officialResumeButton.disabled=T.busy||!T.resumeAllowed,be.hidden=!T.conflict,be.disabled=T.busy,o.lock(T.busy||T.finalizing||!T.editable),Q?.paint(T)};n.body.classList.add("sw-compact"),e.BNXScaleWorkspaceParentMode=!1,n.title="Escala "+p.split("-").reverse().join("/")+" \xB7 BravoNexo";let S=r("header"),D=r("div"),F=r("h1","Escala de "+p.split("-").reverse().join("/")),G=r("small","BravoNexo Central \xB7 v2.59.2"),W=r("span"),we=r("div"),Y=r("button","Salvar rascunho"),ne=r("button","Finalizar escala"),Pe=r("button","Consultar tentativa"),officialResumeButton=r("button","Retomar finalização"),be=r("button","Carregar vers\xE3o salva"),ve=r("button","Fechar janela"),fe=r("p");Y.id="scale-workspace-save",ne.id="scale-workspace-finalize",S.className="sw-window-head",we.className="sw-window-actions",W.className="sw-window-status",ne.className="sw-finalize",ve.className="sw-close",fe.className="sw-message",fe.setAttribute("role","status"),fe.setAttribute("aria-live","polite");for(let T of[Y,ne,Pe,officialResumeButton,be,ve])T.type="button";D.append(F,G,W),we.append(Y,ne,Pe,officialResumeButton,be,ve),S.append(D,we,fe),h.before(S),S.hidden=!0;let Q=null,se=Ct({dateIso:p,transport:t,bridge:o,storage:e.sessionStorage,randomUUID:()=>e.crypto.randomUUID(),setTimer:e.setTimeout.bind(e),clearTimer:e.clearTimeout.bind(e),onStatus(T){try{e.opener&&!e.opener.closed&&e.opener.postMessage({type:"BNX_SCALE_WORKSPACE_STATUS",...T},e.location.origin)}catch{}},onState:We});return Q=BNXMountScaleRibbonActionsV232({environment:e,transport:__driveTransport,controller:se,editor:o,dateIso:p,head:S,save:Y,finalize:ne,close:ve,calendarPdf:Be,getGeneration:i,pdfClient:a,getActorId:s}),o.onRender(()=>We(se.getState())),o.onChange(()=>se.changed()),o.onBuildConfirmed(T=>{se.onBuildConfirmed(T).catch(()=>{})}),e.BNXScaleWorkspaceLifecycle=Object.freeze({hasSavedDraft:()=>se.hasSavedDraft()}),Y.addEventListener("click",()=>{se.save()}),ne.addEventListener("click",()=>{se.finalize()}),Pe.addEventListener("click",()=>{se.check()}),officialResumeButton.addEventListener("click",()=>{se.resume()}),be.addEventListener("click",()=>{e.confirm("Carregar a vers\xE3o salva substituir\xE1 os ajustes desta janela. Deseja continuar?")&&se.initialize(!0)}),ve.addEventListener("click",()=>e.close()),e.addEventListener("beforeunload",T=>{let Se=se.getState();!Se.ready||!Se.dirty&&!Se.pending&&!Se.finalizing&&!Se.busy&&(!Se.knownSaved||se.hasSavedDraft())&&!o.isBusy()||(T.preventDefault(),T.returnValue="")}),Object.freeze({setReady(T){l=T?.ready===!0,Q.setReady(T),se.setReady({...T,actorId:s()})},destroy(){Q.destroy(),se.destroy()}})}n.body.classList.add("sw-parent"),e.BNXScaleWorkspaceParentMode=!0;let R=r("section"),j=r("div"),M=r("h2","Escalas por dia"),H=r("div"),B=r("div","M\xEAs "),K=r("input"),te=r("button","Atualizar calend\xE1rio"),L=r("button","Tentar abrir janela"),V=r("div"),ae=r("div"),oe=r("p"),ie=["Janeiro","Fevereiro","Mar\xE7o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"],he=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],de=r("div"),ce=r("button"),g=r("div"),P=r("div"),q=r("button","\u2039"),J=r("strong"),I=r("button","\u203A"),w=r("div"),$=r("p");de.className="sw-month-selector",g.className="sw-month-panel",g.id="scale-workspace-month-picker",g.hidden=!0,g.setAttribute("role","dialog"),g.setAttribute("aria-label","Escolher m\xEAs das escalas"),ce.type=q.type=I.type="button",ce.setAttribute("aria-controls",g.id),ce.setAttribute("aria-expanded","false"),P.className="sw-month-year",J.setAttribute("aria-live","polite"),q.setAttribute("aria-label","Ano anterior"),I.setAttribute("aria-label","Pr\xF3ximo ano"),P.append(q,J,I),w.className="sw-month-grid",$.className="sw-month-help",$.setAttribute("role","status"),g.append(P,w,$),de.append(ce,g);let C="",z=0,le=!1,me="",ge=new Map;function Ve(S,D){Array.isArray(S.availableMonths)&&ge.set(D.slice(0,4),new Set(S.availableMonths))}function xe(){let S=f||x(),D=C||S.slice(0,4),F=ge.get(D);ce.textContent=ie[Number(S.slice(5))-1]+" de "+S.slice(0,4),ce.setAttribute("aria-label","M\xEAs das escalas: "+ce.textContent),ce.disabled=!l,J.textContent=D,q.disabled=Number(D)<=1900,I.disabled=Number(D)>=2200;let G=w.contains(n.activeElement)?n.activeElement?.dataset?.month:"";w.textContent="";for(let W=0;W<12;W++){let we=D+"-"+String(W+1).padStart(2,"0"),Y=F?.has(we)===!0,ne=r("button",he[W]);ne.type="button",ne.className="sw-month-option",ne.dataset.hasScales=String(Y),ne.dataset.month=we,ne.setAttribute("aria-pressed",String(we===S)),ne.setAttribute("aria-label",ie[W]+" de "+D+(Y?" \xB7 Cont\xE9m escalas":F?" \xB7 Sem escalas":" \xB7 Disponibilidade em consulta")),ne.title=ie[W]+" de "+D+(Y?" \xB7 Cont\xE9m escala salva ou PDF arquivado":F?" \xB7 Sem escala salva ou PDF arquivado":""),ne.addEventListener("click",()=>{Ne(),Je(we),ce.focus()}),w.appendChild(ne)}G&&G.slice(0,4)===D&&w.querySelector('[data-month="'+G+'"]')?.focus({preventScroll:!0}),$.textContent=le?"Consultando meses com escalas\u2026":me||(F?F.size?"Em azul: meses com escalas salvas ou PDFs arquivados. Os demais meses tamb\xE9m podem ser selecionados.":"Nenhum m\xEAs deste ano cont\xE9m escalas salvas ou PDFs arquivados. Selecione um m\xEAs para come\xE7ar.":"Consultando os meses dispon\xEDveis\u2026")}function Ne(){g.hidden=!0,ce.setAttribute("aria-expanded","false")}async function Ke(){if(!l||!C)return;let S=C,D=++z,F=s(),G=i();le=!0,me="",xe();try{let W=await t.calendar(S+"-01");if(!l||D!==z||F!==s()||G!==i()||C!==S)return;Ve(W,S+"-01")}catch{l&&D===z&&C===S&&(me="N\xE3o foi poss\xEDvel conferir os meses deste ano. Voc\xEA pode selecionar um m\xEAs para consult\xE1-lo.")}finally{l&&D===z&&C===S&&(le=!1,xe())}}function Je(S){z++,le=!1,me="",f=/^\d{4}-\d{2}$/.test(S)&&Z(S+"-01")?S:x(),K.value=f,C=f.slice(0,4),k=[],$e()}ce.addEventListener("click",()=>{if(l){if(!g.hidden){Ne();return}z++,le=!1,me="",C=(f||x()).slice(0,4),g.hidden=!1,ce.setAttribute("aria-expanded","true"),xe(),ge.has(C)||Ke()}});for(let[S,D]of[[q,-1],[I,1]])S.addEventListener("click",()=>{C=String(Number(C)+D).padStart(4,"0"),me="",xe(),ge.has(C)?(z++,le=!1,xe()):Ke()});de.addEventListener("keydown",S=>{S.key==="Escape"&&!g.hidden&&(S.preventDefault(),Ne(),ce.focus())});let wt=S=>{de.contains(S.target)||Ne()};n.addEventListener("click",wt),R.className="sw-calendar",R.setAttribute("aria-label","Calend\xE1rio de escalas"),j.className="sw-calendar-head",H.className="sw-calendar-tools",K.type="month",K.hidden=!0,K.setAttribute("aria-label","M\xEAs das escalas"),te.type=L.type="button",L.hidden=!0,B.append(K,de),j.append(M),H.append(B,te,L),V.className="sw-calendar-grid",V.setAttribute("aria-label","Dias do m\xEAs"),ae.className="sw-legend";for(let[S,D]of[["empty","Sem rascunho"],["draft","Rascunho"],["finalized","Finalizada"],["archived","PDF no Drive"]]){let F=r("span",D);F.className=S,ae.appendChild(F)}oe.className="sw-message",oe.setAttribute("role","status"),oe.setAttribute("aria-live","polite"),R.append(j,H,V,ae,oe),h.insertBefore(R,h.firstChild.nextSibling),R.hidden=!0;let at=sa({environment:e,getActorId:s,getGeneration:i,onStatus(S){if(y.set(S.dateIso,S),S.status!=="empty"){let D=S.dateIso.slice(0,4),F=ge.get(D);F&&F.add(S.dateIso.slice(0,7))}Oe()}});function Oe(){xe(),V.textContent="";for(let D of["Dom","Seg","Ter","Qua","Qui","Sex","S\xE1b"]){let F=r("span",D);F.className="sw-weekday",V.appendChild(F)}if(!f)return;let S;try{S=Ze(f,k)}catch{u="N\xE3o foi poss\xEDvel conferir o calend\xE1rio. Atualize para consultar novamente.",S=Ze(f,[])}for(let D of S){if(!D){V.appendChild(r("span"));continue}let F=y.get(D.dateIso),G=k.find(ve=>ve.dateIso===D.dateIso),W=F&&(F.unsaved||F.revision>=D.revision)?F.status:D.status,we=W!=="empty",Y=r(we?"div":"button"),ne=r("strong",String(D.day)),Pe=r("small",W==="finalized"?"Finalizada":W==="draft"?F?.unsaved?"Em edi\xE7\xE3o":"Rascunho":W==="archived"?"PDF no Drive":"Abrir escala"),be=D.dateIso.split("-").reverse().join("/");
+function Ot({environment:e=window,transport:t,pdfTransport:a=null,getActorId:s,getGeneration:i=()=>0}={}){let n=e.document,o=e.BNXCentralScaleEditor,p=na(e.location),h=n.getElementById("scale-page");if(!h||!o||!t)return{setReady(){}};let __driveTransport=t;t=Pt({legacy:t,native:a,getGeneration:i}),o.configure({captureScaleWorkspace:Et,applyScaleWorkspace:At});let r=(S,D)=>{let F=n.createElement(S);return D!==void 0&&(F.textContent=D),F},c=r("style");c.setAttribute("data-scale-workspace-style",""),c.textContent=oa,n.head.appendChild(c),n.documentElement.setAttribute("data-scale-workspace-mounted","1");let d=n.getElementById("scale-workspace-loading");d&&(d.hidden=!0);let l=!1,E=!1,_="",O=-1,m=0,k=[],u="",N=!1,f="",v="",y=new Map,A=new Map,b="";function x(){let S=new Date;return S.getFullYear()+"-"+String(S.getMonth()+1).padStart(2,"0")}if(p){let We=function(T){S.hidden=!T.ready,W.textContent=T.status==="finalized"?"Finalizada":T.status==="draft"?"Rascunho":"Nova escala",W.dataset.status=T.status,fe.textContent=T.message,Y.disabled=!T.editable||T.busy||T.pending||T.conflict||T.finalizing||!o.isReady()||o.isBusy(),ne.disabled=Y.disabled||o.isBusy(),Pe.hidden=!T.pending,Pe.disabled=T.busy,Pe.textContent=T.finalizing?"Conferir escala oficial":"Consultar tentativa",officialResumeButton.hidden=!T.resumeAllowed,officialResumeButton.disabled=T.busy||!T.resumeAllowed,be.hidden=!T.conflict,be.disabled=T.busy,o.lock(T.busy||T.finalizing||!T.editable),Q?.paint(T)};n.body.classList.add("sw-compact"),e.BNXScaleWorkspaceParentMode=!1,n.title="Escala "+p.split("-").reverse().join("/")+" \xB7 BravoNexo";let S=r("header"),D=r("div"),F=r("h1","Escala de "+p.split("-").reverse().join("/")),G=r("small","BravoNexo Central \xB7 v2.59.3"),W=r("span"),we=r("div"),Y=r("button","Salvar rascunho"),ne=r("button","Finalizar escala"),Pe=r("button","Consultar tentativa"),officialResumeButton=r("button","Retomar finalização"),be=r("button","Carregar vers\xE3o salva"),ve=r("button","Fechar janela"),fe=r("p");Y.id="scale-workspace-save",ne.id="scale-workspace-finalize",S.className="sw-window-head",we.className="sw-window-actions",W.className="sw-window-status",ne.className="sw-finalize",ve.className="sw-close",fe.className="sw-message",fe.setAttribute("role","status"),fe.setAttribute("aria-live","polite");for(let T of[Y,ne,Pe,officialResumeButton,be,ve])T.type="button";D.append(F,G,W),we.append(Y,ne,Pe,officialResumeButton,be,ve),S.append(D,we,fe),h.before(S),S.hidden=!0;let Q=null,se=Ct({dateIso:p,transport:t,bridge:o,storage:e.sessionStorage,randomUUID:()=>e.crypto.randomUUID(),setTimer:e.setTimeout.bind(e),clearTimer:e.clearTimeout.bind(e),onStatus(T){try{e.opener&&!e.opener.closed&&e.opener.postMessage({type:"BNX_SCALE_WORKSPACE_STATUS",...T},e.location.origin)}catch{}},onState:We});return Q=BNXMountScaleRibbonActionsV232({environment:e,transport:__driveTransport,controller:se,editor:o,dateIso:p,head:S,save:Y,finalize:ne,close:ve,calendarPdf:Be,getGeneration:i,pdfClient:a,getActorId:s}),o.onRender(()=>We(se.getState())),o.onChange(()=>se.changed()),o.onBuildConfirmed(T=>{se.onBuildConfirmed(T).catch(()=>{})}),e.BNXScaleWorkspaceLifecycle=Object.freeze({hasSavedDraft:()=>se.hasSavedDraft()}),Y.addEventListener("click",()=>{se.save()}),ne.addEventListener("click",()=>{se.finalize()}),Pe.addEventListener("click",()=>{se.check()}),officialResumeButton.addEventListener("click",()=>{se.resume()}),be.addEventListener("click",()=>{e.confirm("Carregar a vers\xE3o salva substituir\xE1 os ajustes desta janela. Deseja continuar?")&&se.initialize(!0)}),ve.addEventListener("click",()=>e.close()),e.addEventListener("beforeunload",T=>{let Se=se.getState();!Se.ready||!Se.dirty&&!Se.pending&&!Se.finalizing&&!Se.busy&&(!Se.knownSaved||se.hasSavedDraft())&&!o.isBusy()||(T.preventDefault(),T.returnValue="")}),Object.freeze({setReady(T){l=T?.ready===!0,Q.setReady(T),se.setReady({...T,actorId:s()})},destroy(){Q.destroy(),se.destroy()}})}n.body.classList.add("sw-parent"),e.BNXScaleWorkspaceParentMode=!0;let R=r("section"),j=r("div"),M=r("h2","Escalas por dia"),H=r("div"),B=r("div","M\xEAs "),K=r("input"),te=r("button","Atualizar calend\xE1rio"),L=r("button","Tentar abrir janela"),V=r("div"),ae=r("div"),oe=r("p"),ie=["Janeiro","Fevereiro","Mar\xE7o","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"],he=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"],de=r("div"),ce=r("button"),g=r("div"),P=r("div"),q=r("button","\u2039"),J=r("strong"),I=r("button","\u203A"),w=r("div"),$=r("p");de.className="sw-month-selector",g.className="sw-month-panel",g.id="scale-workspace-month-picker",g.hidden=!0,g.setAttribute("role","dialog"),g.setAttribute("aria-label","Escolher m\xEAs das escalas"),ce.type=q.type=I.type="button",ce.setAttribute("aria-controls",g.id),ce.setAttribute("aria-expanded","false"),P.className="sw-month-year",J.setAttribute("aria-live","polite"),q.setAttribute("aria-label","Ano anterior"),I.setAttribute("aria-label","Pr\xF3ximo ano"),P.append(q,J,I),w.className="sw-month-grid",$.className="sw-month-help",$.setAttribute("role","status"),g.append(P,w,$),de.append(ce,g);let C="",z=0,le=!1,me="",ge=new Map;function Ve(S,D){Array.isArray(S.availableMonths)&&ge.set(D.slice(0,4),new Set(S.availableMonths))}function xe(){let S=f||x(),D=C||S.slice(0,4),F=ge.get(D);ce.textContent=ie[Number(S.slice(5))-1]+" de "+S.slice(0,4),ce.setAttribute("aria-label","M\xEAs das escalas: "+ce.textContent),ce.disabled=!l,J.textContent=D,q.disabled=Number(D)<=1900,I.disabled=Number(D)>=2200;let G=w.contains(n.activeElement)?n.activeElement?.dataset?.month:"";w.textContent="";for(let W=0;W<12;W++){let we=D+"-"+String(W+1).padStart(2,"0"),Y=F?.has(we)===!0,ne=r("button",he[W]);ne.type="button",ne.className="sw-month-option",ne.dataset.hasScales=String(Y),ne.dataset.month=we,ne.setAttribute("aria-pressed",String(we===S)),ne.setAttribute("aria-label",ie[W]+" de "+D+(Y?" \xB7 Cont\xE9m escalas":F?" \xB7 Sem escalas":" \xB7 Disponibilidade em consulta")),ne.title=ie[W]+" de "+D+(Y?" \xB7 Cont\xE9m escala salva ou PDF arquivado":F?" \xB7 Sem escala salva ou PDF arquivado":""),ne.addEventListener("click",()=>{Ne(),Je(we),ce.focus()}),w.appendChild(ne)}G&&G.slice(0,4)===D&&w.querySelector('[data-month="'+G+'"]')?.focus({preventScroll:!0}),$.textContent=le?"Consultando meses com escalas\u2026":me||(F?F.size?"Em azul: meses com escalas salvas ou PDFs arquivados. Os demais meses tamb\xE9m podem ser selecionados.":"Nenhum m\xEAs deste ano cont\xE9m escalas salvas ou PDFs arquivados. Selecione um m\xEAs para come\xE7ar.":"Consultando os meses dispon\xEDveis\u2026")}function Ne(){g.hidden=!0,ce.setAttribute("aria-expanded","false")}async function Ke(){if(!l||!C)return;let S=C,D=++z,F=s(),G=i();le=!0,me="",xe();try{let W=await t.calendar(S+"-01");if(!l||D!==z||F!==s()||G!==i()||C!==S)return;Ve(W,S+"-01")}catch{l&&D===z&&C===S&&(me="N\xE3o foi poss\xEDvel conferir os meses deste ano. Voc\xEA pode selecionar um m\xEAs para consult\xE1-lo.")}finally{l&&D===z&&C===S&&(le=!1,xe())}}function Je(S){z++,le=!1,me="",f=/^\d{4}-\d{2}$/.test(S)&&Z(S+"-01")?S:x(),K.value=f,C=f.slice(0,4),k=[],$e()}ce.addEventListener("click",()=>{if(l){if(!g.hidden){Ne();return}z++,le=!1,me="",C=(f||x()).slice(0,4),g.hidden=!1,ce.setAttribute("aria-expanded","true"),xe(),ge.has(C)||Ke()}});for(let[S,D]of[[q,-1],[I,1]])S.addEventListener("click",()=>{C=String(Number(C)+D).padStart(4,"0"),me="",xe(),ge.has(C)?(z++,le=!1,xe()):Ke()});de.addEventListener("keydown",S=>{S.key==="Escape"&&!g.hidden&&(S.preventDefault(),Ne(),ce.focus())});let wt=S=>{de.contains(S.target)||Ne()};n.addEventListener("click",wt),R.className="sw-calendar",R.setAttribute("aria-label","Calend\xE1rio de escalas"),j.className="sw-calendar-head",H.className="sw-calendar-tools",K.type="month",K.hidden=!0,K.setAttribute("aria-label","M\xEAs das escalas"),te.type=L.type="button",L.hidden=!0,B.append(K,de),j.append(M),H.append(B,te,L),V.className="sw-calendar-grid",V.setAttribute("aria-label","Dias do m\xEAs"),ae.className="sw-legend";for(let[S,D]of[["empty","Sem rascunho"],["draft","Rascunho"],["finalized","Finalizada"],["archived","PDF no Drive"]]){let F=r("span",D);F.className=S,ae.appendChild(F)}oe.className="sw-message",oe.setAttribute("role","status"),oe.setAttribute("aria-live","polite"),R.append(j,H,V,ae,oe),h.insertBefore(R,h.firstChild.nextSibling),R.hidden=!0;let at=sa({environment:e,getActorId:s,getGeneration:i,onStatus(S){if(y.set(S.dateIso,S),S.status!=="empty"){let D=S.dateIso.slice(0,4),F=ge.get(D);F&&F.add(S.dateIso.slice(0,7))}Oe()}});function Oe(){xe(),V.textContent="";for(let D of["Dom","Seg","Ter","Qua","Qui","Sex","S\xE1b"]){let F=r("span",D);F.className="sw-weekday",V.appendChild(F)}if(!f)return;let S;try{S=Ze(f,k)}catch{u="N\xE3o foi poss\xEDvel conferir o calend\xE1rio. Atualize para consultar novamente.",S=Ze(f,[])}for(let D of S){if(!D){V.appendChild(r("span"));continue}let F=y.get(D.dateIso),G=k.find(ve=>ve.dateIso===D.dateIso),W=F&&(F.unsaved||F.revision>=D.revision)?F.status:D.status,we=W!=="empty",Y=r(we?"div":"button"),ne=r("strong",String(D.day)),Pe=r("small",W==="finalized"?"Finalizada":W==="draft"?F?.unsaved?"Em edi\xE7\xE3o":"Rascunho":W==="archived"?"PDF no Drive":"Abrir escala"),be=D.dateIso.split("-").reverse().join("/");
 const wingNumber=o.wingForDate?.(D.dateIso);
 const wingText=wingNumber ? "Ala " + wingNumber : "";
 const dayHeading=r("span");
@@ -340,7 +340,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
   if ((!inline && !anchorId && !document?.getElementById('guard-page')) || !anchor) return Object.freeze({ open: () => false, canLeave: () => true, setVisible() {}, setReady() {}, setAllowEdit() {}, dispose() {} });
   if (!['list', 'save', 'reconcile', 'getPending'].every(name => typeof transport?.[name] === 'function')) throw Error('COLLABORATORS_UI_TRANSPORT_INVALID');
   const prefix = anchorId ? PREFIX + anchorId + '-' : PREFIX;
-  let ready = false, disposed = false, shown = false, resume = false, dialog, editor, nodes, loaded = false, loading = false;
+  let ready = false, disposed = false, shown = false, resume = false, dialog, editor, nodes, loaded = false, loadingSearch = null, searchTimer = null;
   let saving = false, checking = false, uncertain = false, selected = null, conflict = null, items = [], nextCursor = null, search = '', epoch = 0, deferredReceipt = null;
   let focusRecord = null;
   const element = (tag, id, text, className) => {
@@ -382,11 +382,13 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
     nodes.reload.hidden = !allowEdit || !conflict; nodes.reload.disabled = busy || pending;
     for (const field of [nodes.name, nodes.document, nodes.type, nodes.reason]) field.disabled = busy || pending || !allowEdit;
     nodes.reason.parentNode.hidden = !allowEdit;
-    nodes.search.disabled = loading || busy || pending; nodes.searchButton.disabled = loading || busy || pending;
-    nodes.more.hidden = !nextCursor; nodes.more.disabled = loading || busy || pending;
-    for (const edit of nodes.list.querySelectorAll('button')) edit.disabled = loading || busy || pending;
-    nodes.listPanel.setAttribute('aria-busy', String(loading)); nodes.editPanel.setAttribute('aria-busy', String(busy));
-    if (focusRecord && shown && !loading && !busy && !pending) {
+    const listBusy = loadingSearch !== null || searchTimer !== null;
+    nodes.search.disabled = busy || pending;
+    nodes.searchButton.disabled = loadingSearch !== null || busy || pending;
+    nodes.more.hidden = !nextCursor; nodes.more.disabled = listBusy || busy || pending;
+    for (const edit of nodes.list.querySelectorAll('button')) edit.disabled = listBusy || busy || pending;
+    nodes.listPanel.setAttribute('aria-busy', String(listBusy)); nodes.editPanel.setAttribute('aria-busy', String(busy));
+    if (focusRecord && shown && !listBusy && !busy && !pending) {
       const button = Array.from(nodes.list.querySelectorAll('button')).find(node => node.getAttribute('data-record-id') === focusRecord);
       focusRecord = null;
       (button || nodes.search).focus();
@@ -406,6 +408,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
     (allowEdit ? nodes.name : nodes.back).focus();
   }
   function hideNative() {
+    cancelListRead();
     if (!dialog) return;
     if (inline) { focusRecord = null; hideEditor(); }
     else {
@@ -420,7 +423,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
   }
   function requestClose() {
     if (blocked()) { notice('Confira o resultado da solicitação antes de fechar. Nenhum envio será repetido automaticamente.', 'warning'); controls(); return false; }
-    resume = false; epoch++; loading = false; hideNative(); if (ready) launch?.focus(); return true;
+    resume = false; hideNative(); if (ready) launch?.focus(); return true;
   }
   function requestEditClose() {
     if (blocked()) { notice('Confira o resultado da solicitação antes de fechar. Nenhum envio será repetido automaticamente.', 'warning'); controls(); return; }
@@ -503,6 +506,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
       dialog.addEventListener('cancel', event => { event.preventDefault(); requestClose(); });
       dialog.addEventListener('click', event => { if (event.target === dialog) requestClose(); });
     }
+    searchInput.addEventListener('input', scheduleListSearch);
     searchForm.addEventListener('submit', event => { event.preventDefault(); void loadList(false); });
     more.addEventListener('click', () => { void loadList(true); });
     back.addEventListener('click', requestEditClose);
@@ -522,7 +526,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
         editButton.setAttribute('aria-haspopup', 'dialog');
         editButton.setAttribute('aria-controls', prefix + 'edit-dialog');
       }
-      editButton.addEventListener('click', () => { if ((!inline || shown) && !blocked() && !loading) edit(item); });
+      editButton.addEventListener('click', () => { if (shown && !blocked() && loadingSearch === null && searchTimer === null) edit(item); });
       const situation = item.active ? 'Ativo' : 'Inativo';
       if (inline) {
         const name = append(element('td'), element('strong', null, item.name), element('small', null, ' · ' + situation, 'bnx-collab-situation'));
@@ -544,10 +548,36 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
     if (inline && editor.hidden) showEditor();
     else (allowEdit ? nodes.name : nodes.back).focus();
   }
+  function cancelListRead() {
+    clearTimeout(searchTimer);
+    searchTimer = null;
+    loadingSearch = null;
+    return ++epoch;
+  }
+  function scheduleListSearch() {
+    if (!ready || disposed || !shown || selected || blocked()) return;
+    const term = nodes.search.value.trim();
+    if (term === loadingSearch) return;
+    cancelListRead();
+    if (loaded && term === search) {
+      notice(); controls();
+      return;
+    }
+    searchTimer = setTimeout(() => {
+      searchTimer = null;
+      void loadList(false);
+    }, 250);
+    notice('Consultando cadastros externos…'); controls();
+  }
   async function loadList(appendPage) {
-    if (!ready || disposed || (inline && !shown) || loading || blocked()) return;
-    const currentEpoch = ++epoch, submittedSearch = appendPage ? search : nodes.search.value.trim();
-    loading = true; notice('Consultando cadastros externos…'); controls();
+    if (!ready || disposed || !shown || selected || loadingSearch !== null || blocked()) return;
+    if (appendPage && (!nextCursor || searchTimer !== null)) return;
+    const currentEpoch = cancelListRead(), submittedSearch = appendPage ? search : nodes.search.value.trim();
+    if (submittedSearch !== search) {
+      items = []; nextCursor = null; loaded = false;
+      nodes.list.replaceChildren(); nodes.count.textContent = '';
+    }
+    loadingSearch = submittedSearch; notice('Consultando cadastros externos…'); controls();
     try {
       const result = await transport.list({ search: submittedSearch, cursor: appendPage ? nextCursor : null });
       if (disposed || currentEpoch !== epoch) return;
@@ -557,7 +587,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
       for (const item of result.items) merged.set(item.id, itemCopy(item));
       items = [...merged.values()]; nextCursor = result.nextCursor; search = submittedSearch; loaded = true; notice(); renderList();
     } catch { if (!disposed && currentEpoch === epoch) notice('Não foi possível consultar os cadastros externos. Tente novamente.', 'error'); }
-    finally { if (!disposed && currentEpoch === epoch) { loading = false; controls(); } }
+    finally { if (!disposed && currentEpoch === epoch) { loadingSearch = null; controls(); } }
   }
   function applyReceipt(result) {
     if (result?.version !== 2 || !['saved', 'conflict', 'duplicate_document', 'not_found'].includes(result.status)) throw Error('COLLABORATORS_UI_RECEIPT_INVALID');
@@ -629,7 +659,7 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
     setVisible(value) {
       if (!inline || disposed) return false;
       if (value) return open();
-      if (shown || resume) { resume = false; epoch++; loading = false; hideNative(); }
+      if (shown || resume) { resume = false; hideNative(); }
       return true;
     },
     setAllowEdit(value) {
@@ -653,12 +683,12 @@ function mountCollaboratorsAdmin({ document, transport, anchorId = null, pageId 
       if (disposed) return;
       if (typeof value !== 'boolean') throw Error('COLLABORATORS_UI_READY_INVALID');
       ready = value; if (launch) launch.hidden = !ready;
-      if (!ready) { resume = resume || shown; epoch++; loading = false; hideNative(); }
-      else if (resume && dialog && (!inline || !anchor.hidden)) { resume = false; applyDeferredReceipt(); show(); controls(); showEditor(); if (!selected && !loaded && !blocked()) void loadList(false); }
+      if (!ready) { resume = resume || shown; hideNative(); }
+      else if (resume && dialog && (!inline || !anchor.hidden)) { resume = false; applyDeferredReceipt(); show(); controls(); showEditor(); if (!selected && !blocked() && (!loaded || nodes.search.value.trim() !== search)) void loadList(false); }
     },
     dispose() {
       if (disposed) return;
-      disposed = true; ready = false; epoch++; hideNative(); launch?.remove(); style.remove(); dialog?.remove(); transport.dispose?.();
+      disposed = true; ready = false; hideNative(); launch?.remove(); style.remove(); dialog?.remove(); transport.dispose?.();
       items = []; selected = null; conflict = null; deferredReceipt = null;
     }
   });
