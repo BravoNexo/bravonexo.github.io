@@ -267,6 +267,9 @@
     .prep-grid input, .prep-grid select, .prep-grid textarea { min-height: 36px; font-size: 12px; }
     .prep-grid textarea { min-height: 82px; resize: vertical; }
     .prep-preview { margin-top: 8px; padding: 8px 9px; border-radius: 7px; color: #315467; background: #e8f1f5; font-size: 11px; }
+    #prep-receipt #central-leaves-pending { margin: 8px 0 0 !important; }
+    #prep-receipt #central-leaves-pending span { flex-basis: 100%; }
+    #launch-prep:has(#prep-receipt [data-leave-awaiting-receipt]) #prep-save { display: none; }
     .prep-error { margin-top: 8px; color: #8a3030; font-size: 11px; line-height: 1.35; }
     @media (max-width: 620px) {
       #launch-prep { padding: 10px; }
@@ -2923,7 +2926,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=7228f3f7afe5c9a99527" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=1edccfb1559d5bc0b1f5" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3302,13 +3305,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.64.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.64.1</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.64.0">v2.64.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.64.1">v2.64.1</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -5153,6 +5156,7 @@
               <div class="field wide"><label for="prep-observations">Observações (opcional)</label><textarea id="prep-observations" maxlength="500"></textarea></div>
             </div>
             <div id="prep-preview" class="prep-preview" aria-live="polite">Informe o início e a quantidade de dias.</div>
+            <div id="prep-receipt"></div>
             <div id="prep-error" class="decision-error prep-error" role="alert" aria-live="assertive" tabindex="-1" hidden></div>
           </div>
           <div class="decision-footer">
@@ -11636,8 +11640,8 @@
         showToast('Abra o afastamento vigente para registrar o retorno ou cancelamento antes de reposicionar o militar.');
         return;
       }
+      if (!resetLaunchForm()) return;
       openMilitaryFromHome(allocatedSlot.person.rg);
-      resetLaunchForm();
       openLaunchDialog('type');
       showToast('Informe o tipo e o período para concluir o afastamento.');
     }
@@ -18418,6 +18422,16 @@
         !element.disabled && !element.closest('[hidden]'));
     }
 
+    function leaveAwaitingReceipt_() {
+      return Boolean(document.getElementById('central-leaves-pending')?.hasAttribute('data-leave-awaiting-receipt'));
+    }
+
+    function moveLeaveReceiptNotice_(intoDialog) {
+      const notice = document.getElementById('central-leaves-pending');
+      const destination = document.getElementById(intoDialog ? 'prep-receipt' : 'central-workspace');
+      if (notice && destination && notice.parentNode !== destination) destination.prepend(notice);
+    }
+
     function openLaunchDialog(preferredField) {
       const activeElement = document.activeElement;
       const hasMeaningfulActiveElement = activeElement && activeElement !== document.body && activeElement !== document.documentElement;
@@ -18425,6 +18439,7 @@
         ? activeElement
         : elements.launchAction;
       elements.launchPrep.hidden = false;
+      moveLeaveReceiptNotice_(true);
       window.setTimeout(function() {
         const focusTarget = preferredField === 'start' ? elements.prepStart : elements.prepType;
         if (focusTarget && typeof focusTarget.focus === 'function') focusTarget.focus();
@@ -18433,10 +18448,11 @@
 
     function closeLaunchDialog(options) {
       const settings = options || {};
-      if (!settings.force && (state.leaveWriteBusy || (!state.leaveEditContext && (elements.prepSave.disabled || elements.prepClose.disabled)))) return false;
+      if (!settings.force && !leaveAwaitingReceipt_() && (state.leaveWriteBusy || (!state.leaveEditContext && (elements.prepSave.disabled || elements.prepClose.disabled)))) return false;
       const wasOpen = !elements.launchPrep.hidden;
       const returnFocus = state.launchReturnFocus;
       elements.launchPrep.hidden = true;
+      moveLeaveReceiptNotice_(false);
       if (settings.clearEditing !== false) {
         state.editingId = '';
         state.leaveEditContext = null;
@@ -18455,7 +18471,7 @@
     function trapLaunchDialogFocus(event) {
       if (elements.launchPrep.hidden || event.key !== 'Tab') return;
       const focusable = Array.from(elements.launchPrep.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'))
-        .filter(launchFocusCandidate);
+        .filter(function(element) { return launchFocusCandidate(element) && !(element === elements.prepSave && leaveAwaitingReceipt_()); });
       if (!focusable.length) {
         event.preventDefault();
         return;
@@ -18473,6 +18489,10 @@
     }
 
     function resetLaunchForm() {
+      if (state.leaveWriteBusy) {
+        showToast('A confirmação do afastamento anterior ainda está em andamento.');
+        return false;
+      }
       state.leaveEditRequestId += 1;
       state.leaveEditContext = null;
       state.editingId = '';
@@ -18493,6 +18513,7 @@
       elements.prepClose.disabled = false;
       elements.prepSave.textContent = 'Conferir e salvar';
       updateLaunchForm();
+      return true;
     }
 
     function editHistoryRecord(id) {
@@ -18532,7 +18553,7 @@
         showToast('Este afastamento está disponível somente para consulta.');
         return;
       }
-      resetLaunchForm();
+      if (!resetLaunchForm()) return;
       const requestId = ++state.leaveEditRequestId;
       const context = { id: String(id), rg: String(military.rg), page: state.page, loading: true, blocked: true, original: null };
       state.leaveEditContext = context;
@@ -18829,7 +18850,7 @@
     }
 
     function saveLeave() {
-      if (state.leaveWriteBusy) return;
+      if (state.leaveWriteBusy || leaveAwaitingReceipt_()) return;
       const editContext = state.leaveEditContext;
       if (state.editingId && (!editContext || editContext.loading || editContext.blocked || !editContext.original)) return;
       const military = cadastroMilitaryByRg(editContext ? editContext.rg : state.selectedRg);
@@ -18875,7 +18896,6 @@
       state.leaveWriteBusy = true;
       setLeaveFormInputsDisabled_(true);
       elements.prepSave.disabled = true;
-      elements.prepClose.disabled = true;
       elements.prepSave.textContent = 'Salvando…';
       const request = {
         id: state.editingId,
@@ -18918,7 +18938,7 @@
           elements.prepSave.disabled = conflict;
           elements.prepClose.disabled = false;
           elements.prepSave.textContent = isEditing ? 'Conferir e atualizar' : 'Conferir e salvar';
-          showPrepError(message + (conflict ? ' Seus campos foram preservados, mas este registro mudou. Feche e abra novamente o período antes de salvar.' : ''));
+          if (!elements.launchPrep.hidden && !leaveAwaitingReceipt_()) showPrepError(message + (conflict ? ' Seus campos foram preservados, mas este registro mudou. Feche e abra novamente o período antes de salvar.' : ''));
         });
       if (isEditing) runner.updateLeave(request);
       else runner.createLeave(request);
@@ -19483,8 +19503,8 @@
         showToast('Ex-militares permanecem somente para consulta.');
         return;
       }
+      if (!resetLaunchForm()) return;
       setProfileTab('data');
-      resetLaunchForm();
       openLaunchDialog('type');
     });
     elements.prepType.addEventListener('change', function() {
