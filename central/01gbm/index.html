@@ -273,6 +273,30 @@
     #prep-receipt #central-leaves-pending span { flex-basis: 100%; }
     #launch-prep:has(#prep-receipt [data-leave-awaiting-receipt]) #prep-save { display: none; }
     .prep-error { margin-top: 8px; color: #8a3030; font-size: 11px; line-height: 1.35; }
+    .decision-card.vac-batch-card { display: flex; flex-direction: column; width: min(820px, calc(100vw - 28px)); max-width: 820px; max-height: calc(100vh - 28px); max-height: calc(100dvh - 28px); }
+    .vac-batch-card .decision-body { min-height: 0; overflow-y: auto; }
+    .vac-batch-picker { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(160px, 1.25fr) auto; gap: 10px; align-items: end; }
+    .vac-batch-list { display: grid; gap: 8px; margin-top: 14px; }
+    .vac-batch-row { border: 1px solid #d5e0e7; border-radius: 8px; padding: 9px 12px; background: #f8fbfc; min-width: 0; }
+    .vac-batch-row > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+    .vac-batch-row strong { font-size: 13px; }
+    .vac-batch-fields { display: grid; grid-template-columns: minmax(140px, 2fr) repeat(2, minmax(85px, 1fr)); gap: 10px; }
+    .vac-batch-card .field > input, .vac-batch-card .field > select { min-width: 0; min-height: 36px; }
+    .vac-batch-row details { margin-top: 7px; }
+    .vac-batch-row details summary { cursor: pointer; color: #36596d; font-size: 12px; }
+    .vac-batch-docs { margin-top: 7px; }
+    .vac-batch-docs .wide { grid-column: 1 / -1; }
+    .vac-batch-docs textarea { min-height: 56px; resize: vertical; }
+    .vac-batch-period, .vac-batch-result { margin: 5px 0 0; color: #36596d; font-size: 12px; overflow-wrap: anywhere; }
+    .vac-batch-result.saved, .vac-batch-result.unchanged { color: #165849; }
+    .vac-batch-result.invalid { color: #8a3030; }
+    .vac-batch-review-options { margin: 4px 0; color: #526673; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    @media (max-width: 520px) {
+      .vac-batch-picker { grid-template-columns: 1fr; }
+      .vac-batch-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+      .vac-batch-fields .vac-batch-start { grid-column: 1 / -1; }
+      .vac-batch-card .decision-footer { flex-wrap: wrap; }
+    }
     @media (max-width: 620px) {
       #launch-prep { padding: 10px; }
       .leave-launch-modal-card { width: 100%; max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); }
@@ -2929,7 +2953,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=2618fdbcb3dda5624287" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=8ed5f08d08df2ed3c210" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3308,13 +3332,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.66.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.67.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.66.0">v2.66.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.67.0">v2.67.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -4125,7 +4149,10 @@
 
         <section id="vacation-command-ribbon" class="vacation-command-ribbon" role="group" aria-label="Faixa de opções de Férias">
           <div id="vac-launch-group" class="vacation-command-group" hidden>
-            <div class="vacation-command-buttons"><button id="vac-launch" class="primary vacation-command-button" type="button"><svg class="vacation-command-icon" viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="7" width="20" height="19" rx="2"/><path d="M11 4v6m10-6v6M6 13h20m-10 3v7m-3.5-3.5h7"/></svg><span>Lançar férias</span></button></div>
+            <div class="vacation-command-buttons">
+              <button id="vac-launch" class="primary vacation-command-button" type="button"><svg class="vacation-command-icon" viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="7" width="20" height="19" rx="2"/><path d="M11 4v6m10-6v6M6 13h20m-10 3v7m-3.5-3.5h7"/></svg><span>Lançar férias</span></button>
+              <button id="vac-batch-launch" class="secondary vacation-command-button" type="button" aria-haspopup="dialog" aria-controls="vac-batch-dialog" hidden><svg class="vacation-command-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M11 7H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h15a2 2 0 0 0 2-2v-4M15 5h10a2 2 0 0 1 2 2v9m-13-5h8m-8 5h8m-11 6h7"/></svg><span>Lançar em lote</span></button>
+            </div>
             <span class="vacation-command-group-label">Lançamentos</span>
           </div>
           <div class="vacation-command-group vacation-command-search">
@@ -5183,6 +5210,31 @@
           <div class="decision-footer">
             <button id="prep-close" class="secondary" type="button">Voltar</button>
             <button id="prep-save" class="primary" type="button">Conferir e salvar</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="vac-batch-dialog" class="decision-backdrop" role="dialog" aria-modal="true" aria-labelledby="vac-batch-title" hidden>
+        <div class="decision-card vac-batch-card">
+          <div class="decision-head"><strong id="vac-batch-title">Lançar férias em lote</strong><span>Adicione até 15 períodos e preencha as datas de cada militar.</span></div>
+          <div class="decision-body">
+            <div id="vac-batch-picker" class="vac-batch-picker">
+              <div class="field"><label for="vac-batch-search">Nome ou RG</label><input id="vac-batch-search" type="search" autocomplete="off"></div>
+              <div class="field"><label for="vac-batch-military">Militar</label><select id="vac-batch-military"><option value="">Digite o nome ou RG</option></select></div>
+              <button id="vac-batch-add" class="secondary" type="button" disabled>Adicionar período</button>
+            </div>
+            <div id="vac-batch-status" class="prep-preview" role="status" hidden></div>
+            <div id="vac-batch-error" class="prep-error" role="alert" hidden></div>
+            <div id="vac-batch-rows" class="vac-batch-list"></div>
+          </div>
+          <div class="decision-footer">
+            <button id="vac-batch-close" class="secondary" type="button">Fechar</button>
+            <button id="vac-batch-back" class="secondary" type="button" hidden>Voltar à edição</button>
+            <button id="vac-batch-review" class="primary" type="button" disabled>Conferir períodos</button>
+            <button id="vac-batch-submit" class="primary" type="button" hidden>Confirmar e salvar</button>
+            <button id="vac-batch-receipt" class="secondary" type="button" hidden>Consultar resultado do lote</button>
+            <button id="vac-batch-resolve" class="secondary" type="button" hidden>Encerrar tentativa sem registro</button>
+            <button id="vac-batch-new" class="secondary" type="button" hidden>Novo lote</button>
           </div>
         </div>
       </div>
@@ -6579,6 +6631,7 @@
         return;
       }
       if (nextPage !== 'wings-map' && state.wingsExternalSelection) closeWingsExternalDialog(false);
+      if (nextPage !== 'vacations') closeVacationBatch_(false);
       const launchPage = state.vacationLaunch ? 'vacations' : 'military';
       if (nextPage !== launchPage && elements.launchPrep && !elements.launchPrep.hidden) {
         if (!closeLaunchDialog({ restoreFocus: false })) {
@@ -18545,6 +18598,350 @@
       }
       updateVacationLaunchSelection_();
     }
+
+    const vacationBatchLimit_ = 15;
+    const vacationBatchUuid_ = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+    const vacationBatchElements_ = Object.fromEntries([
+      'launch', 'dialog', 'picker', 'search', 'military', 'add', 'status', 'error', 'rows',
+      'close', 'back', 'review', 'submit', 'receipt', 'resolve', 'new'
+    ].map(key => [key, document.getElementById('vac-batch-' + key)]));
+    function newVacationBatch_() {
+      return { rows: [], recovered: [], review: null, pending: null, busy: false, startedAt: null, status: '', error: '' };
+    }
+    let vacationBatch_ = newVacationBatch_();
+    let vacationBatchPermitted_ = false;
+
+    function vacationBatchAllowed_() {
+      return vacationBatchPermitted_ && window.BNXVacationBatchWriter?.isAvailable() === true;
+    }
+
+    function setVacationBatchAllowed_(allowed) {
+      vacationBatchPermitted_ = allowed === true;
+      vacationBatchElements_.launch.hidden = !vacationBatchAllowed_();
+      if (!vacationBatchPermitted_) {
+        closeVacationBatch_(false);
+        vacationBatch_ = newVacationBatch_();
+        vacationBatchElements_.rows.replaceChildren();
+        vacationBatchElements_.search.value = '';
+        vacationBatchElements_.military.replaceChildren();
+        updateVacationBatchControls_();
+      }
+    }
+
+    function openVacationBatch_() {
+      if (!vacationBatchAllowed_() || state.page !== 'vacations' || !elements.launchPrep.hidden) return;
+      const batch = vacationBatch_;
+      const ui = vacationBatchElements_;
+      ui.dialog.hidden = false;
+      if (!batch.rows.length && !batch.pending) ui.search.value = elements.vacationSearch.value;
+      renderVacationBatchPicker_();
+      renderVacationBatch_();
+      if (!batch.pending && !batch.review && !batch.busy) ui.search.focus();
+      else ui.close.focus();
+      if (batch.pending || batch.busy) return;
+      void window.BNXVacationBatchWriter.getPending().then(function(pending) {
+        if (batch !== vacationBatch_ || batch.pending || batch.busy || !vacationBatchUuid_.test(pending?.requestId || '')) return;
+        batch.pending = { requestId: pending.requestId, items: null };
+        batch.review = null;
+        renderVacationBatch_();
+      }).catch(function() {
+        if (batch === vacationBatch_ && !batch.busy && !batch.pending) setVacationBatchError_('Não foi possível consultar se há um lote pendente.');
+      });
+    }
+
+    function closeVacationBatch_(restoreFocus) {
+      const ui = vacationBatchElements_;
+      if (ui.dialog.hidden) return;
+      ui.dialog.hidden = true;
+      if (restoreFocus && launchFocusCandidate(ui.launch)) ui.launch.focus();
+    }
+
+    function renderVacationBatchPicker_() {
+      const ui = vacationBatchElements_;
+      const query = ui.search.value.trim();
+      const matches = vacationLaunchCandidates_(query);
+      const placeholder = matches.length ? 'Selecione o militar' : (query ? 'Nenhum militar encontrado' : 'Digite o nome ou RG');
+      ui.military.innerHTML = '<option value="">' + placeholder + '</option>' + matches.map(function(entry) {
+        return '<option value="' + escapeHtml(entry[0]) + '">' + escapeHtml((entry[1].displayName || entry[1].warName || 'Militar') + ' • RG ' + entry[0]) + '</option>';
+      }).join('');
+      if (/^\d[\d.\s-]*$/.test(query) && matches[0]?.[0] === canonicalMilitaryRg(query)) ui.military.value = matches[0][0];
+      updateVacationBatchControls_();
+    }
+
+    function addVacationBatchRow_() {
+      const ui = vacationBatchElements_, batch = vacationBatch_;
+      if (ui.add.disabled || batch.busy || batch.pending || batch.review || !vacationBatchAllowed_()) return;
+      const military = cadastroMilitaryByRg(ui.military.value);
+      if (!military || isFormerMilitary(military) || batch.rows.length >= vacationBatchLimit_) return;
+      batch.rows.push({ itemId: window.crypto.randomUUID(), rg: canonicalMilitaryRg(military.rg),
+        name: military.displayName || military.warName || 'Militar', startDate: '', days: '30',
+        referenceYear: elements.vacationYear.value || state.vacationYear || String(new Date().getFullYear()),
+        note: '', bulletin: '', observations: '', result: null });
+      ui.search.value = '';
+      batch.error = '';
+      renderVacationBatchPicker_();
+      renderVacationBatch_();
+      ui.rows.lastElementChild?.querySelector('[data-batch-field="startDate"]')?.focus();
+    }
+
+    function vacationBatchPeriod_(row) {
+      const validDays = Number.isInteger(Number(row.days)) && Number(row.days) >= 1 && Number(row.days) <= 365;
+      return /^\d{4}-\d{2}-\d{2}$/.test(row.startDate) && validDays ? formatLeavePeriod(row.startDate, Number(row.days)) : '';
+    }
+
+    function vacationBatchPayload_(rows) {
+      const seen = new Set();
+      return rows.map(function(row) {
+        const person = cadastroMilitaryByRg(row.rg);
+        const year = Number(row.referenceYear), days = Number(row.days);
+        const when = new Date(row.startDate + 'T12:00:00Z');
+        if (!person || isFormerMilitary(person)) throw Error('Confira o cadastro de ' + row.name + '.');
+        if (!vacationBatchPeriod_(row) || !Number.isFinite(when.getTime()) || when.toISOString().slice(0, 10) !== row.startDate ||
+            !Number.isInteger(year) || year < 2000 || year > 2100) {
+          throw Error('Confira início, dias e ano de referência de ' + row.name + ' (RG ' + row.rg + ').');
+        }
+        const signature = row.rg + '|' + row.startDate + '|' + days + '|' + year;
+        if (seen.has(signature)) throw Error('Há um período repetido para ' + row.name + ' (RG ' + row.rg + ').');
+        seen.add(signature);
+        return { itemId: row.itemId, rg: row.rg, startDate: row.startDate, days: days, referenceYear: year,
+          note: row.note.trim(), bulletin: row.bulletin.trim(), observations: row.observations.trim() };
+      });
+    }
+
+    function vacationBatchEditable_(row) {
+      return !row.readOnly && (!row.result || row.result.status === 'invalid');
+    }
+
+    function renderVacationBatch_() {
+      const ui = vacationBatchElements_, batch = vacationBatch_;
+      const locked = batch.busy || batch.pending || batch.review;
+      ui.rows.innerHTML = batch.rows.concat(batch.recovered).map(function(row) {
+        const label = escapeHtml(row.name + (row.rg ? ' • RG ' + row.rg : ''));
+        const fixed = !vacationBatchEditable_(row);
+        const frozenRow = Boolean(locked || fixed);
+        const rowResult = row.result;
+        const resultText = rowResult ? (rowResult.status === 'saved' ? 'Salvo' : rowResult.status === 'unchanged' ? 'Já registrado' : 'Não salvo') +
+          (rowResult.id ? ' • ' + rowResult.id : '') + (rowResult.message ? ' — ' + rowResult.message : '') : '';
+        const result = '<p class="vac-batch-result' + (rowResult ? ' ' + rowResult.status : '') + '"' + (resultText ? '' : ' hidden') + '>' + escapeHtml(resultText) + '</p>';
+        const period = '<p class="vac-batch-period" data-batch-period>' + escapeHtml(vacationBatchPeriod_(row)) + '</p>';
+        let controls = '';
+        if (frozenRow) {
+          const options = [row.note && 'Nota / documento: ' + row.note, row.bulletin && 'Boletim: ' + row.bulletin, row.observations && 'Observações: ' + row.observations].filter(Boolean);
+          controls = (row.days ? '<p class="vac-batch-period">' + escapeHtml(row.days + (Number(row.days) === 1 ? ' dia' : ' dias') + (row.referenceYear ? ' • Referência ' + row.referenceYear : '')) + '</p>' + period : '') +
+            (options.length ? '<p class="vac-batch-review-options">' + escapeHtml(options.join('\n')) + '</p>' : '');
+        } else {
+          const field = function(key, title, attributes, textarea) {
+            const id = 'vac-row-' + row.itemId + '-' + key;
+            const startClass = key === 'startDate' ? ' vac-batch-start' : '';
+            const input = '<label for="' + id + '">' + title + '</label>' + (textarea
+              ? '<textarea id="' + id + '" data-batch-field="' + key + '" ' + attributes + '>' + escapeHtml(row[key]) + '</textarea>'
+              : '<input id="' + id + '" data-batch-field="' + key + '" ' + attributes + ' value="' + escapeHtml(row[key]) + '">');
+            return '<div class="field' + startClass + (textarea ? ' wide' : '') + '">' + input + '</div>';
+          };
+          controls = '<div class="vac-batch-fields">' + field('startDate', 'Início', 'type="date" required') +
+            field('days', 'Dias', 'type="number" min="1" max="365" step="1" required') + field('referenceYear', 'Ano de referência', 'type="number" min="2000" max="2100" step="1" required') + '</div>' + period +
+            '<details><summary>Nota, boletim e observações</summary><div class="vac-batch-fields vac-batch-docs">' +
+            field('note', 'Nota / documento', 'type="text" maxlength="150"') + field('bulletin', 'Boletim', 'type="text" maxlength="150"') +
+            field('observations', 'Observações', 'maxlength="500"', true) + '</div></details>';
+        }
+        return '<article class="vac-batch-row" data-vac-batch-item="' + row.itemId + '"><header><strong>' + label + '</strong>' +
+          (frozenRow ? '' : '<button class="secondary" data-batch-remove type="button" aria-label="Remover período de ' + label + '">Remover</button>') + '</header>' + controls + result + '</article>';
+      }).join('');
+      updateVacationBatchControls_();
+    }
+
+    function updateVacationBatchControls_() {
+      const batch = vacationBatch_, ui = vacationBatchElements_;
+      const locked = Boolean(batch.busy || batch.pending || batch.review), canEdit = vacationBatchAllowed_();
+      ui.picker.hidden = locked;
+      ui.add.disabled = !canEdit || locked || !ui.military.value || batch.rows.length >= vacationBatchLimit_;
+      ui.review.hidden = locked;
+      ui.review.disabled = !canEdit || !batch.rows.some(vacationBatchEditable_);
+      ui.back.hidden = !batch.review || batch.busy || Boolean(batch.pending);
+      ui.submit.hidden = ui.back.hidden;
+      ui.submit.disabled = !canEdit;
+      ui.receipt.hidden = !batch.pending;
+      ui.receipt.disabled = !canEdit || batch.busy || !batch.pending?.requestId;
+      ui.resolve.hidden = ui.receipt.hidden;
+      ui.resolve.disabled = ui.receipt.disabled;
+      ui.new.hidden = locked || !(batch.rows.length || batch.recovered.length) || batch.rows.some(vacationBatchEditable_);
+      let status = batch.status;
+      if (batch.busy) status = batch.pending ? 'Consultando o resultado do lote…' : 'Salvando os períodos no sistema…';
+      else if (batch.pending) status = batch.pending.requestId
+        ? 'O lote está em confirmação. Consulte o resultado antes de enviar outro lote. Referência: ' + batch.pending.requestId + '.'
+        : 'Não foi possível identificar esta tentativa. Os dados foram preservados.';
+      else if (batch.review) status = 'Confira ' + batch.review.length + (batch.review.length === 1 ? ' período antes de salvar.' : ' períodos antes de salvar.');
+      else if (!status && batch.rows.length >= vacationBatchLimit_) status = 'O lote atingiu o limite de ' + vacationBatchLimit_ + ' períodos.';
+      ui.status.textContent = status;
+      ui.status.hidden = !status;
+      ui.error.textContent = batch.error;
+      ui.error.hidden = !batch.error;
+    }
+
+    function setVacationBatchError_(message) {
+      vacationBatch_.error = message;
+      updateVacationBatchControls_();
+    }
+
+    function reviewVacationBatch_() {
+      const batch = vacationBatch_;
+      if (!vacationBatchAllowed_() || batch.pending || batch.busy || leaveAwaitingReceipt_() || state.leaveWriteBusy) {
+        setVacationBatchError_('Confira o lançamento em andamento antes de enviar este lote.');
+        return;
+      }
+      const rows = batch.rows.filter(vacationBatchEditable_);
+      if (!rows.length) return;
+      try { batch.review = vacationBatchPayload_(rows); }
+      catch (error) { setVacationBatchError_(error.message); return; }
+      batch.error = '';
+      renderVacationBatch_();
+      vacationBatchElements_.submit.focus();
+    }
+
+    function applyVacationBatchReceipt_(batch, frame, pending) {
+      const value = frame?.data?.items;
+      const known = pending?.items || batch.review;
+      const expected = known ? new Set(known.map(item => item.itemId)) : null;
+      const ids = new Set();
+      if (!Array.isArray(value) || !value.length || value.length > vacationBatchLimit_ || expected && value.length !== expected.size ||
+          !value.every(function(item) {
+            if (!item || !vacationBatchUuid_.test(item.itemId || '') || ids.has(item.itemId) || expected && !expected.has(item.itemId) ||
+                !['saved', 'unchanged', 'invalid'].includes(item.status) || item.id != null && typeof item.id !== 'string' || item.message != null && typeof item.message !== 'string') return false;
+            ids.add(item.itemId);
+            return true;
+          })) return false;
+      const results = new Map(value.map(item => [item.itemId, item]));
+      if (known) batch.rows.forEach(function(row) { if (results.has(row.itemId)) row.result = results.get(row.itemId); });
+      if (!known) batch.recovered = value.map(function(item, index) {
+        const person = item.rg ? cadastroMilitaryByRg(item.rg) : null;
+        return { itemId: item.itemId, rg: item.rg || '', name: person?.displayName || person?.warName || 'Período ' + (index + 1),
+          startDate: scaleDateIsoFromValue_(item.startDate) || '', days: item.days || '', readOnly: true, result: item };
+      });
+      const saved = value.filter(item => item.status === 'saved').length;
+      const unchanged = value.filter(item => item.status === 'unchanged').length;
+      const invalid = value.length - saved - unchanged;
+      const elapsed = batch.startedAt === null ? '' : ' • Confirmação em ' + ((performance.now() - batch.startedAt) / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' s';
+      batch.status = [saved + (saved === 1 ? ' salvo' : ' salvos'), unchanged + (unchanged === 1 ? ' já registrado' : ' já registrados'), invalid + (invalid === 1 ? ' não salvo' : ' não salvos')].join(' • ') + elapsed;
+      batch.pending = null;
+      batch.review = null;
+      batch.startedAt = null;
+      if (saved) refreshConfirmedVacationBatch_(value.filter(item => item.status === 'saved'));
+      return true;
+    }
+
+    function refreshConfirmedVacationBatch_(rows) {
+      rows.forEach(function(row) { delete state.profiles[row.rg]; });
+      state.vacationLoaded = false;
+      state.leaveLoaded = false;
+      state.wingsMapLoaded = false;
+      state.wingsMapData = null;
+      markScalePreviewStaleForDates_(rows.flatMap(leaveChangeAffectedDates_));
+      window.setTimeout(function() {
+        loadData(true, undefined, 'O lote de férias foi confirmado no sistema.');
+        if (state.page === 'vacations') loadVacationData(true);
+        else if (state.page === 'leaves') loadOtherLeaveData(true);
+      }, 0);
+    }
+
+    async function sendVacationBatch_(mode) {
+      const batch = vacationBatch_;
+      const bridge = window.BNXVacationBatchWriter;
+      const consult = mode !== 'submit';
+      if (!vacationBatchAllowed_() || state.page !== 'vacations' || batch.busy || (consult ? !batch.pending?.requestId : !batch.review?.length || batch.pending)) return;
+      if (!consult && (leaveAwaitingReceipt_() || state.leaveWriteBusy)) {
+        setVacationBatchError_('Confira o lançamento em andamento antes de enviar este lote.');
+        return;
+      }
+      if (mode === 'resolve' && !window.confirm('Encerrar a tentativa se o lote ainda não tiver sido gravado? Se já estiver gravado, o resultado será exibido e os lançamentos serão preservados.')) return;
+      const pending = batch.pending;
+      batch.error = '';
+      batch.busy = true;
+      if (!consult) batch.startedAt = performance.now();
+      renderVacationBatch_();
+      try {
+        const frame = mode === 'resolve' ? await bridge.resolvePending(pending.requestId)
+          : consult ? await bridge.readReceipt(pending.requestId) : await bridge.submit({ items: batch.review });
+        if (batch !== vacationBatch_) return;
+        if (consult && frame?.requestId !== pending.requestId) throw Error('O resultado retornado é de outra solicitação.');
+        if (vacationBatchUuid_.test(frame?.requestId || '') && ['committed', 'unchanged'].includes(frame.outcome) && applyVacationBatchReceipt_(batch, frame, pending)) return;
+        if (frame?.outcome === 'not_sent') {
+          batch.pending = null;
+          batch.review = null;
+          batch.startedAt = null;
+          batch.error = 'Este lote não foi gravado. Revise os dados antes de enviar novamente.';
+          return;
+        }
+        batch.pending = pending || { requestId: vacationBatchUuid_.test(frame?.requestId || '') ? frame.requestId : '', items: batch.review };
+      } catch (error) {
+        if (batch !== vacationBatch_) return;
+        if (!consult && error?.outcome === 'not_sent' && (error.unsentCurrent === true || error.serverConfirmed === true)) {
+          batch.review = null;
+          batch.startedAt = null;
+        } else {
+          batch.pending = pending || { requestId: vacationBatchUuid_.test(error?.requestId || '') ? error.requestId : '', items: batch.review };
+        }
+        batch.error = error?.message || 'Não foi possível confirmar o lote.';
+      } finally {
+        if (batch === vacationBatch_) {
+          batch.busy = false;
+          renderVacationBatch_();
+          const ui = vacationBatchElements_;
+          if (!ui.dialog.hidden) {
+            const next = batch.pending?.requestId ? ui.receipt : !ui.new.hidden ? ui.new : batch.pending ? ui.close : ui.review;
+            next.focus();
+          }
+        }
+      }
+    }
+
+    function bindVacationBatch_() {
+      const ui = vacationBatchElements_;
+      ui.launch.addEventListener('click', openVacationBatch_);
+      ui.search.addEventListener('input', renderVacationBatchPicker_);
+      ui.search.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' || ui.add.disabled) return;
+        event.preventDefault();
+        addVacationBatchRow_();
+      });
+      ui.military.addEventListener('change', updateVacationBatchControls_);
+      ui.add.addEventListener('click', addVacationBatchRow_);
+      ui.close.addEventListener('click', () => closeVacationBatch_(true));
+      ui.back.addEventListener('click', function() { vacationBatch_.review = null; renderVacationBatch_(); ui.review.focus(); });
+      ui.review.addEventListener('click', reviewVacationBatch_);
+      ui.submit.addEventListener('click', () => { void sendVacationBatch_('submit'); });
+      ui.receipt.addEventListener('click', () => { void sendVacationBatch_('receipt'); });
+      ui.resolve.addEventListener('click', () => { void sendVacationBatch_('resolve'); });
+      ui.new.addEventListener('click', function() { vacationBatch_ = newVacationBatch_(); renderVacationBatch_(); ui.search.focus(); });
+      ui.rows.addEventListener('input', function(event) {
+        const field = event.target.dataset.batchField;
+        if (!['startDate', 'days', 'referenceYear', 'note', 'bulletin', 'observations'].includes(field)) return;
+        const card = event.target.closest('[data-vac-batch-item]');
+        const row = vacationBatch_.rows.find(item => item.itemId === card?.dataset.vacBatchItem);
+        if (!row || !vacationBatchEditable_(row) || vacationBatch_.review || vacationBatch_.busy || vacationBatch_.pending) return;
+        row[field] = event.target.value;
+        row.result = null;
+        card.querySelector('[data-batch-period]').textContent = vacationBatchPeriod_(row);
+        card.querySelector('.vac-batch-result').hidden = true;
+        setVacationBatchError_('');
+      });
+      ui.rows.addEventListener('click', function(event) {
+        const id = event.target.closest('[data-batch-remove]')?.closest('[data-vac-batch-item]')?.dataset.vacBatchItem;
+        if (!id || vacationBatch_.review || vacationBatch_.busy || vacationBatch_.pending) return;
+        vacationBatch_.rows = vacationBatch_.rows.filter(item => item.itemId !== id || !vacationBatchEditable_(item));
+        renderVacationBatch_();
+        ui.search.focus();
+      });
+      ui.dialog.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeVacationBatch_(true); }
+        if (event.key !== 'Tab') return;
+        const focusable = Array.from(ui.dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary')).filter(launchFocusCandidate);
+        const first = focusable[0], last = focusable.at(-1);
+        if (event.shiftKey ? document.activeElement === first : document.activeElement === last) {
+          event.preventDefault(); (event.shiftKey ? last : first)?.focus();
+        }
+      });
+    }
+    bindVacationBatch_();
 
     function updateVacationLaunchSelection_() {
       if (!state.vacationLaunch) return;
