@@ -366,6 +366,8 @@
     .permuta-toolbar { display: grid; grid-template-columns: minmax(220px,1fr) 170px 120px 150px 160px auto; gap: 10px; align-items: end; margin-bottom: 14px; }
     .permuta-toolbar.is-upcoming { grid-template-columns: minmax(240px,1fr) 170px 150px 160px auto; }
     .vacation-table { min-width: 1120px; }
+    .vacation-wing-status { margin: 8px 13px; color: #58717f; font-size: 12px; }
+    .vacation-wing { white-space: nowrap; }
     #vacation-page #vac-table-wrap th[data-vacation-sort] { padding: 0; }
     #vacation-page .vacation-sort-button { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 42px; padding: 11px 13px; border: 0; border-radius: 0; color: inherit; background: transparent; font: inherit; text-align: left; }
     #vacation-page .vacation-sort-button:hover { color: #173f5f; background: #eaf2f6; }
@@ -2953,7 +2955,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=fe983b5e9a2f19bae55a" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=66d84246b7c7fc198540" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3332,13 +3334,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.67.1</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.68.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.67.1">v2.67.1</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.68.0">v2.68.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -4191,10 +4193,11 @@
         <section class="panel">
           <div class="panel-head"><strong>Programação de férias</strong><span id="vac-result-count">Carregando…</span></div>
           <div id="vac-sort-note" class="vacation-sort-note" hidden><span id="vac-sort-note-label" role="status" aria-live="polite"></span><button id="vac-sort-reset" type="button">Organização original</button></div>
+          <p id="vac-wing-status" class="vacation-wing-status" role="status" hidden>Não foi possível consultar a ala no Mapa das Alas. Use Atualizar dados para tentar novamente.</p>
           <div id="vac-loading" class="loading">Consultando os registros de férias…</div>
           <div id="vac-table-wrap" class="table-wrap" hidden>
             <table class="vacation-table">
-              <thead><tr><th scope="col" data-vacation-sort="military" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="group" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="referenceYear" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="referenceYear" aria-label="Referência: ordenar em ordem crescente"><span>Referência</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="planningMonth" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="planningMonth" aria-label="Mês de planejamento: ordenar em ordem crescente"><span>Mês de planejamento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="startDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="startDate" aria-label="Início: ordenar em ordem crescente"><span>Início</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="returnDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="returnDate" aria-label="Retorno: ordenar em ordem crescente"><span>Retorno</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="days" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="situation" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="document" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
+              <thead><tr><th scope="col" data-vacation-sort="military" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="group" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="wing" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="wing" aria-label="Ala: ordenar em ordem crescente" title="Vínculo atual no Mapa das Alas"><span>Ala</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="referenceYear" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="referenceYear" aria-label="Referência: ordenar em ordem crescente"><span>Referência</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="planningMonth" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="planningMonth" aria-label="Mês de planejamento: ordenar em ordem crescente"><span>Mês de planejamento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="startDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="startDate" aria-label="Início: ordenar em ordem crescente"><span>Início</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="returnDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="returnDate" aria-label="Retorno: ordenar em ordem crescente"><span>Retorno</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="days" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="situation" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="document" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
               <tbody id="vac-rows"></tbody>
             </table>
           </div>
@@ -5923,6 +5926,7 @@
       milEmail: document.getElementById('mil-email'),
       milPrecariousDriver: document.getElementById('mil-precarious-driver'),
       vacationError: document.getElementById('vacation-error'),
+      vacationWingStatus: document.getElementById('vac-wing-status'),
       vacationLaunchGroup: document.getElementById('vac-launch-group'),
       vacationLaunch: document.getElementById('vac-launch'),
       vacationSearch: document.getElementById('vac-search'),
@@ -6644,6 +6648,7 @@
         if (state.permutaLoaded) renderPermutas();
       }
       const enteringRas = nextPage === 'ras' && state.page !== 'ras';
+      const enteringVacations = nextPage === 'vacations' && state.page !== 'vacations';
       const militaryPages = ['military', 'vacations', 'leaves'];
       const enteringMilitary = militaryPages.indexOf(nextPage) !== -1 && militaryPages.indexOf(state.page) === -1;
       if (state.page === 'guard' && nextPage !== 'guard') cancelGuardSearch();
@@ -6722,6 +6727,7 @@
       window.BNXGuardSidebarNavigation?.sync(state.page);
       elements.navVehicles.classList.toggle('active', vehiclesActive);
       if (vacationActive && !state.vacationLoaded) loadVacationData(false);
+      else if (vacationActive && enteringVacations) refreshVacationWings_();
       if (leaveActive && !state.leaveLoaded) loadOtherLeaveData(false);
       if (permutasActive) {
         if (!state.permutaLoaded || state.permutaTodayIso !== permutaTodayIso()) {
@@ -16894,7 +16900,70 @@
       setProfileTab('data');
     }
 
+    const vacationWingRead_ = { actor: '', flight: null, wings: null, failed: false };
+
+    function setVacationWingReadAllowed_(allowed, actorId) {
+      const actor = allowed && typeof actorId === 'string' ? actorId.trim() : '';
+      if (vacationWingRead_.actor === actor) return;
+      vacationWingRead_.actor = actor;
+      vacationWingRead_.flight = null;
+      vacationWingRead_.wings = null;
+      vacationWingRead_.failed = false;
+      elements.vacationWingStatus.hidden = true;
+      elements.vacationRows.querySelectorAll('.vacation-wing').forEach(function(cell) { cell.textContent = '—'; });
+      if (actor && state.page === 'vacations') refreshVacationWings_();
+    }
+
+    function vacationWingValue_(record) {
+      return vacationWingRead_.wings?.get(canonicalMilitaryRg(record.rg)) ?? null;
+    }
+
+    function vacationWingLabel_(record) {
+      if (!vacationWingRead_.wings) return '—';
+      const wing = vacationWingValue_(record);
+      return wing == null ? 'Sem ala' : 'Ala ' + wing;
+    }
+
+    function refreshVacationWings_() {
+      const reader = window.BNXVacationWingReader;
+      const actor = vacationWingRead_.actor;
+      if (!actor || !reader?.isAvailable()) return;
+      if (vacationWingRead_.flight) return vacationWingRead_.flight;
+
+      const current = function() {
+        return vacationWingRead_.actor === actor && vacationWingRead_.flight === flight && reader.isAvailable();
+      };
+      const flight = Promise.resolve().then(function() {
+        if (current()) return reader.read();
+      }).then(function(result) {
+        if (!current()) return;
+        if (result?.version !== 1 || !result.wings || typeof result.wings !== 'object' || Array.isArray(result.wings)) {
+          throw new Error('Dados de ala inválidos.');
+        }
+        const entries = Object.entries(result.wings);
+        if (entries.some(function(entry) { return !/^(?:0|[1-9]\d{0,11})$/.test(entry[0]) || ![1, 2, 3, 4].includes(entry[1]); })) {
+          throw new Error('Dados de ala inválidos.');
+        }
+        vacationWingRead_.wings = new Map(entries);
+        vacationWingRead_.failed = false;
+      }).catch(function() {
+        if (!current()) return;
+        vacationWingRead_.wings = null;
+        vacationWingRead_.failed = true;
+      }).finally(function() {
+        if (vacationWingRead_.flight !== flight) return;
+        const visible = current() && state.page === 'vacations' && !elements.vacationPage.hidden;
+        vacationWingRead_.flight = null;
+        if (!visible) return;
+        elements.vacationWingStatus.hidden = !vacationWingRead_.failed;
+        if (state.vacationLoaded && elements.vacationLoading.hidden && elements.vacationError.hidden) renderVacations();
+      });
+      vacationWingRead_.flight = flight;
+      return flight;
+    }
+
     function loadVacationData(forceRefresh) {
+      refreshVacationWings_();
       elements.vacationLoading.hidden = false;
       elements.vacationTableWrap.hidden = true;
       elements.vacationEmpty.hidden = true;
@@ -16946,7 +17015,7 @@
 
     // Férias owns this detached presentation order, not the shared records.
     let vacationColumnSort_ = { key: null, direction: 'asc' };
-    const vacationSortColumns_ = Object.freeze({ military: 'Militar', group: 'Efetivo', referenceYear: 'Referência', planningMonth: 'Mês de planejamento', startDate: 'Início', returnDate: 'Retorno', days: 'Dias', situation: 'Situação', document: 'Documento' });
+    const vacationSortColumns_ = Object.freeze({ military: 'Militar', group: 'Efetivo', wing: 'Ala', referenceYear: 'Referência', planningMonth: 'Mês de planejamento', startDate: 'Início', returnDate: 'Retorno', days: 'Dias', situation: 'Situação', document: 'Documento' });
     const vacationSortCollator_ = new Intl.Collator('pt-BR', { numeric: true, sensitivity: 'base' });
 
     function vacationSortText_(value) {
@@ -16966,6 +17035,7 @@
         return vacationSortText_(military && military.warName) || vacationSortText_(record.military) || vacationSortText_(record.displayName);
       }
       if (key === 'group') return vacationSortText_(record.group);
+      if (key === 'wing') return vacationWingValue_(record);
       if (key === 'situation') return vacationSortText_(record.periodStatus);
       if (record.periodStatusKey === 'missing') return null;
       if (key === 'referenceYear') {
@@ -17045,6 +17115,7 @@
     }
 
     function renderVacations() {
+      elements.vacationWingStatus.hidden = !vacationWingRead_.failed;
       const term = normalize(elements.vacationSearch.value);
       let filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
         if (!isCurrentCadastroMilitaryRg(record.rg)) return false;
@@ -17093,13 +17164,14 @@
           const groupCountLabel = record.periodStatusKey === 'missing'
             ? (count === 1 ? ' militar' : ' militares')
             : (count === 1 ? ' período' : ' períodos');
-          rows.push('<tr class="vacation-month-group"><td colspan="10">' + escapeHtml(record.planningMonthLabel) + ' • ' + escapeHtml(count) + groupCountLabel + '</td></tr>');
+          rows.push('<tr class="vacation-month-group"><td colspan="11">' + escapeHtml(record.planningMonthLabel) + ' • ' + escapeHtml(count) + groupCountLabel + '</td></tr>');
         }
         const documentText = [record.bulletin, record.note].filter(Boolean).join(' — ');
         if (record.periodStatusKey === 'missing') {
           rows.push('<tr>' +
             '<td><span class="military-name">' + escapeHtml(record.military) + '</span><span class="military-full">RG ' + escapeHtml(record.rg) + (record.qbmp ? ' • ' + escapeHtml(record.qbmp) : '') + '</span></td>' +
             '<td>' + escapeHtml(record.group || '—') + '</td>' +
+            '<td class="vacation-wing">' + escapeHtml(vacationWingLabel_(record)) + '</td>' +
             '<td>' + escapeHtml(record.referenceYear || '—') + '</td>' +
             '<td>—</td>' +
             '<td><span class="military-name">Nenhum período registrado</span></td>' +
@@ -17114,6 +17186,7 @@
         rows.push('<tr>' +
           '<td><span class="military-name">' + escapeHtml(record.military) + '</span><span class="military-full">RG ' + escapeHtml(record.rg) + (record.qbmp ? ' • ' + escapeHtml(record.qbmp) : '') + '</span></td>' +
           '<td>' + escapeHtml(record.group || '—') + '</td>' +
+          '<td class="vacation-wing">' + escapeHtml(vacationWingLabel_(record)) + '</td>' +
           '<td>' + escapeHtml(record.referenceYear || '—') + '</td>' +
           '<td><span class="planning-month">' + escapeHtml(record.planningMonthLabel || '—') + '</span><span class="planning-days">' + escapeHtml(record.planningDays || 0) + ' de ' + escapeHtml(record.days || 0) + ' dias neste mês</span></td>' +
           '<td><span class="military-name">' + escapeHtml(record.startDate) + '</span><span class="vacation-note">' + escapeHtml(record.confirmedEditPending ? 'Alteração salva • aguardando atualização da consulta' : (record.situation || '')) + '</span></td>' +
