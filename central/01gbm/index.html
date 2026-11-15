@@ -131,6 +131,8 @@
     .nav button:disabled { cursor: default; opacity: .55; }
     .nav-section { display: grid; gap: 4px; margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,.12); }
     .nav-section-title { padding: 7px 11px 3px; color: rgba(255,255,255,.72); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .nav-group-label { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+    .nav-group-icon { flex: 0 0 17px; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .nav-sub { display: grid; gap: 4px; margin-left: 11px; padding-left: 9px; border-left: 2px solid rgba(255,255,255,.18); }
     .account { margin-top: auto; padding-top: 15px; border-top: 1px solid rgba(255,255,255,.18); font-size: 12px; }
     .account strong, .account span { display: block; }
@@ -2584,6 +2586,7 @@
       .nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; overflow: visible; }
       .nav > button { min-width: 0; min-height: 44px; white-space: normal; }
       .nav .nav-scales-section { display: grid; grid-column: 1 / -1; width: 100%; margin: 2px 0; padding: 4px 0; border-top: 1px solid rgba(255,255,255,.16); border-bottom: 1px solid rgba(255,255,255,.16); }
+      .nav #central-access-admin-anchor { display: grid; grid-column: 1 / -1; }
       .nav .scales-nav-menu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 2px 0 4px 9px; padding-left: 8px; }
       .nav .scales-nav-menu button { min-height: 44px; }
     }
@@ -2926,7 +2929,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=f1ec9b6c0fdb0ddd090f" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=cfd398b4521a1b6f5ab6" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3305,13 +3308,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.64.4</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.65.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.64.4">v2.64.4</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.65.0">v2.65.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -3322,7 +3325,8 @@
         <button id="nav-home" type="button" class="active">Início</button>
         <div class="nav-section nav-scales-section">
           <button id="nav-military" class="nav-scales-toggle" type="button" aria-expanded="true" aria-controls="military-nav-menu" title="Recolher opções de Militares">
-            <span>Militares</span><svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+            <span class="nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M17 5a3 3 0 0 1 0 6m4 9v-2a4 4 0 0 0-3-3.9"/></svg>Militares</span>
+            <svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
           <div id="military-nav-menu" class="nav-sub scales-nav-menu" role="group" aria-label="Áreas de Militares">
             <button id="military-tab-effective" type="button" data-military-page="military" aria-controls="military-page">Efetivo</button>
@@ -3332,7 +3336,8 @@
         </div>
         <div class="nav-section nav-scales-section">
           <button id="nav-scales" class="nav-scales-toggle" type="button" aria-expanded="true" aria-controls="scales-nav-menu" title="Recolher opções de Escalas">
-            <span>Escalas</span><svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+            <span class="nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4m8-4v4M3 10h18m-13 5h2m4 0h2"/></svg>Escalas</span>
+            <svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
           <div id="scales-nav-menu" class="nav-sub scales-nav-menu" role="group" aria-label="Áreas de Escalas">
             <button id="nav-scale" type="button" data-scale-page="scale" aria-controls="scale-page">Montar Escala</button>
@@ -3345,7 +3350,8 @@
         </div>
         <div class="nav-section nav-scales-section">
           <button id="nav-ras" class="nav-scales-toggle" type="button" aria-expanded="true" aria-controls="ras-nav-menu" title="Recolher opções de RAS">
-            <span>RAS</span><svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+            <span class="nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>RAS</span>
+            <svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
           <div id="ras-nav-menu" class="nav-sub scales-nav-menu" role="group" aria-label="Áreas do controle de RAS">
             <button id="ras-tab-queue" type="button" data-ras-tab="queue" aria-controls="ras-view-queue">Fila contínua</button>
@@ -3359,7 +3365,8 @@
         </div>
         <div id="guard-nav-section" class="nav-section nav-scales-section" hidden>
           <button id="nav-guard" class="nav-scales-toggle" type="button" aria-expanded="true" aria-controls="guard-nav-menu" title="Recolher opções de Guarda" disabled>
-            <span>Guarda</span><svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+            <span class="nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m12 3 8 3v5c0 4.3-2.6 7.5-8 10-5.4-2.5-8-5.7-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></svg>Guarda</span>
+            <svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
           <div id="guard-nav-menu" class="nav-sub scales-nav-menu" role="group" aria-label="Áreas da Guarda">
             <button id="guard-tab-records" type="button" aria-controls="guard-page" hidden disabled>Registros de Acesso</button>
@@ -3370,14 +3377,17 @@
         <button id="nav-vehicles" type="button">Viaturas</button>
         <div id="nav-boletins" class="nav-section nav-scales-section">
           <button id="nav-boletins-toggle" class="nav-scales-toggle" type="button" aria-expanded="true" aria-controls="boletins-nav-menu" title="Recolher opções de Boletins">
-            <span>Boletins</span><svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
+            <span class="nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 20h13a2 2 0 0 0 2-2V4H8v14a2 2 0 0 1-4 0v-8h4m3-2h7m-7 4h7m-7 4h5"/></svg>Boletins</span>
+            <svg class="nav-scales-chevron" viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
           <div id="boletins-nav-menu" class="nav-sub scales-nav-menu" role="group" aria-label="Áreas de Boletins">
             <button id="boletins-tab-calendar" type="button" aria-controls="boletins-calendar-page">Boletins</button>
             <button id="boletins-tab-notas" type="button" aria-controls="boletins-page">Notas Internas</button>
           </div>
         </div>
-        <div id="central-access-admin-anchor" class="nav-section" role="group" aria-label="Administração"><span class="nav-section-title">Administração</span></div>
+        <div id="central-access-admin-anchor" class="nav-section" role="group" aria-label="Administração">
+          <span class="nav-section-title nav-group-label"><svg class="nav-group-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h3m4 0h9M4 12h9m4 0h3M4 18h3m4 0h9M7 4v4m6 2v4m-6 2v4"/></svg>Administração</span>
+        </div>
       </nav>
     </aside>
 
