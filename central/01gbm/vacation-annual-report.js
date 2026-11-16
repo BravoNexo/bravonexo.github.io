@@ -13,11 +13,9 @@
   }
 
   function annualTotals(model) {
-    const availableMonths = model.months.filter(month => month.count > 0).length;
     const totals = [
       [model.totalMilitary, 'Militares no ano'],
-      [model.totalPeriods, 'Períodos no ano'],
-      [availableMonths + ' de 12', 'Meses com férias']
+      [model.totalPeriods, 'Períodos no ano']
     ];
     return '<dl class="annual-totals">' + totals.filter(([value]) => value != null).map(([value, label]) =>
       '<div><dt>' + label + '</dt><dd>' + escapeHtml(value) + '</dd></div>'
@@ -28,9 +26,11 @@
     const military = escapeHtml(row.military);
     const reference = row.otherReference
       ? '<span class="period-reference">Ref. ' + escapeHtml(row.referenceYear) + '</span>' : '';
+    const partial = row.partial
+      ? '<span class="period-partial" title="Este período entra no total de outro mês">Parcial</span>' : '';
     return '<li class="period' + (row.otherReference ? ' other-reference' : '') + '">' +
       '<span class="period-name" title="' + military + '">' + military + '</span>' + reference +
-      '<span class="period-days">' + escapeHtml(row.range) + '</span></li>';
+      '<span class="period-days">' + partial + escapeHtml(row.range) + '</span></li>';
   }
 
   function monthCard(month) {
@@ -43,8 +43,7 @@
       ? '<ul class="month-periods">' + periods + overflow + '</ul>'
       : '<p class="empty-month">Sem férias programadas</p>';
     return '<section class="month"><header class="month-header"><h2>' + label + '</h2>' +
-      '<p class="month-count">' + countLabel(month.count, 'militar', 'militares') +
-      ' fora da escala</p></header>' + body + '</section>';
+      '<p class="month-count">' + countLabel(month.count, 'militar', 'militares') + '</p></header>' + body + '</section>';
   }
 
   const styles = `
@@ -78,6 +77,7 @@
     .period-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
     .period-reference { flex: 0 0 auto; color: #704e21; font-size: 6.2pt; }
     .period-days { flex: 0 0 auto; min-width: 8mm; margin-left: auto; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .period-partial { margin-right: 1.4mm; color: #536c7a; font-size: 6.2pt; font-weight: 400; }
     .other-reference { box-shadow: inset .48mm 0 #b18139, inset 0 -.13mm #e8eff2; background: #fbf2e3; }
     .period-more, .empty-month { margin: 0; padding: 0 .55mm; color: #4a6771; font-size: 6.6pt; line-height: 2.64mm; }
     .period-more { font-weight: 700; }
@@ -107,7 +107,7 @@
       '<header class="annual-header"><div><h1 id="annual-title">Planejamento anual de férias <span>' + year + '</span></h1>' +
       '<p>1º GBM • Ano de gozo • ' + periodScope + '</p></div>' + annualTotals(model) + '</header>' +
       '<div class="months" aria-label="Meses do ano">' + model.months.map(monthCard).join('') + '</div>' +
-      '<footer class="annual-footer"><p>Os intervalos mostram os dias de férias dentro de cada mês.' + legend + '</p>' +
+      '<footer class="annual-footer"><p>Dias de férias no mês. Cada período conta no mês com mais dias. “Parcial” indica contagem em outro mês.' + legend + '</p>' +
       (model.generatedAt ? '<p>Gerado em ' + escapeHtml(model.generatedAt) + '</p>' : '') + '</footer>' +
       '</main></div><script>document.getElementById("annual-print").addEventListener("click",function(){window.print()});' +
       'document.getElementById("annual-close").addEventListener("click",function(){window.close()});</script></body></html>';
