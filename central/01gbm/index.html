@@ -401,6 +401,22 @@
     .vacation-actions { display: flex; gap: 6px; }
     .vacation-actions button { min-height: 30px; border: 1px solid #bdcbd4; border-radius: 7px; padding: 5px 9px; color: #24495f; background: #fff; font-size: 10px; font-weight: 600; white-space: nowrap; }
     .vacation-note { display: block; max-width: 250px; margin-top: 2px; color: #788792; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    #vacation-page .vacation-military-filters { display: flex; align-items: flex-start; gap: 8px; }
+    #vacation-page .vacation-military-field { display: grid; gap: 2px; min-width: 146px; }
+    #vacation-page .vacation-command-ribbon .vacation-military-field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
+    #vacation-page .vacation-military-toggle { display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%; min-height: 31px; margin: 0; padding: 3px 8px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 12px; text-align: left; white-space: nowrap; }
+    #vacation-page .vacation-command-ribbon .vacation-military-toggle { min-height: 24px; font-size: 11px; }
+    #vacation-page .vacation-military-toggle[aria-expanded="true"] { border-color: #2477a7; }
+    #vacation-page .vacation-military-toggle:focus-visible { outline: 2px solid #2477a7; outline-offset: 2px; }
+    #vacation-page .vacation-military-menu { position: fixed; z-index: 90; min-width: 146px; margin: 0; padding: 4px; border: 1px solid #c8d6df; border-radius: 7px; background: #fff; box-shadow: 0 8px 24px #12344326; color: #244f69; }
+    #vacation-page .vacation-military-menu label { display: flex; align-items: center; gap: 8px; margin: 0; padding: 6px 9px; min-height: 32px; border-radius: 4px; font-size: 13px; cursor: pointer; }
+    #vacation-page .vacation-military-menu label:hover { background: #edf4f8; }
+    #vacation-page .vacation-military-menu input { flex: 0 0 auto; width: 16px; height: 16px; min-height: 0; margin: 0; padding: 0; accent-color: #155c63; }
+    @media (max-width: 700px), (pointer: coarse) {
+      #vacation-page .vacation-command-ribbon .vacation-military-toggle, #vacation-page .vacation-military-menu label { min-height: 40px; }
+    }
+    @media print { #vacation-page .vacation-military-field, #vacation-page .vacation-military-menu { display: none !important; } }
     .vacation-help { margin: -5px 0 16px; padding: 11px 13px; border: 1px solid #d8e2e8; border-radius: 9px; color: #536976; background: #f7fafb; font-size: 12px; line-height: 1.45; }
     .permuta-status { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 8px; font-size: 10px; font-weight: 700; white-space: nowrap; }
     .permuta-status.pending { color: #875d12; background: #fff0cf; }
@@ -2955,7 +2971,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=66d84246b7c7fc198540" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=9a8e1aaa3d3228dc6de0" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3334,13 +3350,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.68.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.69.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.68.0">v2.68.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.69.0">v2.69.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -4169,9 +4185,15 @@
             <span class="vacation-command-group-label">Período</span>
           </div>
           <div class="vacation-command-group">
-            <div class="vacation-command-fields">
-              <div class="field"><label for="vac-group">Efetivo</label><select id="vac-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
-              <div class="field"><label for="vac-status">Situação do período</label><select id="vac-status"><option value="all">Todas</option><option value="missing">Sem lançamento</option><option value="current">Em férias</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
+            <div class="vacation-military-filters">
+              <div class="vacation-command-fields">
+                <div class="field"><label for="vac-group">Efetivo</label><select id="vac-group"><option value="all">Todos os efetivos</option><option value="1º GBM">1º GBM</option><option value="DBM 1/1">DBM 1/1</option></select></div>
+                <div class="field"><label for="vac-status">Situação do período</label><select id="vac-status"><option value="all">Todas</option><option value="missing">Sem lançamento</option><option value="current">Em férias</option><option value="upcoming">Programado</option><option value="completed">Concluído</option><option value="cancelled">Cancelado</option><option value="other">Outros</option></select></div>
+              </div>
+              <div class="field vacation-military-field">
+                <label id="vac-military-label" for="vac-military-filter">Militares</label>
+                <button id="vac-military-filter" class="secondary vacation-military-toggle" type="button" aria-expanded="false" aria-controls="vac-military-menu" aria-labelledby="vac-military-label vac-military-selection"><span id="vac-military-selection">Oficiais e Praças</span><span aria-hidden="true">▾</span></button>
+              </div>
             </div>
             <span class="vacation-command-group-label">Filtros</span>
           </div>
@@ -4189,6 +4211,11 @@
         </section>
 
         <div class="vacation-help">No planejamento mensal, cada período pertence a um único mês: aquele que concentra mais dias de férias. Em caso de empate, prevalece o mês de início. Assim, o militar nunca é contado duas vezes. O filtro “Sem lançamento” identifica quem não possui nenhum registro no ano selecionado. Use “Lançar férias” para cadastrar um período ou “Editar período” para corrigi-lo. Os cancelamentos ficam na ficha do militar.</div>
+
+        <div id="vac-military-menu" class="vacation-military-menu" role="group" aria-label="Militares exibidos em Férias" hidden>
+          <label><input id="vac-show-officers" type="checkbox" checked> Oficiais</label>
+          <label><input id="vac-show-enlisted" type="checkbox" checked> Praças</label>
+        </div>
 
         <section class="panel">
           <div class="panel-head"><strong>Programação de férias</strong><span id="vac-result-count">Carregando…</span></div>
@@ -5933,6 +5960,11 @@
       vacationYear: document.getElementById('vac-year'),
       vacationMonth: document.getElementById('vac-month'),
       vacationGroup: document.getElementById('vac-group'),
+      vacationMilitaryFilter: document.getElementById('vac-military-filter'),
+      vacationMilitarySelection: document.getElementById('vac-military-selection'),
+      vacationMilitaryMenu: document.getElementById('vac-military-menu'),
+      vacationOfficers: document.getElementById('vac-show-officers'),
+      vacationEnlisted: document.getElementById('vac-show-enlisted'),
       vacationStatus: document.getElementById('vac-status'),
       vacationRefresh: document.getElementById('vac-refresh'),
       vacationRows: document.getElementById('vac-rows'),
@@ -6652,6 +6684,7 @@
       const militaryPages = ['military', 'vacations', 'leaves'];
       const enteringMilitary = militaryPages.indexOf(nextPage) !== -1 && militaryPages.indexOf(state.page) === -1;
       if (state.page === 'guard' && nextPage !== 'guard') cancelGuardSearch();
+      if (nextPage !== 'vacations' && !elements.vacationMilitaryMenu.hidden) setVacationMilitaryMenu_(false);
       state.page = nextPage;
       const homeActive = state.page === 'home';
       const vacationActive = state.page === 'vacations';
@@ -17114,11 +17147,79 @@
       updateVacationSortHeaders_();
     }
 
+    function matchesVacationMilitaryFilter_(military) {
+      const officers = elements.vacationOfficers.checked;
+      const enlisted = elements.vacationEnlisted.checked;
+      if (officers && enlisted) return true;
+      const activity = normalize(military.activity).trim();
+      return (officers && activity === 'oficial') || (enlisted && (activity === 'meio' || activity === 'fim'));
+    }
+
+    function positionVacationMilitaryMenu_() {
+      const menu = elements.vacationMilitaryMenu;
+      if (menu.hidden) return;
+      const control = elements.vacationMilitaryFilter.getBoundingClientRect();
+      if (control.width === 0 || control.bottom < 0 || control.top >= window.innerHeight) {
+        setVacationMilitaryMenu_(false);
+        return;
+      }
+      const gap = 6;
+      const width = Math.max(control.width, 146);
+      menu.style.width = width + 'px';
+      const height = menu.offsetHeight;
+      menu.style.left = Math.max(gap, Math.min(control.left, window.innerWidth - width - gap)) + 'px';
+      menu.style.top = (control.bottom + gap + height <= window.innerHeight
+        ? control.bottom + gap : Math.max(gap, control.top - height - gap)) + 'px';
+    }
+
+    function setVacationMilitaryMenu_(open, restoreFocus) {
+      const menu = elements.vacationMilitaryMenu;
+      menu.hidden = !open;
+      elements.vacationMilitaryFilter.setAttribute('aria-expanded', String(open));
+      if (open) {
+        positionVacationMilitaryMenu_();
+        if (!menu.hidden) elements.vacationOfficers.focus();
+      } else if (restoreFocus) {
+        elements.vacationMilitaryFilter.focus();
+      }
+    }
+
+    function updateVacationMilitaryFilter_() {
+      const selected = [];
+      if (elements.vacationOfficers.checked) selected.push('Oficiais');
+      if (elements.vacationEnlisted.checked) selected.push('Praças');
+      elements.vacationMilitarySelection.textContent = selected.join(' e ') || 'Nenhum selecionado';
+      if (state.vacationLoaded && elements.vacationLoading.hidden && elements.vacationError.hidden) renderVacations();
+    }
+
+    function bindVacationMilitaryFilter_() {
+      const menu = elements.vacationMilitaryMenu;
+      const control = elements.vacationMilitaryFilter;
+      control.addEventListener('click', function() { setVacationMilitaryMenu_(menu.hidden); });
+      [elements.vacationOfficers, elements.vacationEnlisted].forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateVacationMilitaryFilter_);
+      });
+      const closeOutside = function(event) {
+        if (!menu.hidden && !menu.contains(event.target) && !control.contains(event.target)) setVacationMilitaryMenu_(false);
+      };
+      document.addEventListener('pointerdown', closeOutside);
+      document.addEventListener('focusin', closeOutside);
+      menu.addEventListener('keydown', function(event) {
+        if (event.key !== 'Escape') return;
+        event.preventDefault();
+        event.stopPropagation();
+        setVacationMilitaryMenu_(false, true);
+      });
+      document.addEventListener('scroll', positionVacationMilitaryMenu_, {capture: true, passive: true});
+      window.addEventListener('resize', positionVacationMilitaryMenu_);
+    }
+
     function renderVacations() {
       elements.vacationWingStatus.hidden = !vacationWingRead_.failed;
       const term = normalize(elements.vacationSearch.value);
       let filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
-        if (!isCurrentCadastroMilitaryRg(record.rg)) return false;
+        const military = cadastroMilitaryByRg(record.rg);
+        if (!military || isFormerMilitary(military) || !matchesVacationMilitaryFilter_(military)) return false;
         if (record.confirmedEditPending && String(record.referenceYear) !== String(elements.vacationYear.value || state.vacationYear)) return false;
         const matchesText = !term || normalize([
           record.military,
@@ -19763,6 +19864,7 @@
     elements.refresh.addEventListener('click', function() { loadData(true); });
     elements.copyDocumentName.addEventListener('click', copySelectedDocumentName);
     initializeVacationSort_();
+    bindVacationMilitaryFilter_();
     elements.vacationSearch.addEventListener('input', renderVacations);
     [elements.vacationMonth, elements.vacationGroup, elements.vacationStatus].forEach(function(element) {
       element.addEventListener('change', renderVacations);
