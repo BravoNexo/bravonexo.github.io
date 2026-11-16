@@ -53,6 +53,85 @@ const check=()=>{if(control.signal.aborted||!permitted())throw error('A consulta
 try{const token=await wait(options.getAccessToken());check();if(typeof token!=='string'||token.length<16||token.length>16384||!/^[A-Za-z0-9_.-]+$/.test(token))throw error('Entre novamente para conferir sua sessão.','AUTH_REQUIRED');const isPost=['save','preview','import'].includes(name),target=new URL('/rest/v1/rpc/'+RPC[name],url);if(!isPost)for(const[k,v]of Object.entries(params))if(v!==null&&v!==undefined&&v!=='')target.searchParams.set(k,String(v));const headers={apikey:options.publishableKey,Authorization:'Bearer '+token,Accept:'application/json','Accept-Profile':'public'};if(isPost){headers['Content-Type']='application/json';headers['Content-Profile']='public';}check();sent=true;const response=await wait(fetchImpl(target.href,{method:isPost?'POST':'GET',headers,...(isPost?{body:JSON.stringify(params)}:{}),signal:control.signal,credentials:'omit',redirect:'error',cache:'no-store',referrerPolicy:'no-referrer'}));check();if(!response.ok){response.body?.cancel?.().catch(()=>{});throw error([401,403].includes(response.status)?'Não foi possível autorizar esta operação. Confira seu acesso à área.':'Não foi possível concluir a operação. Seus dados foram mantidos.','HTTP_'+response.status,write&&![400,401,403,409,422].includes(response.status));}if(!/^application\/json(?:;|$)/i.test(response.headers.get('Content-Type')||'')||!response.body)fail();reader=response.body.getReader();const decoder=new TextDecoder('utf-8',{fatal:true});let bytes=0,text='';while(true){const part=await wait(reader.read());check();if(part.done)break;bytes+=part.value.byteLength;if(bytes>2000000)throw error('A resposta excedeu o limite. Restrinja a busca.','RESPONSE_LIMIT',write&&sent);text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();check();const raw=JSON.parse(text),validate=name==='list'?list:name==='military'?militaryResult:name==='preview'?preview:name==='forecast'?forecastDto:name==='roster'?rosterDto:receipt;const result=name==='receipt'&&raw===null?null:validate(raw);check();return result;
 }catch(e){if(e?.code){if(write&&sent&&!/^HTTP_(400|401|403|409|422)$/.test(e.code))e.uncertain=true;throw e;}throw error(write&&sent?'Ainda não foi possível confirmar o envio. Use Consultar resultado; nenhum envio será repetido automaticamente.':'Não foi possível consultar agora. Seus filtros e ajustes foram mantidos.','REQUEST_FAILED',write&&sent);}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);controls.delete(control);control.signal.removeEventListener('abort',interruptedByAbort);try{Promise.resolve(reader?.cancel()).catch(()=>{});reader?.releaseLock();}catch{}}}
 return Object.freeze({roster:signal=>request('roster',{},false,signal),forecast:(ala=null,signal)=>request('forecast',{p_ala:forecastWing(ala)},false,signal),list:(filters,signal)=>request('list',listFilterArgs(filters),false,signal),military:(term,signal)=>request('military',{p_busca:term},false,signal),save:(requestId,payload,signal)=>request('save',{p_request:id(requestId),p_payload:payload},true,signal),preview:(rows,signal)=>request('preview',{p_rows:rows},false,signal),import:(requestId,rows,signal)=>request('import',{p_request:id(requestId),p_rows:rows},true,signal),receipt:(requestId,signal)=>request('receipt',{p_request:id(requestId)},false,signal),dispose(){disposed=true;controls.forEach(x=>x.abort());controls.clear();}});}
+async function readReportVehicles(client, signal, guard) {
+  const items = [];
+  const seenIds = new Set(), seenPlates = new Set();
+  let cursor = null, activeTotal = null;
+  do {
+    guard();
+    const page = await client.list({p_apos_placa: cursor?.placa, p_apos_id: cursor?.id}, signal);
+    guard();
+    if (activeTotal === null) activeTotal = page.resumo.total;
+    if (activeTotal !== page.resumo.total) throw error('O cadastro foi atualizado durante a consulta. Gere o relatório novamente.');
+    for (const item of page.items) {
+      if (seenIds.has(item.id) || seenPlates.has(item.placa)) fail();
+      seenIds.add(item.id);
+      seenPlates.add(item.placa);
+      items.push(item);
+    }
+    const last = page.items.at(-1);
+    if (page.nextCursor && (page.nextCursor.id !== last?.id || page.nextCursor.placa !== last?.placa)) fail();
+    cursor = page.nextCursor;
+  } while (cursor);
+  if (items.filter(item => item.ativo).length !== activeTotal) throw error('O cadastro foi atualizado durante a consulta. Gere o relatório novamente.');
+  return items;
+}
+
+function buildPrivateVehiclesReport(roster, items) {
+  const collator = new Intl.Collator('pt-BR', {sensitivity: 'base', numeric: true});
+  const normalizeRg = value => {
+    const compact = String(value ?? '').replace(/[.\s-]/g, '');
+    if (!/^(?:\d{1,2}\/)?\d{4,9}$/.test(compact)) return '';
+    return compact.replace(/^\d{1,2}\//, '').replace(/^0+/, '');
+  };
+  const compareMembers = (a, b) => a.antiguidade - b.antiguidade || collator.compare(a.nomeGuerra, b.nomeGuerra) || collator.compare(a.rg, b.rg);
+  const members = [...roster].sort(compareMembers);
+  const byRg = new Map();
+  members.forEach((member, position) => {
+    const key = normalizeRg(member.rg);
+    if (key) byRg.set(key, byRg.has(key) ? null : {member, position});
+  });
+  const emptyCounts = () => ({cars: 0, motorcycles: 0, other: 0, vehicleCount: 0});
+  const groups = new Map([1, 2, 3, 4, null].map(ala => [ala, {...emptyCounts(), label: wingLabel(ala), owners: new Set()}]));
+  const activeOwners = new Set();
+  const totals = {...emptyCounts(), militaryCount: members.length, withVehicle: 0};
+  const countVehicle = (count, type) => {
+    count.vehicleCount++;
+    count[type === 'carro' ? 'cars' : type === 'moto' ? 'motorcycles' : 'other']++;
+  };
+  const vehicles = items.map(item => {
+    const rg = normalizeRg(item.militar?.documento);
+    const linked = byRg.get(rg);
+    if (item.ativo) {
+      const group = groups.get(item.ala);
+      countVehicle(totals, item.tipo);
+      countVehicle(group, item.tipo);
+      if (item.militar) {
+        const ownerKey = rg && linked !== null ? rg : item.militar.id;
+        group.owners.add(ownerKey);
+        activeOwners.add(ownerKey);
+      }
+    }
+    return {
+      position: linked?.position ?? Number.MAX_SAFE_INTEGER,
+      plate: item.placa, kind: typeLabel(item.tipo), model: item.modelo, color: item.cor,
+      military: linked?.member.nome || item.militar?.nome || 'Militar indisponível no cadastro',
+      rg: linked?.member.rg || item.militar?.documento, wing: wingLabel(item.ala),
+      status: item.ativo ? 'Ativo' : 'Inativo'
+    };
+  }).sort((a, b) => a.position - b.position || collator.compare(a.military, b.military) || collator.compare(a.plate, b.plate));
+  const military = members.map(member => {
+    const vehicleCount = member.carros + member.motos + member.semTipo;
+    if (vehicleCount > 0) totals.withVehicle++;
+    return {label: member.nome, rg: member.rg, cars: member.carros, motorcycles: member.motos, other: member.semTipo, vehicleCount};
+  });
+  const generatedAt = new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short'}).format(new Date());
+  return {
+    generatedAt, totals, linkedOwners: activeOwners.size, military, vehicles,
+    groups: Array.from(groups.values(), ({owners, ...group}) => ({...group, withVehicle: owners.size}))
+  };
+}
+
 // The Central page and delegated dialog use the same vehicle registry.
 function mount(options){
 const env=options.environment||window,doc=options.document||env.document,host=doc.getElementById(options.hostId||'guard-private-vehicles'),trigger=doc.getElementById('guard-private-vehicles-open');if(!host)return Object.freeze({setReady(){},setVisible(){},load(){},dispose(){}});
@@ -135,7 +214,7 @@ function updateBulkDialog(view, edit) {
   elements.bulkReceipt.disabled = busy || !view;
   if (awaitingImport) elements.paste.disabled = busy || !edit;
 }
-function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||listSearchTimer!==null||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateEditorDialog(view,edit);updateBulkDialog(view,edit);}
+function update(){const view=allowed(),edit=allowed(true);if(trigger)trigger.disabled=!view;for(const input of [elements.search,elements.active,elements.wingFilter,elements.typeFilter,elements.refresh])input.disabled=busy&&activeAction!=='list'||!view;elements.new.disabled=elements.paste.disabled=busy||listSearchTimer!==null||!edit||!!pending;elements.more.disabled=busy||!view||!cursor;elements.check.hidden=!pending;elements.check.disabled=busy||!view;for(const input of [elements.plate,elements.rg,elements.militarySearch,elements.model,elements.color,elements.type,elements.recordActive])input.disabled=busy||!edit||!!pending;elements.save.disabled=busy||!edit||!!pending||(!militarySelected&&(!editRecord||elements.recordActive.checked));elements.bulkText.disabled=busy||!edit||!!pending;elements.preview.disabled=busy||!edit||!!pending;elements.import.disabled=busy||!edit||!!pending||!bulkPreview||bulkPreview.rows.some(r=>!['ready','existing'].includes(r.status))||!bulkPreview.rows.some(r=>r.status==='ready');updateForecast();roster?.update();updateEditorDialog(view,edit);updateBulkDialog(view,edit);updateReport();}
 async function run(action,task){if(busy||!allowed())return false;const operation=++epoch,who=actor,generation=options.getGeneration();control=new AbortController();const signal=control.signal;busy=true;activeAction=action;update();const alive=()=>!disposed&&operation===epoch&&who===actor&&generation===options.getGeneration()&&allowed();let ownAttempt=null;try{const guard=()=>{if(!alive())throw error('A sessão mudou. Seus dados foram preservados.','SESSION_CHANGED',!!ownAttempt);};const work=task(signal,guard);ownAttempt=['save','import'].includes(action)?pending:null;const result=await work;if(!alive())return false;return result;}catch(e){if(ownAttempt&&pending===ownAttempt&&who===actor&&e.uncertain===false){pending=null;update();}if(alive()){status(e.message||'Não foi possível concluir. Seus dados foram mantidos.',true);if(inEditorDialog()&&(action==='military'||action==='receipt'&&pending?.operation==='save'))elements.editStatus.textContent=elements.status.textContent;if(action==='preview'||action==='receipt'&&pending?.operation==='import')elements.bulkStatus.textContent=elements.status.textContent;if(['save','import'].includes(action)){const message=pending?'O envio ainda não foi confirmado. Use Consultar resultado; não salve novamente.':e.message||'Nenhuma alteração foi confirmada. Revise os dados.';(action==='save'?elements.editStatus:elements.bulkStatus).textContent=message;}}return false;}finally{if(operation===epoch){busy=false;activeAction=null;control=null;update();}}}
 function setVisible(show) {
   if (disposed) {
@@ -203,6 +282,66 @@ function scheduleListSearch() {
   update();
 }
 async function load(more=false){cancelListSearch();if(!allowed() || embedded && !visible)return false;let filters;try{filters=readFilters();}catch(e){status(e.message,true);update();return false;}if(busy){if(activeAction!=='list')return false;stop();}const key=JSON.stringify(filters),append=more===true&&cursor!==null&&loadedFilterKey===key,selectedCursor=append?{...cursor}:null;if(!append){rows=[];cursor=null;loadedFilterKey='';renderTotals(null);renderRows();elements.empty.hidden=true;}void loadForecast();return run('list',async(signal,guard)=>{status('Consultando veículos…');const result=await client.list({...filters,p_apos_placa:selectedCursor?.placa||null,p_apos_id:selectedCursor?.id||null},signal);guard();let current;try{current=JSON.stringify(readFilters());}catch{}if(current!==key){status('Filtros alterados. Use Atualizar para consultar a lista.');return false;}const next=append?[...rows,...result.items]:result.items;if(new Set(next.map(r=>r.id)).size!==next.length||new Set(next.map(r=>r.placa)).size!==next.length)fail();rows=next;cursor=result.nextCursor;loadedFilterKey=key;renderTotals(result.resumo);renderRows();status(rows.length?'Cadastros consultados.':'Nenhum veículo encontrado.');return true;});}
+
+function canReadReport() {
+  return visible && rosterEnabled && allowed() && options.canViewRoster() === true;
+}
+function reportMessage(message) {
+  if (!elements.reportStatus) return;
+  elements.reportStatus.textContent = message;
+  elements.reportStatus.hidden = !message;
+}
+function updateReport() {
+  if (!elements.report) return;
+  const access = canReadReport();
+  elements.reportGroup.hidden = !access;
+  elements.report.disabled = !access || busy;
+  if (!access) reportMessage('');
+}
+async function openReport() {
+  if (!canReadReport() || busy) return;
+  const renderer = env.BNXPrivateVehiclesReport;
+  if (typeof renderer?.render !== 'function') {
+    reportMessage('O relatório não carregou. Atualize a Central e tente novamente.');
+    return;
+  }
+  const popup = env.open('', '_blank');
+  if (!popup) {
+    reportMessage('Permita que a Central abra a janela do relatório e tente novamente.');
+    return;
+  }
+  const who = actor, generation = options.getGeneration();
+  const current = () => canReadReport() && who === actor && options.getGeneration() === generation;
+  popup.opener = null;
+  popup.document.title = 'Relatório de Veículos Particulares';
+  const message = popup.document.createElement('p');
+  message.setAttribute('role', 'status');
+  message.style.cssText = 'font:16px Arial,sans-serif;color:#18394e;padding:20px';
+  message.textContent = 'Consultando todos os veículos e militares…';
+  popup.document.body.appendChild(message);
+  reportMessage('Preparando o relatório de veículos…');
+
+  const html = await run('report', async (signal, guard) => {
+    const [result, items] = await Promise.all([client.roster(signal), readReportVehicles(client, signal, guard)]);
+    guard();
+    if (!current() || popup.closed) return false;
+    return renderer.render(buildPrivateVehiclesReport(result.items, items));
+  });
+  if (!current()) {
+    if (!popup.closed) popup.close();
+    return;
+  }
+  reportMessage('');
+  if (popup.closed) return;
+  if (!html) {
+    message.textContent = 'Não foi possível preparar o relatório completo. Volte a Veículos Particulares e tente novamente.';
+    return;
+  }
+  popup.document.open();
+  popup.document.write(html);
+  popup.document.close();
+}
+
 const vehicleFields = ['plate', 'rg', 'model', 'color', 'type'];
 function captureNewDraft() {
   return {
@@ -732,7 +871,17 @@ ${scope}[hidden],${scope} [hidden]{display:none!important}
     host.appendChild(commandRibbon);
   }
   const registry = rosterEnabled ? node('div', undefined, 'cpv-registration') : host;
-  if (rosterEnabled) roster = buildRoster(registry, commandRibbon, inventoryCommands);
+  if (rosterEnabled) {
+    roster = buildRoster(registry, commandRibbon, inventoryCommands);
+    elements.report = commandButton(button('Relatório PDF', openReport), 'M6 3h8l4 4v14H6zM14 3v5h4M9 12h6m-6 4h6');
+    elements.reportGroup = commandGroup('Relatórios', 'cpv-command-reports', elements.report);
+    commandRibbon.insertBefore(elements.reportGroup, commandRibbon.children[1] || null);
+    elements.reportStatus = node('p');
+    elements.reportStatus.className = 'cpv-status';
+    elements.reportStatus.setAttribute('role', 'status');
+    elements.reportStatus.hidden = true;
+    host.insertBefore(elements.reportStatus, registry);
+  }
   const description = node('p', 'Cadastro vinculado aos militares para identificação pela placa no Controle de Acesso. Os veículos não integram a frota do quartel.');
   description.className = 'cpv-description';
   registry.appendChild(description);

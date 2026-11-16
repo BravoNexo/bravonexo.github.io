@@ -1,0 +1,147 @@
+(function (window) {
+  'use strict';
+
+  const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const numberFormat = new Intl.NumberFormat('pt-BR');
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => entities[character]);
+  }
+
+  function number(value) {
+    return Number.isSafeInteger(value) && value >= 0 ? numberFormat.format(value) : '—';
+  }
+
+  function wingLabel(wing) {
+    if (wing == null || wing === '') return 'Sem ala';
+    if (/^[1-4]$/.test(String(wing))) return 'Ala ' + wing;
+    return wing;
+  }
+
+  function typeLabel(kind) {
+    if (kind === 'carro') return 'Carro';
+    if (kind === 'moto') return 'Moto';
+    if (!kind || kind === 'nao_informado') return 'Não informado';
+    return kind;
+  }
+
+  function statusLabel(status) {
+    const value = String(status ?? '').trim().toLowerCase();
+    if (status === true || value === 'ativo' || value === 'active') return 'Ativo';
+    if (status === false || value === 'inativo' || value === 'inactive') return 'Inativo';
+    return status;
+  }
+
+  function cells(columns, values, tag) {
+    return columns.map((column, index) => {
+      const kind = column[1];
+      const value = values[index];
+      const content = tag === 'td' && kind === 'number' ? number(value) : escapeHtml(value || '—');
+      return '<' + tag + (tag === 'th' ? ' scope="col"' : '') + (kind ? ' class="' + kind + '"' : '') +
+        '>' + content + '</' + tag + '>';
+    }).join('');
+  }
+
+  function table(id, title, description, columns, rows, empty, totals) {
+    const headings = columns.map(column => column[0]);
+    const body = rows.length
+      ? rows.map(row => '<tr>' + cells(columns, row, 'td') + '</tr>').join('')
+      : '<tr class="empty-row"><td colspan="' + columns.length + '">' + escapeHtml(empty) + '</td></tr>';
+    return '<section class="report-section"><h2 id="' + id + '">' + title + '</h2>' +
+      '<p class="section-description" id="' + id + '-description">' + description + '</p>' +
+      '<table class="' + id + '" aria-labelledby="' + id + '" aria-describedby="' + id + '-description"><thead><tr>' + cells(columns, headings, 'th') + '</tr></thead>' +
+      '<tbody>' + body + (totals ? '<tr class="total-row">' + cells(columns, totals, 'td') + '</tr>' : '') + '</tbody></table></section>';
+  }
+
+  const styles = `
+    @page { size: A4 portrait; margin: 9mm; }
+    :root { --navy: #18394e; --navy-panel: #294d63; --gold: #bc9b58; --gold-light: #e4d6b7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #edf2f5; color: #233d4e; font-family: Arial, Helvetica, sans-serif; }
+    .print-tools { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 11px 20px; background: #f9fbfc; border-bottom: 1px solid #d6e1e7; }
+    .print-tools button { padding: 9px 13px; border: 1px solid #bfd2dc; border-radius: 6px; background: #fff; color: #24495a; font: 700 13px Arial, sans-serif; cursor: pointer; }
+    .print-tools button:first-child { border-color: var(--navy); background: var(--navy); color: #fff; }
+    .print-tools button:focus-visible { outline: 2px solid #246f90; outline-offset: 2px; }
+    .print-tools p { margin: 0 4px; color: #526873; font-size: 12px; }
+    .report-preview { overflow: auto; padding: 16px; }
+    .report { width: 192mm; margin: 0 auto; background: #fff; box-shadow: 0 8px 24px #17364622; }
+    .report-head { padding: 4.4mm 5mm; border-bottom: .65mm solid var(--gold); border-radius: 1.4mm 1.4mm 0 0; background: var(--navy); color: #fff; }
+    .report-head h1 { margin: 0 0 1.2mm; font-size: 18pt; line-height: 1.12; }
+    .report-head p { margin: 0; color: var(--gold-light); font-size: 9pt; }
+    .report-content { padding: 3.4mm 4mm 5mm; }
+    .report-totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; margin: 0 0 3.5mm; break-inside: avoid; }
+    .report-totals div { display: flex; flex-direction: column-reverse; align-items: flex-start; gap: .6mm; padding: 1.65mm 2.2mm; border: .22mm solid #cddbe2; background: #f0f5f8; }
+    .report-totals dt { color: #415e6f; font-size: 8pt; }
+    .report-totals dd { margin: 0; color: var(--navy); font-size: 13pt; font-weight: 700; line-height: 1; }
+    .report-section { margin: 0 0 4.5mm; }
+    .report-section h2 { margin: 0; padding: 1.65mm 2mm; background: var(--navy-panel); color: #fff; font-size: 11pt; line-height: 1.18; break-after: avoid; page-break-after: avoid; }
+    .section-description { margin: 0; padding: 1mm 1.5mm; color: #4b6573; background: #f4f7f8; font-size: 8pt; break-after: avoid; page-break-after: avoid; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 8.45pt; line-height: 1.24; }
+    thead { display: table-header-group; }
+    th, td { padding: 1mm 1.4mm; border: .22mm solid #cddbe2; overflow-wrap: anywhere; vertical-align: top; }
+    th { background: #e6eef3; color: #294755; font-weight: 700; }
+    tbody tr:nth-child(even) { background: #f5f8fa; }
+    tbody tr { break-inside: avoid; page-break-inside: avoid; }
+    .number { text-align: right; font-variant-numeric: tabular-nums; }
+    td.number { white-space: nowrap; }
+    .identifier { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .align-label { font-weight: 700; }
+    .total-row td { border-top: .45mm solid #b8cbd4; background: #e8f0f4; font-weight: 700; }
+    td.empty-row, .empty-row td { color: #526873; text-align: center; }
+    .wing-summary th:first-child { width: 19%; }
+    .military-counts th:first-child { width: 31%; }
+    .military-counts th:nth-child(2) { width: 11%; }
+    .vehicle-list th:first-child { width: 10%; }
+    .vehicle-list th:nth-child(2) { width: 10%; }
+    .vehicle-list th:nth-child(3) { width: 22%; }
+    .vehicle-list th:nth-child(4), .vehicle-list th:nth-child(8) { width: 9%; }
+    .vehicle-list th:nth-child(5) { width: 24%; }
+    .vehicle-list th:nth-child(6), .vehicle-list th:nth-child(7) { width: 8%; }
+    @media print {
+      body { background: #fff; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .print-tools { display: none; }
+      .report-preview { padding: 0; overflow: visible; }
+      .report { width: 100%; margin: 0; box-shadow: none; }
+      .report-head { break-inside: avoid; }
+      .report-content { padding: 3.4mm 0 0; }
+    }
+  `;
+
+  function render(model) {
+    const groupColumns = [['Ala', 'align-label'], ['Com veículo', 'number'], ['Carros', 'number'],
+      ['Motos', 'number'], ['Tipo não informado', 'number'], ['Veículos', 'number']];
+    const militaryColumns = [['Militar', 'align-label'], ['RG', 'identifier'], ['Carros', 'number'], ['Motos', 'number'],
+      ['Tipo não informado', 'number'], ['Veículos', 'number']];
+    const vehicleColumns = [['Placa', 'identifier'], ['Tipo'], ['Modelo'], ['Cor'], ['Militar', 'align-label'], ['RG', 'identifier'], ['Ala'], ['Situação']];
+    const grouped = (label, item) => [label, item.withVehicle, item.cars, item.motorcycles, item.other, item.vehicleCount];
+    const groups = model.groups.map(group => grouped(group.label, group));
+    const military = model.military.map(row => [row.label, row.rg, row.cars, row.motorcycles, row.other, row.vehicleCount]);
+    const vehicles = model.vehicles.map(row => [row.plate, typeLabel(row.kind), row.model, row.color, row.military, row.rg,
+      wingLabel(row.wing), statusLabel(row.status)]);
+    const summary = table('wing-summary', 'Resumo por ala', 'Contagem dos veículos ativos e dos militares vinculados a eles.',
+      groupColumns, groups, 'Nenhuma ala encontrada.', grouped('Total', {...model.totals, withVehicle: model.linkedOwners ?? model.totals.withVehicle}));
+    const counts = table('military-counts', 'Veículos por militar', 'Quantidades de veículos ativos. A relação inclui quem está sem veículo ativo.',
+      militaryColumns, military, 'Nenhum militar encontrado.');
+    const listing = table('vehicle-list', 'Relação de veículos por antiguidade',
+      'Inclui cadastros ativos e inativos. Vínculos sem antiguidade disponível aparecem ao final.', vehicleColumns, vehicles,
+      'Nenhum veículo particular cadastrado.');
+    const totals = '<dl class="report-totals">' + [
+      ['Militares no efetivo', model.totals.militaryCount],
+      ['Militares com veículo ativo', model.totals.withVehicle],
+      ['Veículos ativos', model.totals.vehicleCount]
+    ].map(([label, value]) => '<div><dt>' + label + '</dt><dd>' + number(value) + '</dd></div>').join('') + '</dl>';
+
+    return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>Veículos particulares – 1º GBM</title><style>' + styles + '</style></head><body>' +
+      '<nav class="print-tools" aria-label="Impressão do relatório"><button id="vehicles-print" type="button">Imprimir / Salvar PDF</button>' +
+      '<button id="vehicles-close" type="button">Fechar</button><p>A4 • Retrato</p></nav>' +
+      '<div class="report-preview"><main class="report" aria-labelledby="report-title"><header class="report-head">' +
+      '<h1 id="report-title">Veículos particulares</h1><p>1º GBM' +
+      (model.generatedAt ? ' • Gerado em ' + escapeHtml(model.generatedAt) : '') + '</p></header>' +
+      '<div class="report-content">' + totals + summary + counts + listing + '</div></main></div>' +
+      '<script>document.getElementById("vehicles-print").addEventListener("click",function(){window.print()});' +
+      'document.getElementById("vehicles-close").addEventListener("click",function(){window.close()});</script></body></html>';
+  }
+
+  window.BNXPrivateVehiclesReport = Object.freeze({ render });
+})(window);
