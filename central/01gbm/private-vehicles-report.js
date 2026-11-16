@@ -19,10 +19,10 @@
   }
 
   function typeLabel(kind) {
-    if (kind === 'carro') return 'Carro';
-    if (kind === 'moto') return 'Moto';
-    if (!kind || kind === 'nao_informado') return 'Não informado';
-    return kind;
+    const type = String(kind ?? '').toLowerCase();
+    if (type === 'carro') return 'Carro';
+    if (type === 'moto') return 'Moto';
+    return '—';
   }
 
   function statusLabel(status) {
@@ -88,8 +88,8 @@
     .align-label { font-weight: 700; }
     .total-row td { border-top: .45mm solid #b8cbd4; background: #e8f0f4; font-weight: 700; }
     td.empty-row, .empty-row td { color: #526873; text-align: center; }
-    .wing-summary th:first-child { width: 19%; }
-    .military-counts th:first-child { width: 31%; }
+    .wing-summary th:first-child { width: 24%; }
+    .military-counts th:first-child { width: 38%; }
     .military-counts th:nth-child(2) { width: 11%; }
     .vehicle-list th:first-child { width: 10%; }
     .vehicle-list th:nth-child(2) { width: 10%; }
@@ -108,14 +108,12 @@
   `;
 
   function render(model) {
-    const groupColumns = [['Ala', 'align-label'], ['Com veículo', 'number'], ['Carros', 'number'],
-      ['Motos', 'number'], ['Tipo não informado', 'number'], ['Veículos', 'number']];
-    const militaryColumns = [['Militar', 'align-label'], ['RG', 'identifier'], ['Carros', 'number'], ['Motos', 'number'],
-      ['Tipo não informado', 'number'], ['Veículos', 'number']];
+    const groupColumns = [['Ala', 'align-label'], ['Com veículo', 'number'], ['Carros', 'number'], ['Motos', 'number'], ['Veículos', 'number']];
+    const militaryColumns = [['Militar', 'align-label'], ['RG', 'identifier'], ['Carros', 'number'], ['Motos', 'number'], ['Veículos', 'number']];
     const vehicleColumns = [['Placa', 'identifier'], ['Tipo'], ['Modelo'], ['Cor'], ['Militar', 'align-label'], ['RG', 'identifier'], ['Ala'], ['Situação']];
-    const grouped = (label, item) => [label, item.withVehicle, item.cars, item.motorcycles, item.other, item.vehicleCount];
+    const grouped = (label, item) => [label, item.withVehicle, item.cars, item.motorcycles, item.vehicleCount];
     const groups = model.groups.map(group => grouped(group.label, group));
-    const military = model.military.map(row => [row.label, row.rg, row.cars, row.motorcycles, row.other, row.vehicleCount]);
+    const military = model.military.map(row => [row.label, row.rg, row.cars, row.motorcycles, row.vehicleCount]);
     const vehicles = model.vehicles.map(row => [row.plate, typeLabel(row.kind), row.model, row.color, row.military, row.rg,
       wingLabel(row.wing), statusLabel(row.status)]);
     const summary = table('wing-summary', 'Resumo por ala', 'Contagem dos veículos ativos e dos militares vinculados a eles.',
