@@ -42,15 +42,37 @@
     }).join('');
   }
 
-  function table(id, title, description, columns, rows, empty, totals) {
+  function tableMarkup(id, columns, rows, empty, { totals, group } = {}) {
     const headings = columns.map(column => column[0]);
     const body = rows.length
       ? rows.map(row => '<tr>' + cells(columns, row, 'td') + '</tr>').join('')
       : '<tr class="empty-row"><td colspan="' + columns.length + '">' + escapeHtml(empty) + '</td></tr>';
+    const groupHeader = group ? '<tr class="military-group-heading"><th scope="colgroup" colspan="' +
+      columns.length + '">' + escapeHtml(group) + '</th></tr>' : '';
+    return '<table class="' + id + '" aria-labelledby="' + id + '" aria-describedby="' + id + '-description"><thead>' +
+      groupHeader + '<tr>' + cells(columns, headings, 'th') + '</tr></thead><tbody>' + body +
+      (totals ? '<tr class="total-row">' + cells(columns, totals, 'td') + '</tr>' : '') + '</tbody></table>';
+  }
+
+  function reportSection(id, title, description, content) {
     return '<section class="report-section"><h2 id="' + id + '">' + title + '</h2>' +
-      '<p class="section-description" id="' + id + '-description">' + description + '</p>' +
-      '<table class="' + id + '" aria-labelledby="' + id + '" aria-describedby="' + id + '-description"><thead><tr>' + cells(columns, headings, 'th') + '</tr></thead>' +
-      '<tbody>' + body + (totals ? '<tr class="total-row">' + cells(columns, totals, 'td') + '</tr>' : '') + '</tbody></table></section>';
+      '<p class="section-description" id="' + id + '-description">' + description + '</p>' + content + '</section>';
+  }
+
+  function militaryCounts(columns, military) {
+    const id = 'military-counts';
+    const empty = 'Nenhum militar encontrado.';
+    const sorted = tableMarkup(id, columns, military, empty);
+    if (!military.length) return sorted;
+    const groups = [
+      ['Com veículo ativo', military.filter(row => row[4] > 0)],
+      ['Sem veículo ativo', military.filter(row => row[4] === 0)]
+    ];
+    const grouped = groups.filter(([, rows]) => rows.length > 0).map(([label, rows]) =>
+      tableMarkup(id, columns, rows, empty, { group: label + ' · ' + number(rows.length) })
+    ).join('');
+    return '<div id="military-order-vehicle">' + grouped + '</div>' +
+      '<div id="military-order-seniority" hidden>' + sorted + '</div>';
   }
 
   const styles = `
@@ -59,10 +81,11 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: #edf2f5; color: #233d4e; font-family: Arial, Helvetica, sans-serif; }
     .print-tools { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 11px 20px; background: #f9fbfc; border-bottom: 1px solid #d6e1e7; }
-    .print-tools button { padding: 9px 13px; border: 1px solid #bfd2dc; border-radius: 6px; background: #fff; color: #24495a; font: 700 13px Arial, sans-serif; cursor: pointer; }
+    .print-tools button, .print-tools select { padding: 9px 13px; border: 1px solid #bfd2dc; border-radius: 6px; background: #fff; color: #24495a; font: 700 13px Arial, sans-serif; cursor: pointer; }
     .print-tools button:first-child { border-color: var(--navy); background: var(--navy); color: #fff; }
-    .print-tools button:focus-visible { outline: 2px solid #246f90; outline-offset: 2px; }
+    .print-tools :is(button, select):focus-visible { outline: 2px solid #246f90; outline-offset: 2px; }
     .print-tools p { margin: 0 4px; color: #526873; font-size: 12px; }
+    .print-tools label { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 5px; color: #415e6f; font-size: 13px; }
     .report-preview { overflow: auto; padding: 16px; }
     .report { width: 192mm; margin: 0 auto; background: #fff; box-shadow: 0 8px 24px #17364622; }
     .report-head { padding: 4.4mm 5mm; border-bottom: .65mm solid var(--gold); border-radius: 1.4mm 1.4mm 0 0; background: var(--navy); color: #fff; }
@@ -89,8 +112,10 @@
     .total-row td { border-top: .45mm solid #b8cbd4; background: #e8f0f4; font-weight: 700; }
     td.empty-row, .empty-row td { color: #526873; text-align: center; }
     .wing-summary th:first-child { width: 24%; }
-    .military-counts th:first-child { width: 38%; }
-    .military-counts th:nth-child(2) { width: 11%; }
+    .military-counts th[scope="col"]:first-child { width: 38%; }
+    .military-counts th[scope="col"]:nth-child(2) { width: 11%; }
+    .military-counts + .military-counts { margin-top: 3mm; }
+    .military-counts .military-group-heading th { background: #d3e5ef; color: var(--navy); }
     .vehicle-list th:first-child { width: 10%; }
     .vehicle-list th:nth-child(2) { width: 10%; }
     .vehicle-list th:nth-child(3) { width: 22%; }
@@ -116,29 +141,39 @@
     const military = model.military.map(row => [row.label, row.rg, row.cars, row.motorcycles, row.vehicleCount]);
     const vehicles = model.vehicles.map(row => [row.plate, typeLabel(row.kind), row.model, row.color, row.military, row.rg,
       wingLabel(row.wing), statusLabel(row.status)]);
-    const summary = table('wing-summary', 'Resumo por ala', 'Contagem dos veículos ativos e dos militares vinculados a eles.',
-      groupColumns, groups, 'Nenhuma ala encontrada.', grouped('Total', {...model.totals, withVehicle: model.linkedOwners ?? model.totals.withVehicle}));
-    const counts = table('military-counts', 'Veículos por militar', 'Quantidades de veículos ativos. A relação inclui quem está sem veículo ativo.',
-      militaryColumns, military, 'Nenhum militar encontrado.');
-    const listing = table('vehicle-list', 'Relação de veículos por antiguidade',
-      'Inclui cadastros ativos e inativos. Vínculos sem antiguidade disponível aparecem ao final.', vehicleColumns, vehicles,
-      'Nenhum veículo particular cadastrado.');
+    const summary = reportSection('wing-summary', 'Resumo por ala', 'Contagem dos veículos ativos e dos militares vinculados a eles.',
+      tableMarkup('wing-summary', groupColumns, groups, 'Nenhuma ala encontrada.', {
+        totals: grouped('Total', {...model.totals, withVehicle: model.linkedOwners ?? model.totals.withVehicle})
+      }));
+    const counts = reportSection('military-counts', 'Veículos por militar', 'Quantidades de veículos ativos por militar.',
+      militaryCounts(militaryColumns, military));
+    const listing = reportSection('vehicle-list', 'Relação de veículos por antiguidade',
+      'Inclui cadastros ativos e inativos. Vínculos sem antiguidade disponível aparecem ao final.',
+      tableMarkup('vehicle-list', vehicleColumns, vehicles, 'Nenhum veículo particular cadastrado.'));
     const totals = '<dl class="report-totals">' + [
       ['Militares no efetivo', model.totals.militaryCount],
       ['Militares com veículo ativo', model.totals.withVehicle],
       ['Veículos ativos', model.totals.vehicleCount]
     ].map(([label, value]) => '<div><dt>' + label + '</dt><dd>' + number(value) + '</dd></div>').join('') + '</dl>';
 
+    const orderControl = military.length ? '<label>Organizar militares por' +
+      '<select id="military-order"><option value="vehicle">Com veículo primeiro</option>' +
+      '<option value="seniority">Antiguidade</option></select></label>' : '';
     return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<title>Veículos particulares – 1º GBM</title><style>' + styles + '</style></head><body>' +
       '<nav class="print-tools" aria-label="Impressão do relatório"><button id="vehicles-print" type="button">Imprimir / Salvar PDF</button>' +
-      '<button id="vehicles-close" type="button">Fechar</button><p>A4 • Retrato</p></nav>' +
+      '<button id="vehicles-close" type="button">Fechar</button>' + orderControl + '<p>A4 • Retrato</p></nav>' +
       '<div class="report-preview"><main class="report" aria-labelledby="report-title"><header class="report-head">' +
       '<h1 id="report-title">Veículos particulares</h1><p>1º GBM' +
       (model.generatedAt ? ' • Gerado em ' + escapeHtml(model.generatedAt) : '') + '</p></header>' +
       '<div class="report-content">' + totals + summary + counts + listing + '</div></main></div>' +
       '<script>document.getElementById("vehicles-print").addEventListener("click",function(){window.print()});' +
-      'document.getElementById("vehicles-close").addEventListener("click",function(){window.close()});</script></body></html>';
+      'document.getElementById("vehicles-close").addEventListener("click",function(){window.close()});' +
+      'document.getElementById("military-order")?.addEventListener("change",function(){' +
+      'const byVehicle=this.value==="vehicle";' +
+      'document.getElementById("military-order-vehicle").hidden=!byVehicle;' +
+      'document.getElementById("military-order-seniority").hidden=byVehicle;' +
+      '});</script></body></html>';
   }
 
   window.BNXPrivateVehiclesReport = Object.freeze({ render });
