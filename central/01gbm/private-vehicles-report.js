@@ -44,12 +44,16 @@
 
   function tableMarkup(id, columns, rows, empty, { totals, group } = {}) {
     const headings = columns.map(column => column[0]);
+    const militaryTable = id === 'military-counts';
+    const withoutVehicle = ' data-without-active-vehicle';
     const body = rows.length
-      ? rows.map(row => '<tr>' + cells(columns, row, 'td') + '</tr>').join('')
+      ? rows.map(row => '<tr' + (militaryTable && row[4] === 0 ? withoutVehicle : '') + '>' +
+        cells(columns, row, 'td') + '</tr>').join('')
       : '<tr class="empty-row"><td colspan="' + columns.length + '">' + escapeHtml(empty) + '</td></tr>';
     const groupHeader = group ? '<tr class="military-group-heading"><th scope="colgroup" colspan="' +
       columns.length + '">' + escapeHtml(group) + '</th></tr>' : '';
-    return '<table class="' + id + '" aria-labelledby="' + id + '" aria-describedby="' + id + '-description"><thead>' +
+    const tableFilter = militaryTable && rows.length && rows.every(row => row[4] === 0) ? withoutVehicle : '';
+    return '<table class="' + id + '"' + tableFilter + ' aria-labelledby="' + id + '" aria-describedby="' + id + '-description"><thead>' +
       groupHeader + '<tr>' + cells(columns, headings, 'th') + '</tr></thead><tbody>' + body +
       (totals ? '<tr class="total-row">' + cells(columns, totals, 'td') + '</tr>' : '') + '</tbody></table>';
   }
@@ -71,8 +75,10 @@
     const grouped = groups.filter(([, rows]) => rows.length > 0).map(([label, rows]) =>
       tableMarkup(id, columns, rows, empty, { group: label + ' · ' + number(rows.length) })
     ).join('');
-    return '<div id="military-order-vehicle">' + grouped + '</div>' +
-      '<div id="military-order-seniority" hidden>' + sorted + '</div>';
+    const noActive = groups[0][1].length === 0
+      ? '<p class="military-filter-empty">Nenhum militar com veículo ativo.</p>' : '';
+    return '<div id="military-order-result"><div id="military-order-vehicle">' + grouped + '</div>' +
+      '<div id="military-order-seniority" hidden>' + sorted + '</div>' + noActive + '</div>';
   }
 
   const styles = `
@@ -116,6 +122,9 @@
     .military-counts th[scope="col"]:nth-child(2) { width: 11%; }
     .military-counts + .military-counts { margin-top: 3mm; }
     .military-counts .military-group-heading th { background: #d3e5ef; color: var(--navy); }
+    #military-order-result [hidden], #military-order-result[data-active-only] [data-without-active-vehicle] { display: none !important; }
+    .military-filter-empty { display: none; margin: 0; padding: 2mm; color: #526873; font-size: 8.45pt; }
+    #military-order-result[data-active-only] .military-filter-empty { display: block; }
     .vehicle-list th:first-child { width: 10%; }
     .vehicle-list th:nth-child(2) { width: 10%; }
     .vehicle-list th:nth-child(3) { width: 22%; }
@@ -156,24 +165,31 @@
       ['Veículos ativos', model.totals.vehicleCount]
     ].map(([label, value]) => '<div><dt>' + label + '</dt><dd>' + number(value) + '</dd></div>').join('') + '</dl>';
 
-    const orderControl = military.length ? '<label>Organizar militares por' +
+    const militaryControls = military.length ? '<label>Organizar militares por' +
       '<select id="military-order"><option value="vehicle">Com veículo primeiro</option>' +
-      '<option value="seniority">Antiguidade</option></select></label>' : '';
+      '<option value="seniority">Antiguidade</option></select></label>' +
+      '<label>Exibir militares<select id="military-filter"><option value="all">Todos</option>' +
+      '<option value="active">Com veículo ativo</option></select></label>' : '';
     return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
       '<title>Veículos particulares – 1º GBM</title><style>' + styles + '</style></head><body>' +
       '<nav class="print-tools" aria-label="Impressão do relatório"><button id="vehicles-print" type="button">Imprimir / Salvar PDF</button>' +
-      '<button id="vehicles-close" type="button">Fechar</button>' + orderControl + '<p>A4 • Retrato</p></nav>' +
+      '<button id="vehicles-close" type="button">Fechar</button>' + militaryControls + '<p>A4 • Retrato</p></nav>' +
       '<div class="report-preview"><main class="report" aria-labelledby="report-title"><header class="report-head">' +
       '<h1 id="report-title">Veículos particulares</h1><p>1º GBM' +
       (model.generatedAt ? ' • Gerado em ' + escapeHtml(model.generatedAt) : '') + '</p></header>' +
       '<div class="report-content">' + totals + summary + counts + listing + '</div></main></div>' +
       '<script>document.getElementById("vehicles-print").addEventListener("click",function(){window.print()});' +
       'document.getElementById("vehicles-close").addEventListener("click",function(){window.close()});' +
-      'document.getElementById("military-order")?.addEventListener("change",function(){' +
-      'const byVehicle=this.value==="vehicle";' +
+      'const order=document.getElementById("military-order");const filter=document.getElementById("military-filter");' +
+      'if(order&&filter){const result=document.getElementById("military-order-result");' +
+      'const description=document.getElementById("military-counts-description");const initial=description.textContent;' +
+      'function updateMilitaryOptions(){const byVehicle=order.value==="vehicle";const activeOnly=filter.value==="active";' +
       'document.getElementById("military-order-vehicle").hidden=!byVehicle;' +
       'document.getElementById("military-order-seniority").hidden=byVehicle;' +
-      '});</script></body></html>';
+      'result.toggleAttribute("data-active-only",activeOnly);' +
+      'description.textContent=activeOnly?"Somente militares com veículo ativo.":initial;}' +
+      'order.addEventListener("change",updateMilitaryOptions);filter.addEventListener("change",updateMilitaryOptions);' +
+      'updateMilitaryOptions();}</script></body></html>';
   }
 
   window.BNXPrivateVehiclesReport = Object.freeze({ render });
