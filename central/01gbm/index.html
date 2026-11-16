@@ -321,6 +321,7 @@
     #vacation-page .vacation-command-search > .field > label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: .04em; }
     #vacation-page .vacation-command-search #vac-search { width: 100%; min-width: 0; min-height: 30px; height: 30px; margin: 0; padding: 3px 0; border: 0; border-radius: 2px; background: transparent; color: #244f69; font: inherit; font-size: 13px; }
     #vacation-page .vacation-command-fields { display: grid; grid-template-columns: 156px; gap: 4px; height: 76px; }
+    #vacation-page .vacation-period-fields { display: flex; gap: 8px; align-items: flex-start; }
     #vacation-page .vacation-command-fields .field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     #vacation-page .vacation-command-fields .field label { margin: 0; color: #607887; font-size: 9px; font-weight: 800; line-height: 10px; }
     #vacation-page .vacation-command-fields select { width: 100%; min-width: 0; min-height: 24px; height: 24px; margin: 0; padding: 2px 5px; border: 1px solid #c8d6df; border-radius: 4px; background: #fff; color: #244f69; font: inherit; font-size: 11px; }
@@ -368,6 +369,9 @@
     .vacation-table { min-width: 1120px; }
     .vacation-wing-status { margin: 8px 13px; color: #58717f; font-size: 12px; }
     .vacation-wing { white-space: nowrap; }
+    #vacation-page tr.vacation-other-reference > td { background-color: #fff9ed; }
+    #vacation-page tr.vacation-other-reference > td:first-child { box-shadow: inset 3px 0 #ad721d; }
+    .vacation-other-reference-label { display: block; margin-top: 2px; color: #775016; font-size: 10px; }
     #vacation-page #vac-table-wrap th[data-vacation-sort] { padding: 0; }
     #vacation-page .vacation-sort-button { display: inline-flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; min-height: 42px; padding: 11px 13px; border: 0; border-radius: 0; color: inherit; background: transparent; font: inherit; text-align: left; }
     #vacation-page .vacation-sort-button:hover { color: #173f5f; background: #eaf2f6; }
@@ -2971,7 +2975,7 @@
     activeTransport(request);
   }});
 })();
-</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=a295acac9dfe1a6b57a2" defer></script><script data-central-ras-direct-recovery>
+</script><style data-central-access-style>#central-access[hidden],#central-session-bar[hidden],#central-workspace[hidden]{display:none!important}#central-access{min-height:100vh;display:grid;place-items:center;padding:24px;background:#eef2f6;color:#16324b;font-family:Arial,sans-serif}.central-access-card{width:min(100%,420px);padding:32px;background:#fff;border:1px solid #d5dee8;border-radius:16px;box-shadow:0 12px 36px #16324b12}.central-access-card h1{font-size:26px;margin:16px 0 8px}.central-access-brand{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:#16324b;color:#fff;font-weight:bold}.central-access-card fieldset{border:0;padding:0;margin:20px 0 0;display:grid;gap:10px}.central-access-card input{box-sizing:border-box;width:100%;min-width:0;padding:12px;border:1px solid #bcc9d8;border-radius:8px;font-size:16px}.central-access-card button,#central-sign-out{padding:12px 16px;border:0;border-radius:8px;background:#16324b;color:#fff;cursor:pointer}.central-access-card button:disabled{opacity:.6}#central-access-status{font-size:14px;line-height:1.5}#central-session-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;background:#16324b;color:#fff;font:13px Arial,sans-serif}#central-sign-out{padding:8px 12px;border:1px solid #fff6}#central-workspace:not([hidden]){display:contents}#central-session-compact-identity{display:none}.sw-compact #central-session-compact-identity:not([hidden]){display:inline;overflow-wrap:anywhere}.sw-compact #central-session-compact-identity:not([hidden])+.central-session-main-label{display:none}</style><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><script id="central-public-config" type="application/json">{"supabaseUrl":"https://ciqctdckqmopdeoigzfz.supabase.co","publishableKey":"sb_publishable_pajRNKn6fzVrI4ppzQBT4Q_yeH7naZT","apiUrl":"https://script.google.com/macros/s/AKfycbzhinhQZLQDd_utwfjPzNg6a_R_vXuNMHbkQXWm9m8AvQL9_6qAXw4YCgqD-TE9hrQc7g/exec","timeoutMs":340000,"rasSqlEnabled":true,"cadastroDirectReadsEnabled":true,"cadastroDirectWritesEnabled":true,"permutasSqlEnabled":true,"scaleSqlEnabled":true,"guardSqlEnabled":true}</script><dialog id="guard-private-vehicles" hidden aria-label="Veículos particulares"></dialog><script src="./private-vehicles.js?v=c8927fe77582eb4cebcd" defer></script><script src="./driver-history-report.js?v=1e1847988d75470c4c46" defer></script><script src="./central-client.js?v=c7dae946f91ed4a41091" defer></script><script data-central-ras-direct-recovery>
 (function(root, factory) {
   'use strict';
   const api = factory();
@@ -3350,13 +3354,13 @@
 
 <style data-guard-sidebar-sections>#guard-nav-section[hidden],#guard-nav-menu>[hidden]{display:none!important}</style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.70.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.71.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair desta aba</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.70.0">v2.70.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.71.0">v2.71.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -4178,9 +4182,14 @@
             <span class="vacation-command-group-label">Localizar</span>
           </div>
           <div class="vacation-command-group">
-            <div class="vacation-command-fields">
-              <div class="field"><label for="vac-year">Ano de referência</label><select id="vac-year"></select></div>
-              <div class="field"><label for="vac-month">Mês de planejamento</label><select id="vac-month"><option value="all">Todos os meses</option><option value="none">Nenhum (sem divisão)</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+            <div class="vacation-period-fields">
+              <div class="vacation-command-fields">
+                <div class="field"><label for="vac-mode">Consultar por</label><select id="vac-mode"><option value="reference">Ano de referência</option><option value="gozo">Ano de gozo</option></select></div>
+              </div>
+              <div class="vacation-command-fields">
+                <div class="field"><label id="vac-year-label" for="vac-year">Ano de referência</label><select id="vac-year"></select></div>
+                <div class="field"><label id="vac-month-label" for="vac-month">Mês de planejamento</label><select id="vac-month"><option value="all">Todos os meses</option><option value="none">Nenhum (sem divisão)</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+              </div>
             </div>
             <span class="vacation-command-group-label">Período</span>
           </div>
@@ -4210,7 +4219,7 @@
           <div class="stat"><span>Dias programados</span><strong id="vac-stat-days">—</strong><small>dos períodos filtrados</small></div>
         </section>
 
-        <div class="vacation-help">No planejamento mensal, cada período pertence a um único mês: aquele que concentra mais dias de férias. Em caso de empate, prevalece o mês de início. Assim, o militar nunca é contado duas vezes. O filtro “Sem lançamento” identifica quem não possui nenhum registro no ano selecionado. Use “Lançar férias” para cadastrar um período ou “Editar período” para corrigi-lo. Os cancelamentos ficam na ficha do militar.</div>
+        <div id="vac-mode-help" class="vacation-help">Na visão por referência, cada período entra no mês em que tem mais dias de férias. Em caso de empate, fica no mês de início. A contagem mensal mostra quantos militares distintos ficam fora da escala.</div>
 
         <div id="vac-military-menu" class="vacation-military-menu" role="group" aria-label="Militares exibidos em Férias" hidden>
           <label><input id="vac-show-officers" type="checkbox" checked> Oficiais</label>
@@ -4224,7 +4233,7 @@
           <div id="vac-loading" class="loading">Consultando os registros de férias…</div>
           <div id="vac-table-wrap" class="table-wrap" hidden>
             <table class="vacation-table">
-              <thead><tr><th scope="col" data-vacation-sort="military" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="group" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="wing" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="wing" aria-label="Ala: ordenar em ordem crescente" title="Vínculo atual no Mapa das Alas"><span>Ala</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="referenceYear" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="referenceYear" aria-label="Referência: ordenar em ordem crescente"><span>Referência</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="planningMonth" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="planningMonth" aria-label="Mês de planejamento: ordenar em ordem crescente"><span>Mês de planejamento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="startDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="startDate" aria-label="Início: ordenar em ordem crescente"><span>Início</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="returnDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="returnDate" aria-label="Retorno: ordenar em ordem crescente"><span>Retorno</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="days" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="situation" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="document" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
+              <thead><tr><th scope="col" data-vacation-sort="military" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="military" aria-label="Militar: ordenar em ordem crescente"><span>Militar</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="group" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="group" aria-label="Efetivo: ordenar em ordem crescente"><span>Efetivo</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="wing" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="wing" aria-label="Ala: ordenar em ordem crescente" title="Vínculo atual no Mapa das Alas"><span>Ala</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="referenceYear" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="referenceYear" aria-label="Referência: ordenar em ordem crescente"><span>Referência</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="planningMonth" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="planningMonth" aria-label="Mês de planejamento: ordenar em ordem crescente"><span id="vac-month-column-label">Mês de planejamento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="startDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="startDate" aria-label="Início: ordenar em ordem crescente"><span>Início</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="returnDate" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="returnDate" aria-label="Retorno: ordenar em ordem crescente"><span>Retorno</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="days" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="days" aria-label="Dias: ordenar em ordem crescente"><span>Dias</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="situation" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="situation" aria-label="Situação: ordenar em ordem crescente"><span>Situação</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col" data-vacation-sort="document" aria-sort="none"><button class="vacation-sort-button" type="button" data-vacation-sort-key="document" aria-label="Documento: ordenar em ordem crescente"><span>Documento</span><span class="vacation-sort-arrow" aria-hidden="true" hidden></span></button></th><th scope="col">Ação</th></tr></thead>
               <tbody id="vac-rows"></tbody>
             </table>
           </div>
@@ -5686,8 +5695,14 @@
       militaryPage: 'military',
       rasNavExpanded: true,
       vacationData: [],
-      vacationYears: [],
       vacationYear: '',
+      vacationDataMode: '',
+      vacationRequest: 0,
+      vacationLoading: false,
+      vacationViews: {
+        reference: { year: '', years: [], month: 'all' },
+        gozo: { year: '', years: [], month: 'all' }
+      },
       vacationMonth: 'all',
       vacationLoaded: false,
       vacationGeneratedAt: '',
@@ -5958,6 +5973,11 @@
       vacationLaunch: document.getElementById('vac-launch'),
       vacationSearch: document.getElementById('vac-search'),
       vacationYear: document.getElementById('vac-year'),
+      vacationMode: document.getElementById('vac-mode'),
+      vacationYearLabel: document.getElementById('vac-year-label'),
+      vacationMonthLabel: document.getElementById('vac-month-label'),
+      vacationMonthColumnLabel: document.getElementById('vac-month-column-label'),
+      vacationModeHelp: document.getElementById('vac-mode-help'),
       vacationMonth: document.getElementById('vac-month'),
       vacationGroup: document.getElementById('vac-group'),
       vacationMilitaryFilter: document.getElementById('vac-military-filter'),
@@ -16995,7 +17015,28 @@
       return flight;
     }
 
+    function vacationViewMode_() {
+      return elements.vacationMode.value === 'gozo' ? 'gozo' : 'reference';
+    }
+
+    function updateVacationModeLabels_() {
+      const gozo = vacationViewMode_() === 'gozo';
+      elements.vacationYearLabel.textContent = gozo ? 'Ano de gozo' : 'Ano de referência';
+      elements.vacationMonthLabel.textContent = gozo ? 'Mês de gozo' : 'Mês de planejamento';
+      elements.vacationMonthColumnLabel.textContent = elements.vacationMonthLabel.textContent;
+      elements.vacationModeHelp.textContent = gozo
+        ? 'Na visão por gozo, cada período aparece nos meses em que há dias de férias. A data de retorno fica fora da contagem. A lista destaca períodos cuja referência é de outro ano e conta cada militar uma vez por mês.'
+        : 'Na visão por referência, cada período entra no mês em que tem mais dias de férias. Em caso de empate, fica no mês de início. A contagem mensal mostra quantos militares distintos ficam fora da escala.';
+    }
+
     function loadVacationData(forceRefresh) {
+      const mode = vacationViewMode_();
+      const selection = state.vacationViews[mode];
+      const year = elements.vacationYear.value || selection.year;
+      const requested = mode === 'gozo' ? (year ? 'gozo:' + year : 'gozo') : year;
+      const request = ++state.vacationRequest;
+      const current = function() { return request === state.vacationRequest && mode === vacationViewMode_(); };
+
       refreshVacationWings_();
       elements.vacationLoading.hidden = false;
       elements.vacationTableWrap.hidden = true;
@@ -17003,47 +17044,109 @@
       elements.vacationError.hidden = true;
       elements.vacationRefresh.disabled = true;
       elements.vacationResultCount.textContent = 'Carregando…';
+      if (mode !== state.vacationDataMode || (year && year !== state.vacationYear)) {
+        ['vac-stat-periods', 'vac-stat-current', 'vac-stat-upcoming', 'vac-stat-days'].forEach(function(id) {
+          document.getElementById(id).textContent = '—';
+        });
+      }
+      state.vacationLoaded = false;
+      state.vacationLoading = true;
+
+      function failed(error) {
+        if (!current()) return;
+        state.vacationLoading = false;
+        elements.vacationLoading.hidden = true;
+        elements.vacationRefresh.disabled = false;
+        elements.vacationError.textContent = 'Não foi possível consultar as férias: ' + (error && error.message ? error.message : error);
+        elements.vacationError.hidden = false;
+        elements.vacationResultCount.textContent = 'Falha na consulta';
+      }
 
       BNX_rpc.run
         .withSuccessHandler(function(payload) {
-          state.vacationData = payload.records || [];
+          if (!current()) return;
+          const validMode = payload && (mode === 'gozo' ? payload.mode === 'gozo' : !payload.mode || payload.mode === 'reference');
+          if (!validMode || !Array.isArray(payload.records)) {
+            failed('A consulta retornou uma visão diferente da selecionada.');
+            return;
+          }
+          state.vacationLoading = false;
+          state.vacationDataMode = mode;
+          state.vacationData = payload.records;
           refreshAdministrativeDashboardFilter(elements.vacationGroup, state.vacationData);
-          state.vacationYears = payload.years || [];
-          state.vacationYear = String(payload.selectedYear || '');
+          selection.years = Array.isArray(payload.years) ? payload.years : [];
+          selection.year = String(payload.selectedYear || '');
+          state.vacationYear = selection.year;
           state.vacationGeneratedAt = payload.generatedAt || '';
           state.vacationLoaded = true;
           updateVacationYearOptions();
+          elements.vacationLoading.hidden = true;
+          elements.vacationRefresh.disabled = false;
           renderVacations();
-          elements.vacationLoading.hidden = true;
-          elements.vacationRefresh.disabled = false;
-          showToast('Férias atualizadas em ' + state.vacationGeneratedAt);
+          if (state.page === 'vacations') showToast('Férias atualizadas em ' + state.vacationGeneratedAt);
         })
-        .withFailureHandler(function(error) {
-          elements.vacationLoading.hidden = true;
-          elements.vacationRefresh.disabled = false;
-          elements.vacationError.textContent = 'Não foi possível consultar as férias: ' + (error && error.message ? error.message : error);
-          elements.vacationError.hidden = false;
-          elements.vacationResultCount.textContent = 'Falha na consulta';
-        })
-        .getVacationDashboard(elements.vacationYear.value || state.vacationYear, Boolean(forceRefresh));
+        .withFailureHandler(failed)
+        .getVacationDashboard(requested, Boolean(forceRefresh));
     }
 
     function updateVacationYearOptions() {
-      const years = state.vacationYears.length ? state.vacationYears : [Number(state.vacationYear) || new Date().getFullYear()];
+      const selection = state.vacationViews[vacationViewMode_()];
+      const years = selection.years.slice();
+      if (selection.year && !years.some(function(year) { return String(year) === selection.year; })) {
+        years.push(selection.year);
+        years.sort(function(a, b) { return Number(b) - Number(a); });
+      }
       elements.vacationYear.innerHTML = years.map(function(year) {
         return '<option value="' + escapeHtml(year) + '">' + escapeHtml(year) + '</option>';
       }).join('');
-      elements.vacationYear.value = state.vacationYear;
+      elements.vacationYear.value = selection.year;
     }
 
-    function updateVacationStats(records) {
-      const activeRecords = records.filter(function(record) { return record.periodStatusKey !== 'cancelled' && record.periodStatusKey !== 'missing'; });
-      const militaryRgs = {};
-      activeRecords.forEach(function(record) { militaryRgs[record.rg] = true; });
-      document.getElementById('vac-stat-periods').textContent = Object.keys(militaryRgs).length;
+    function vacationCountsForScale_(record) {
+      return ['current', 'upcoming', 'completed'].includes(record.periodStatusKey);
+    }
+
+    function vacationGozoMonths_(year, selectedMonth) {
+      if (!/^[1-9]\d{3}$/.test(year)) return [];
+      const monthFormat = new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' });
+      return Array.from({ length: 12 }, function(_, index) {
+        const start = Date.UTC(Number(year), index, 1);
+        const label = monthFormat.format(start);
+        return {
+          month: index + 1,
+          key: year + '-' + String(index + 1).padStart(2, '0'),
+          label: label.charAt(0).toUpperCase() + label.slice(1) + '/' + year,
+          start: start,
+          end: Date.UTC(Number(year), index + 1, 1)
+        };
+      }).filter(function(month) {
+        return selectedMonth === 'all' || selectedMonth === 'none' || month.month === Number(selectedMonth);
+      });
+    }
+
+    function vacationGozoSegments_(record, months) {
+      const start = rasOpportunityDateParts_(record.startDate);
+      const end = rasOpportunityDateParts_(record.returnDate);
+      if (!start || !end || start.sortDate >= end.sortDate) return [];
+      const from = Date.parse(start.iso);
+      const until = Date.parse(end.iso);
+      return months.flatMap(function(month) {
+        const days = (Math.min(until, month.end) - Math.max(from, month.start)) / 86400000;
+        return days > 0 ? [{ key: month.key, label: month.label, days: days }] : [];
+      });
+    }
+
+    function updateVacationStats(records, gozoSegments) {
+      const activeRecords = records.filter(vacationCountsForScale_);
+      const militaryRgs = new Set(activeRecords.map(function(record) { return canonicalMilitaryRg(record.rg); }).filter(Boolean));
+      document.getElementById('vac-stat-periods').textContent = militaryRgs.size;
       document.getElementById('vac-stat-current').textContent = activeRecords.filter(function(record) { return record.periodStatusKey === 'current'; }).length;
       document.getElementById('vac-stat-upcoming').textContent = activeRecords.filter(function(record) { return record.periodStatusKey === 'upcoming'; }).length;
-      document.getElementById('vac-stat-days').textContent = activeRecords.reduce(function(total, record) { return total + Number(record.days || 0); }, 0);
+      document.getElementById('vac-stat-days').textContent = activeRecords.reduce(function(total, record) {
+        return total + (gozoSegments
+          ? gozoSegments.get(record).reduce(function(days, segment) { return days + segment.days; }, 0)
+          : Number(record.days || 0));
+      }, 0);
     }
 
     // Férias owns this detached presentation order, not the shared records.
@@ -17084,7 +17187,7 @@
         return date ? date.sortDate : null;
       }
       if (key === 'planningMonth') {
-        const monthKey = String(record.planningMonthKey || '').trim();
+        const monthKey = String(record.vacationDisplayMonth?.key || record.planningMonthKey || '').trim();
         const exact = /^\d{4}-(?:0[1-9]|1[0-2])$/.test(monthKey) ? rasOpportunityDateParts_(monthKey + '-01') : null;
         if (exact) return exact.sortDate;
         const year = vacationSortNumber_(record.planningYear), month = vacationSortNumber_(record.planningMonth);
@@ -17122,13 +17225,17 @@
         header.setAttribute('aria-sort', active ? (ascending ? 'ascending' : 'descending') : 'none');
         arrow.textContent = active ? (ascending ? '↑' : '↓') : '';
         arrow.hidden = !active;
-        const hint = vacationSortColumns_[key] + (active ? ': ordem ' + (ascending ? 'crescente' : 'decrescente') + '. Clique para ordenar em ordem ' + (ascending ? 'decrescente' : 'crescente') : ': ordenar em ordem crescente');
+        const label = key === 'planningMonth' ? elements.vacationMonthColumnLabel.textContent : vacationSortColumns_[key];
+        const hint = label + (active ? ': ordem ' + (ascending ? 'crescente' : 'decrescente') + '. Clique para ordenar em ordem ' + (ascending ? 'decrescente' : 'crescente') : ': ordenar em ordem crescente');
         button.setAttribute('aria-label', hint);
         button.setAttribute('title', hint);
       });
       document.getElementById('vac-sort-note').hidden = !vacationColumnSort_.key;
-      document.getElementById('vac-sort-note-label').textContent = vacationColumnSort_.key
-        ? 'Ordenação por ' + vacationSortColumns_[vacationColumnSort_.key] + ' • exibição sem divisão por mês.' : '';
+      const key = vacationColumnSort_.key;
+      const label = key === 'planningMonth' ? elements.vacationMonthColumnLabel.textContent : vacationSortColumns_[key];
+      const grouped = vacationViewMode_() === 'gozo' && elements.vacationMonth.value !== 'none' && elements.vacationStatus.value !== 'missing';
+      document.getElementById('vac-sort-note-label').textContent = key
+        ? 'Ordenação por ' + label + (grouped ? ' • dentro de cada mês.' : ' • exibição sem divisão por mês.') : '';
     }
 
     function initializeVacationSort_() {
@@ -17217,89 +17324,122 @@
       window.addEventListener('resize', positionVacationMilitaryMenu_);
     }
 
+    function compareVacationSeniority_(a, b) {
+      const first = vacationSortNumber_(a.seniorityOrder) ?? 999999;
+      const second = vacationSortNumber_(b.seniorityOrder) ?? 999999;
+      return first - second || vacationSortCollator_.compare(a.military || '', b.military || '');
+    }
+
     function renderVacations() {
+      const mode = vacationViewMode_();
+      if (state.vacationLoading || state.vacationDataMode !== mode || elements.vacationYear.value !== state.vacationYear) return;
+
       elements.vacationWingStatus.hidden = !vacationWingRead_.failed;
       const term = normalize(elements.vacationSearch.value);
-      let filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
+      const year = state.vacationYear;
+      const month = elements.vacationMonth.value;
+      const status = elements.vacationStatus.value;
+      const gozo = mode === 'gozo';
+      const monthSegments = gozo ? new Map() : null;
+      const calendarMonths = gozo ? vacationGozoMonths_(year, month) : [];
+      const filtered = state.vacationData.map(applyConfirmedLeaveEdit_).filter(function(record) {
         const military = cadastroMilitaryByRg(record.rg);
         if (!military || isFormerMilitary(military) || !matchesVacationMilitaryFilter_(military)) return false;
-        if (record.confirmedEditPending && String(record.referenceYear) !== String(elements.vacationYear.value || state.vacationYear)) return false;
-        const matchesText = !term || normalize([
-          record.military,
-          record.fullName,
-          record.rg,
-          record.note,
-          record.bulletin
-        ].join(' ')).includes(term);
-        const matchesMonth = elements.vacationMonth.value === 'all' || elements.vacationMonth.value === 'none' || Number(record.planningMonth) === Number(elements.vacationMonth.value);
-        const matchesGroup = elements.vacationGroup.value === 'all' || record.group === elements.vacationGroup.value;
-        const matchesStatus = elements.vacationStatus.value === 'all'
-          ? (record.periodStatusKey !== 'missing' || elements.vacationMonth.value === 'all')
-          : record.periodStatusKey === elements.vacationStatus.value;
-        return matchesText && matchesMonth && matchesGroup && matchesStatus;
+        if (!gozo && record.confirmedEditPending && String(record.referenceYear) !== year) return false;
+        const missing = record.periodStatusKey === 'missing';
+        if (status === 'all' ? (missing && month !== 'all') : record.periodStatusKey !== status) return false;
+        if (elements.vacationGroup.value !== 'all' && record.group !== elements.vacationGroup.value) return false;
+        if (term && !normalize([record.military, record.fullName, record.rg, record.note, record.bulletin].join(' ')).includes(term)) return false;
+
+        if (!gozo) return month === 'all' || month === 'none' || Number(record.planningMonth) === Number(month);
+        if (missing) return month === 'all' || month === 'none';
+        const segments = vacationGozoSegments_(record, calendarMonths);
+        if (!segments.length) return false;
+        monthSegments.set(record, segments);
+        return true;
       });
 
-      if (!vacationColumnSort_.key && elements.vacationMonth.value === 'none') {
-        filtered.sort(function(a, b) {
-          const seniorityDiff = Number(a.seniorityOrder || 999999) - Number(b.seniorityOrder || 999999);
-          if (seniorityDiff !== 0) return seniorityDiff;
-          return String(a.military || '').localeCompare(String(b.military || ''), 'pt-BR');
-        });
-      } else if (!vacationColumnSort_.key && filtered.some(function(record) { return record.confirmedEditPending; })) {
-        // A confirmed date correction may move one period to another month
-        // before IMPORTRANGE catches up. Keep each monthly section contiguous.
-        filtered.sort(function(a, b) { return String(a.planningMonthKey || '9999-99').localeCompare(String(b.planningMonthKey || '9999-99')); });
-      }
-
-      if (vacationColumnSort_.key) filtered = vacationSortedRows_(filtered, vacationColumnSort_);
-      updateVacationSortHeaders_();
-      updateVacationStats(filtered);
-      const monthCounts = {};
-      filtered.forEach(function(record) {
-        monthCounts[record.planningMonthKey] = (monthCounts[record.planningMonthKey] || 0) + 1;
-      });
-      let activeMonthKey = '';
-      const rows = [];
-      const showingMissing = elements.vacationStatus.value === 'missing';
-      filtered.forEach(function(record) {
-        if (!vacationColumnSort_.key && !showingMissing && elements.vacationMonth.value !== 'none' && record.planningMonthKey !== activeMonthKey) {
-          activeMonthKey = record.planningMonthKey;
-          const count = monthCounts[activeMonthKey] || 0;
-          const groupCountLabel = record.periodStatusKey === 'missing'
-            ? (count === 1 ? ' militar' : ' militares')
-            : (count === 1 ? ' período' : ' períodos');
-          rows.push('<tr class="vacation-month-group"><td colspan="11">' + escapeHtml(record.planningMonthLabel) + ' • ' + escapeHtml(count) + groupCountLabel + '</td></tr>');
+      const showingMissing = status === 'missing';
+      const groupByMonth = !showingMissing && month !== 'none' && (gozo || !vacationColumnSort_.key);
+      const display = gozo ? filtered.flatMap(function(record) {
+        const segments = monthSegments.get(record);
+        if (!segments) return [record];
+        if (groupByMonth || segments.length === 1) {
+          return segments.map(function(segment) {
+            return Object.assign({}, record, { vacationDisplayMonth: segment });
+          });
         }
-        const documentText = [record.bulletin, record.note].filter(Boolean).join(' — ');
-        if (record.periodStatusKey === 'missing') {
-          rows.push('<tr>' +
+        const first = segments[0];
+        const last = segments[segments.length - 1];
+        return [Object.assign({}, record, { vacationDisplayMonth: {
+          key: first.key,
+          label: first.label + ' a ' + last.label,
+          days: segments.reduce(function(sum, segment) { return sum + segment.days; }, 0),
+          multiple: true
+        } })];
+      }) : filtered;
+
+      const groups = new Map();
+      display.forEach(function(record) {
+        const key = groupByMonth ? (record.vacationDisplayMonth?.key || record.planningMonthKey || '') : '';
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(record);
+      });
+      updateVacationSortHeaders_();
+      updateVacationStats(filtered, monthSegments);
+
+      const rows = [];
+      const groupKeys = Array.from(groups.keys()).sort();
+      groupKeys.forEach(function(key) {
+        const group = groups.get(key);
+        const ordered = vacationColumnSort_.key ? vacationSortedRows_(group, vacationColumnSort_) : group.sort(compareVacationSeniority_);
+        if (groupByMonth) {
+          const first = ordered[0];
+          const missing = first.periodStatusKey === 'missing';
+          const militaryCount = new Set(ordered.filter(function(record) {
+            return missing || vacationCountsForScale_(record);
+          }).map(function(record) { return canonicalMilitaryRg(record.rg); }).filter(Boolean)).size;
+          const monthLabel = first.vacationDisplayMonth?.label || first.planningMonthLabel;
+          const label = militaryCount === 1 ? ' militar' : ' militares';
+          const suffix = missing ? ' sem lançamento' : ' fora da escala';
+          rows.push('<tr class="vacation-month-group"><td colspan="11">' + escapeHtml(monthLabel) + ' • ' + militaryCount + label + suffix + '</td></tr>');
+        }
+        ordered.forEach(function(record) {
+          const documentText = [record.bulletin, record.note].filter(Boolean).join(' — ');
+          if (record.periodStatusKey === 'missing') {
+            rows.push('<tr>' +
+              '<td><span class="military-name">' + escapeHtml(record.military) + '</span><span class="military-full">RG ' + escapeHtml(record.rg) + (record.qbmp ? ' • ' + escapeHtml(record.qbmp) : '') + '</span></td>' +
+              '<td>' + escapeHtml(record.group || '—') + '</td>' +
+              '<td class="vacation-wing">' + escapeHtml(vacationWingLabel_(record)) + '</td>' +
+              '<td>' + escapeHtml(record.referenceYear || '—') + '</td>' +
+              '<td>—</td>' +
+              '<td><span class="military-name">Nenhum período registrado</span></td>' +
+              '<td>—</td>' +
+              '<td>—</td>' +
+              '<td><span class="vacation-period missing">SEM LANÇAMENTO</span></td>' +
+              '<td>—</td>' +
+              '<td><div class="vacation-actions"><button type="button" data-vacation-rg="' + escapeHtml(record.rg) + '">Abrir ficha</button></div></td>' +
+              '</tr>');
+            return;
+          }
+          const otherReference = gozo && String(record.referenceYear || '') !== year;
+          const displayMonth = record.vacationDisplayMonth;
+          const monthLabel = displayMonth?.label || record.planningMonthLabel || '—';
+          const monthDays = displayMonth?.days ?? (record.planningDays || 0);
+          rows.push('<tr' + (otherReference ? ' class="vacation-other-reference"' : '') + '>' +
             '<td><span class="military-name">' + escapeHtml(record.military) + '</span><span class="military-full">RG ' + escapeHtml(record.rg) + (record.qbmp ? ' • ' + escapeHtml(record.qbmp) : '') + '</span></td>' +
             '<td>' + escapeHtml(record.group || '—') + '</td>' +
             '<td class="vacation-wing">' + escapeHtml(vacationWingLabel_(record)) + '</td>' +
-            '<td>' + escapeHtml(record.referenceYear || '—') + '</td>' +
-            '<td>—</td>' +
-            '<td><span class="military-name">Nenhum período registrado</span></td>' +
-            '<td>—</td>' +
-            '<td>—</td>' +
-            '<td><span class="vacation-period missing">SEM LANÇAMENTO</span></td>' +
-            '<td>—</td>' +
-            '<td><div class="vacation-actions"><button type="button" data-vacation-rg="' + escapeHtml(record.rg) + '">Abrir ficha</button></div></td>' +
+            '<td>' + escapeHtml(record.referenceYear || '—') + (otherReference ? '<small class="vacation-other-reference-label">Referência de outro ano</small>' : '') + '</td>' +
+            '<td><span class="planning-month">' + escapeHtml(monthLabel) + '</span><span class="planning-days">' + escapeHtml(monthDays) + ' de ' + escapeHtml(record.days || 0) + (displayMonth?.multiple ? ' dias no período exibido' : ' dias neste mês') + '</span></td>' +
+            '<td><span class="military-name">' + escapeHtml(record.startDate) + '</span><span class="vacation-note">' + escapeHtml(record.confirmedEditPending ? 'Alteração salva • aguardando atualização da consulta' : (record.situation || '')) + '</span></td>' +
+            '<td><span class="military-name">' + escapeHtml(record.returnDate) + '</span></td>' +
+            '<td>' + escapeHtml(record.days || 0) + '</td>' +
+            '<td><span class="vacation-period ' + escapeHtml(record.periodStatusKey) + '">' + escapeHtml(record.periodStatus) + '</span></td>' +
+            '<td>' + escapeHtml(documentText || '—') + '</td>' +
+            '<td><div class="vacation-actions">' + leaveEditActionHtml_(record, record.rg) + '<button type="button" data-vacation-rg="' + escapeHtml(record.rg) + '">Abrir ficha</button></div></td>' +
             '</tr>');
-          return;
-        }
-        rows.push('<tr>' +
-          '<td><span class="military-name">' + escapeHtml(record.military) + '</span><span class="military-full">RG ' + escapeHtml(record.rg) + (record.qbmp ? ' • ' + escapeHtml(record.qbmp) : '') + '</span></td>' +
-          '<td>' + escapeHtml(record.group || '—') + '</td>' +
-          '<td class="vacation-wing">' + escapeHtml(vacationWingLabel_(record)) + '</td>' +
-          '<td>' + escapeHtml(record.referenceYear || '—') + '</td>' +
-          '<td><span class="planning-month">' + escapeHtml(record.planningMonthLabel || '—') + '</span><span class="planning-days">' + escapeHtml(record.planningDays || 0) + ' de ' + escapeHtml(record.days || 0) + ' dias neste mês</span></td>' +
-          '<td><span class="military-name">' + escapeHtml(record.startDate) + '</span><span class="vacation-note">' + escapeHtml(record.confirmedEditPending ? 'Alteração salva • aguardando atualização da consulta' : (record.situation || '')) + '</span></td>' +
-          '<td><span class="military-name">' + escapeHtml(record.returnDate) + '</span></td>' +
-          '<td>' + escapeHtml(record.days || 0) + '</td>' +
-          '<td><span class="vacation-period ' + escapeHtml(record.periodStatusKey) + '">' + escapeHtml(record.periodStatus) + '</span></td>' +
-          '<td>' + escapeHtml(documentText || '—') + '</td>' +
-          '<td><div class="vacation-actions">' + leaveEditActionHtml_(record, record.rg) + '<button type="button" data-vacation-rg="' + escapeHtml(record.rg) + '">Abrir ficha</button></div></td>' +
-          '</tr>');
+        });
       });
       elements.vacationRows.innerHTML = rows.join('');
 
@@ -19869,13 +20009,20 @@
     initializeVacationSort_();
     bindVacationMilitaryFilter_();
     elements.vacationSearch.addEventListener('input', renderVacations);
-    [elements.vacationMonth, elements.vacationGroup, elements.vacationStatus].forEach(function(element) {
+    [elements.vacationGroup, elements.vacationStatus].forEach(function(element) {
       element.addEventListener('change', renderVacations);
     });
-    elements.vacationYear.addEventListener('change', function() {
-      state.vacationYear = elements.vacationYear.value;
+    elements.vacationMonth.addEventListener('change', function() {
+      state.vacationViews[vacationViewMode_()].month = elements.vacationMonth.value;
+      renderVacations();
+    });
+    elements.vacationMode.addEventListener('change', function() {
+      elements.vacationMonth.value = state.vacationViews[vacationViewMode_()].month;
+      updateVacationYearOptions();
+      updateVacationModeLabels_();
       loadVacationData(false);
     });
+    elements.vacationYear.addEventListener('change', function() { loadVacationData(false); });
     elements.vacationRefresh.addEventListener('click', function() { loadVacationData(true); });
     initializeLeaveTableSort_();
     elements.leaveSearch.addEventListener('input', renderOtherLeaves);
