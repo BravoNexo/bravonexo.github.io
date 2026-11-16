@@ -63,6 +63,31 @@
       '<p class="section-description" id="' + id + '-description">' + description + '</p>' + content + '</section>';
   }
 
+  function forecastScenario(cars, motorcycles) {
+    return number(cars) + (cars === 1 ? ' carro' : ' carros') + ' + ' +
+      number(motorcycles) + (motorcycles === 1 ? ' moto' : ' motos');
+  }
+
+  function vehicleForecast(forecast, unavailable) {
+    if (unavailable === true) {
+      return reportSection('vehicle-forecast', 'Previsão de veículos', 'Não foi possível consultar a previsão de veículos.', '');
+    }
+    if (!Array.isArray(forecast)) return '';
+    const columns = [['Grupo', 'align-label'], ['Militares', 'number'], ['Máximo de carros', 'forecast-scenario'],
+      ['Mínimo de carros', 'forecast-scenario']];
+    const hasPending = forecast.some(group => group.pending > 0);
+    if (hasPending) columns.push(['A conferir', 'number']);
+    const rows = forecast.map(group => {
+      const row = [group.label, group.people, forecastScenario(group.maxCars, group.maxMotorcycles),
+        forecastScenario(group.minCars, group.minMotorcycles)];
+      if (hasPending) row.push(group.pending ?? 0);
+      return row;
+    });
+    return reportSection('vehicle-forecast', 'Previsão de veículos',
+      'Até um veículo por militar por dia. Os cenários consideram os tipos cadastrados.',
+      tableMarkup('vehicle-forecast', columns, rows, 'Nenhuma previsão disponível.'));
+  }
+
   function militaryCounts(columns, military) {
     const id = 'military-counts';
     const empty = 'Nenhum militar encontrado.';
@@ -118,6 +143,9 @@
     .total-row td { border-top: .45mm solid #b8cbd4; background: #e8f0f4; font-weight: 700; }
     td.empty-row, .empty-row td { color: #526873; text-align: center; }
     .wing-summary th:first-child { width: 24%; }
+    .vehicle-forecast th:first-child { width: 24%; }
+    .forecast-scenario { text-align: right; font-variant-numeric: tabular-nums; }
+    td.forecast-scenario { white-space: nowrap; }
     .military-counts th[scope="col"]:first-child { width: 38%; }
     .military-counts th[scope="col"]:nth-child(2) { width: 11%; }
     .military-counts + .military-counts { margin-top: 3mm; }
@@ -177,7 +205,7 @@
       '<div class="report-preview"><main class="report" aria-labelledby="report-title"><header class="report-head">' +
       '<h1 id="report-title">Veículos particulares</h1><p>1º GBM' +
       (model.generatedAt ? ' • Gerado em ' + escapeHtml(model.generatedAt) : '') + '</p></header>' +
-      '<div class="report-content">' + totals + summary + counts + listing + '</div></main></div>' +
+      '<div class="report-content">' + totals + summary + vehicleForecast(model.forecast, model.forecastUnavailable) + counts + listing + '</div></main></div>' +
       '<script>document.getElementById("vehicles-print").addEventListener("click",function(){window.print()});' +
       'document.getElementById("vehicles-close").addEventListener("click",function(){window.close()});' +
       'const order=document.getElementById("military-order");const filter=document.getElementById("military-filter");' +

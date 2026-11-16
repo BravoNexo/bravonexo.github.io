@@ -1,7 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.BNXPrivateVehiclesV1=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
 const AREA='guarda.cadastros',UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const RPC=Object.freeze({forecast:'central_private_vehicles_forecast_v1',list:'central_private_vehicles_list_v3',roster:'central_private_vehicles_roster_v2',military:'central_private_vehicle_military_search_v2',save:'central_private_vehicle_save_v2',receipt:'central_private_vehicle_receipt_v2',preview:'central_private_vehicles_preview_v2',import:'central_private_vehicles_import_v2'});
+const RPC=Object.freeze({forecast:'central_private_vehicles_forecast_v1',reportForecast:'central_private_vehicles_forecast_report_v1',list:'central_private_vehicles_list_v3',roster:'central_private_vehicles_roster_v2',military:'central_private_vehicle_military_search_v2',save:'central_private_vehicle_save_v2',receipt:'central_private_vehicle_receipt_v2',preview:'central_private_vehicles_preview_v2',import:'central_private_vehicles_import_v2'});
 function error(message,code='INVALID_DATA',uncertain=false){return Object.assign(new Error(message),{code,uncertain});}
 function fail(){throw error('Não foi possível conferir os dados dos veículos.');}
 function exact(o,keys){if(!o||typeof o!=='object'||Array.isArray(o)||Object.keys(o).length!==keys.length||keys.some(k=>!Object.prototype.hasOwnProperty.call(o,k)))fail();}
@@ -47,12 +47,27 @@ function rosterDto(value) {
   }
   return value;
 }
+const reportForecastLabels = Object.freeze({
+  ala1: 'Ala 1', ala2: 'Ala 2', ala3: 'Ala 3', ala4: 'Ala 4', expediente: 'Expediente', sem_ala: 'Sem ala no Mapa'
+});
+function reportForecastDto(value) {
+  exact(value, ['version', 'kind', 'area', 'groups']);
+  const groups = Object.keys(reportForecastLabels);
+  if (value.version !== 1 || value.kind !== 'CENTRAL_PRIVATE_VEHICLES_REPORT_FORECAST' || value.area !== AREA ||
+      !Array.isArray(value.groups) || value.groups.length !== groups.length) fail();
+  value.groups.forEach((row, index) => {
+    const {group, ...metrics} = row ?? {};
+    if (group !== groups[index]) fail();
+    forecastMetrics(metrics);
+  });
+  return value;
+}
 function createClient(options){const url=new URL(options.supabaseUrl);if(url.protocol!=='https:'||!/^\w{20}\.supabase\.co$/.test(url.hostname)||url.pathname!=='/'||url.search||url.hash||url.username||url.password)fail();str(options.publishableKey,2000);if(options.timeoutMs!==undefined&&(!Number.isFinite(options.timeoutMs)||options.timeoutMs<1||options.timeoutMs>60000))fail();const fetchImpl=options.fetchImpl||globalThis.fetch;if(typeof fetchImpl!=='function'||['getAccessToken','getGeneration','getActorId','canView','canEdit'].some(k=>typeof options[k]!=='function'))fail();let disposed=false;const controls=new Set();
-async function request(name,params={},write=false,signal){if(disposed||!Object.prototype.hasOwnProperty.call(RPC,name))fail();const who=options.getActorId(),generation=options.getGeneration();id(who);const permitted=()=>!disposed&&options.getActorId()===who&&options.getGeneration()===generation&&options.canView()===true&&(name!=='roster'||options.canViewRoster?.()===true)&&(!write||options.canEdit()===true);if(!permitted())throw error('Seu acesso a esta área não está liberado.','ACCESS_DENIED');let sent=false,reader=null,rejectInterrupted;const interrupted=new Promise((resolve,reject)=>{rejectInterrupted=reject;});const control=new AbortController();controls.add(control);const interruptedByAbort=()=>rejectInterrupted(error('A operação foi interrompida. Seus dados foram preservados.','SESSION_CHANGED',write&&sent));control.signal.addEventListener('abort',interruptedByAbort,{once:true});const abort=()=>control.abort();if(signal?.aborted)control.abort();else signal?.addEventListener('abort',abort,{once:true});const timer=setTimeout(abort,options.timeoutMs||30000),wait=promise=>Promise.race([promise,interrupted]);
+async function request(name,params={},write=false,signal){if(disposed||!Object.prototype.hasOwnProperty.call(RPC,name))fail();const who=options.getActorId(),generation=options.getGeneration();id(who);const permitted=()=>!disposed&&options.getActorId()===who&&options.getGeneration()===generation&&options.canView()===true&&(!['roster','reportForecast'].includes(name)||options.canViewRoster?.()===true)&&(!write||options.canEdit()===true);if(!permitted())throw error('Seu acesso a esta área não está liberado.','ACCESS_DENIED');let sent=false,reader=null,rejectInterrupted;const interrupted=new Promise((resolve,reject)=>{rejectInterrupted=reject;});const control=new AbortController();controls.add(control);const interruptedByAbort=()=>rejectInterrupted(error('A operação foi interrompida. Seus dados foram preservados.','SESSION_CHANGED',write&&sent));control.signal.addEventListener('abort',interruptedByAbort,{once:true});const abort=()=>control.abort();if(signal?.aborted)control.abort();else signal?.addEventListener('abort',abort,{once:true});const timer=setTimeout(abort,options.timeoutMs||30000),wait=promise=>Promise.race([promise,interrupted]);
 const check=()=>{if(control.signal.aborted||!permitted())throw error('A consulta foi interrompida. Seus dados foram preservados.','SESSION_CHANGED',write&&sent);};
-try{const token=await wait(options.getAccessToken());check();if(typeof token!=='string'||token.length<16||token.length>16384||!/^[A-Za-z0-9_.-]+$/.test(token))throw error('Entre novamente para conferir sua sessão.','AUTH_REQUIRED');const isPost=['save','preview','import'].includes(name),target=new URL('/rest/v1/rpc/'+RPC[name],url);if(!isPost)for(const[k,v]of Object.entries(params))if(v!==null&&v!==undefined&&v!=='')target.searchParams.set(k,String(v));const headers={apikey:options.publishableKey,Authorization:'Bearer '+token,Accept:'application/json','Accept-Profile':'public'};if(isPost){headers['Content-Type']='application/json';headers['Content-Profile']='public';}check();sent=true;const response=await wait(fetchImpl(target.href,{method:isPost?'POST':'GET',headers,...(isPost?{body:JSON.stringify(params)}:{}),signal:control.signal,credentials:'omit',redirect:'error',cache:'no-store',referrerPolicy:'no-referrer'}));check();if(!response.ok){response.body?.cancel?.().catch(()=>{});throw error([401,403].includes(response.status)?'Não foi possível autorizar esta operação. Confira seu acesso à área.':'Não foi possível concluir a operação. Seus dados foram mantidos.','HTTP_'+response.status,write&&![400,401,403,409,422].includes(response.status));}if(!/^application\/json(?:;|$)/i.test(response.headers.get('Content-Type')||'')||!response.body)fail();reader=response.body.getReader();const decoder=new TextDecoder('utf-8',{fatal:true});let bytes=0,text='';while(true){const part=await wait(reader.read());check();if(part.done)break;bytes+=part.value.byteLength;if(bytes>2000000)throw error('A resposta excedeu o limite. Restrinja a busca.','RESPONSE_LIMIT',write&&sent);text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();check();const raw=JSON.parse(text),validate=name==='list'?list:name==='military'?militaryResult:name==='preview'?preview:name==='forecast'?forecastDto:name==='roster'?rosterDto:receipt;const result=name==='receipt'&&raw===null?null:validate(raw);check();return result;
+try{const token=await wait(options.getAccessToken());check();if(typeof token!=='string'||token.length<16||token.length>16384||!/^[A-Za-z0-9_.-]+$/.test(token))throw error('Entre novamente para conferir sua sessão.','AUTH_REQUIRED');const isPost=['save','preview','import'].includes(name),target=new URL('/rest/v1/rpc/'+RPC[name],url);if(!isPost)for(const[k,v]of Object.entries(params))if(v!==null&&v!==undefined&&v!=='')target.searchParams.set(k,String(v));const headers={apikey:options.publishableKey,Authorization:'Bearer '+token,Accept:'application/json','Accept-Profile':'public'};if(isPost){headers['Content-Type']='application/json';headers['Content-Profile']='public';}check();sent=true;const response=await wait(fetchImpl(target.href,{method:isPost?'POST':'GET',headers,...(isPost?{body:JSON.stringify(params)}:{}),signal:control.signal,credentials:'omit',redirect:'error',cache:'no-store',referrerPolicy:'no-referrer'}));check();if(!response.ok){response.body?.cancel?.().catch(()=>{});throw error([401,403].includes(response.status)?'Não foi possível autorizar esta operação. Confira seu acesso à área.':'Não foi possível concluir a operação. Seus dados foram mantidos.','HTTP_'+response.status,write&&![400,401,403,409,422].includes(response.status));}if(!/^application\/json(?:;|$)/i.test(response.headers.get('Content-Type')||'')||!response.body)fail();reader=response.body.getReader();const decoder=new TextDecoder('utf-8',{fatal:true});let bytes=0,text='';while(true){const part=await wait(reader.read());check();if(part.done)break;bytes+=part.value.byteLength;if(bytes>2000000)throw error('A resposta excedeu o limite. Restrinja a busca.','RESPONSE_LIMIT',write&&sent);text+=decoder.decode(part.value,{stream:true});}text+=decoder.decode();check();const raw=JSON.parse(text),validate=name==='list'?list:name==='military'?militaryResult:name==='preview'?preview:name==='forecast'?forecastDto:name==='reportForecast'?reportForecastDto:name==='roster'?rosterDto:receipt;const result=name==='receipt'&&raw===null?null:validate(raw);check();return result;
 }catch(e){if(e?.code){if(write&&sent&&!/^HTTP_(400|401|403|409|422)$/.test(e.code))e.uncertain=true;throw e;}throw error(write&&sent?'Ainda não foi possível confirmar o envio. Use Consultar resultado; nenhum envio será repetido automaticamente.':'Não foi possível consultar agora. Seus filtros e ajustes foram mantidos.','REQUEST_FAILED',write&&sent);}finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);controls.delete(control);control.signal.removeEventListener('abort',interruptedByAbort);try{Promise.resolve(reader?.cancel()).catch(()=>{});reader?.releaseLock();}catch{}}}
-return Object.freeze({roster:signal=>request('roster',{},false,signal),forecast:(ala=null,signal)=>request('forecast',{p_ala:forecastWing(ala)},false,signal),list:(filters,signal)=>request('list',listFilterArgs(filters),false,signal),military:(term,signal)=>request('military',{p_busca:term},false,signal),save:(requestId,payload,signal)=>request('save',{p_request:id(requestId),p_payload:payload},true,signal),preview:(rows,signal)=>request('preview',{p_rows:rows},false,signal),import:(requestId,rows,signal)=>request('import',{p_request:id(requestId),p_rows:rows},true,signal),receipt:(requestId,signal)=>request('receipt',{p_request:id(requestId)},false,signal),dispose(){disposed=true;controls.forEach(x=>x.abort());controls.clear();}});}
+return Object.freeze({roster:signal=>request('roster',{},false,signal),reportForecast:signal=>request('reportForecast',{},false,signal),forecast:(ala=null,signal)=>request('forecast',{p_ala:forecastWing(ala)},false,signal),list:(filters,signal)=>request('list',listFilterArgs(filters),false,signal),military:(term,signal)=>request('military',{p_busca:term},false,signal),save:(requestId,payload,signal)=>request('save',{p_request:id(requestId),p_payload:payload},true,signal),preview:(rows,signal)=>request('preview',{p_rows:rows},false,signal),import:(requestId,rows,signal)=>request('import',{p_request:id(requestId),p_rows:rows},true,signal),receipt:(requestId,signal)=>request('receipt',{p_request:id(requestId)},false,signal),dispose(){disposed=true;controls.forEach(x=>x.abort());controls.clear();}});}
 async function readReportVehicles(client, signal, guard) {
   const items = [];
   const seenIds = new Set(), seenPlates = new Set();
@@ -77,7 +92,7 @@ async function readReportVehicles(client, signal, guard) {
   return items;
 }
 
-function buildPrivateVehiclesReport(roster, items) {
+function buildPrivateVehiclesReport(roster, items, forecastReport) {
   const collator = new Intl.Collator('pt-BR', {sensitivity: 'base', numeric: true});
   const normalizeRg = value => {
     const compact = String(value ?? '').replace(/[.\s-]/g, '');
@@ -126,8 +141,15 @@ function buildPrivateVehiclesReport(roster, items) {
     return {label: member.nome, rg: member.rg, cars: member.carros, motorcycles: member.motos, other: member.semTipo, vehicleCount};
   });
   const generatedAt = new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short'}).format(new Date());
+  const forecast = forecastReport?.groups.map(row => ({
+    label: reportForecastLabels[row.group], people: row.militares,
+    maxCars: row.maxCarros.carros, maxMotorcycles: row.maxCarros.motos,
+    minCars: row.minCarros.carros, minMotorcycles: row.minCarros.motos,
+    pending: row.tipoPendente + row.identidadePendente
+  }));
   return {
-    generatedAt, totals, linkedOwners: activeOwners.size, military, vehicles,
+    generatedAt, totals, linkedOwners: activeOwners.size, military, vehicles, forecast,
+    forecastUnavailable: !forecastReport,
     groups: Array.from(groups.values(), ({owners, ...group}) => ({...group, withVehicle: owners.size}))
   };
 }
@@ -322,10 +344,12 @@ async function openReport() {
   reportMessage('Preparando o relatório de veículos…');
 
   const html = await run('report', async (signal, guard) => {
-    const [result, items] = await Promise.all([client.roster(signal), readReportVehicles(client, signal, guard)]);
+    const [result, items, forecast] = await Promise.all([
+      client.roster(signal), readReportVehicles(client, signal, guard), client.reportForecast(signal).catch(() => null)
+    ]);
     guard();
     if (!current() || popup.closed) return false;
-    return renderer.render(buildPrivateVehiclesReport(result.items, items));
+    return renderer.render(buildPrivateVehiclesReport(result.items, items, forecast));
   });
   if (!current()) {
     if (!popup.closed) popup.close();
