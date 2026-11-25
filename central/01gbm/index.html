@@ -3467,16 +3467,21 @@
 #home-page .home-shortcut:not(:disabled):hover { box-shadow: inset 0 3px 0 var(--home-accent), 0 5px 10px rgba(23, 63, 95, .23); }
 #home-page .home-head-actions .secondary { background: #eef5f9; border-color: #9db6c5; box-shadow: 0 2px 0 #d2dfe7; }
 
-#home-page .home-return.return-tomorrow { background: #fff3ce; box-shadow: inset 4px 0 0 #cc951c; }
-#home-page .home-return.return-tomorrow strong { color: #654600; }
-#home-page .home-return.return-tomorrow > div > span { color: #775716; }
+#home-page .home-return.return-soon { background: #fff3ce; box-shadow: inset 4px 0 0 #cc951c; }
+#home-page .home-return.return-soon strong { color: #654600; }
+#home-page .home-return.return-soon > div > span { color: #775716; }
 #home-page .home-return .home-return-badge { display: inline-flex; width: fit-content; margin-top: 6px; padding: 3px 7px; border: 1px solid #d7ad51; border-radius: 5px; color: #654600; background: #ffe6a0; font-size: 10px; font-weight: 700; line-height: 1.3; }
-#home-page .home-return.return-tomorrow button { border-color: #c8a456; color: #654600; }
-#home-page .home-return.return-today { background: #ffe3e0; box-shadow: inset 4px 0 0 #c8473b; }
-#home-page .home-return.return-today strong { color: #902d28; }
-#home-page .home-return.return-today > div > span { color: #8d3c35; }
-#home-page .home-return.return-today .home-return-badge { border-color: #e4948a; color: #8b241d; background: #ffd0ca; }
-#home-page .home-return.return-today button { border-color: #d58c83; color: #902d28; }
+#home-page .home-return.return-soon button { border-color: #c8a456; color: #654600; }
+#home-page .home-return.return-today,
+#home-page .home-return.return-tomorrow { background: #ffe3e0; box-shadow: inset 4px 0 0 #c8473b; }
+#home-page .home-return.return-today strong,
+#home-page .home-return.return-tomorrow strong { color: #902d28; }
+#home-page .home-return.return-today > div > span,
+#home-page .home-return.return-tomorrow > div > span { color: #8d3c35; }
+#home-page .home-return.return-today .home-return-badge,
+#home-page .home-return.return-tomorrow .home-return-badge { border-color: #e4948a; color: #8b241d; background: #ffd0ca; }
+#home-page .home-return.return-today button,
+#home-page .home-return.return-tomorrow button { border-color: #d58c83; color: #902d28; }
 #home-page .home-scale-day-status { margin: -4px 0 16px; padding: 10px 13px; border: 1px solid #c4d9e5; border-radius: 8px; color: #31566d; background: #edf6fa; font-size: 12px; line-height: 1.45; }
 #home-page .home-scale-day-status[hidden] { display: none; }
 #home-page .home-scale-day-status[data-state="unavailable"],
@@ -3524,13 +3529,13 @@
 .sw-extra-service-badge{display:inline-flex;align-items:center;align-self:flex-start;gap:4px;max-width:100%;padding:3px 6px;border:1px solid #e6c171;border-radius:5px;background:#fff3d5;color:#775017;font-size:11px;font-weight:700;line-height:1.2;white-space:nowrap;box-sizing:border-box}.sw-legend .sw-extra-service-legend{background:#fff3d5;color:#775017;border:1px solid #e6c171}.sw-extra-service-help{font-size:11px;color:#687c88;margin-top:4px}.sw-extra-service-help[data-error="true"]{color:#8c5321}
 </style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.94.3</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><label class="central-remember-session" for="central-remember-session"><input id="central-remember-session" name="remember-session" type="checkbox" autocomplete="off" aria-describedby="central-remember-session-hint"><span>Manter minha sessão neste navegador</span></label><small id="central-remember-session-hint">Em computador compartilhado, deixe desmarcado.</small><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.94.4</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><label class="central-remember-session" for="central-remember-session"><input id="central-remember-session" name="remember-session" type="checkbox" autocomplete="off" aria-describedby="central-remember-session-hint"><span>Manter minha sessão neste navegador</span></label><small id="central-remember-session-hint">Em computador compartilhado, deixe desmarcado.</small><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.94.3">v2.94.3</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.94.4">v2.94.4</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -17949,7 +17954,8 @@
         const leaveTypes = (military.currentLeaveTypes || []).join(', ') || military.situation;
         const today = item.daysUntilReturn === 0;
         const tomorrow = item.daysUntilReturn === 1;
-        return '<div class="home-return' + (today ? ' return-today' : (tomorrow ? ' return-tomorrow' : '')) + '">' +
+        const soon = item.daysUntilReturn >= 2 && item.daysUntilReturn <= 3;
+        return '<div class="home-return' + (today ? ' return-today' : (tomorrow ? ' return-tomorrow' : (soon ? ' return-soon' : ''))) + '">' +
           '<div><strong>' + escapeHtml(military.displayName) + '</strong><span>' + escapeHtml(leaveTypes) + ' • retorno ' + escapeHtml(military.returnDate) + ' (' + escapeHtml(timing) + ')</span>' +
           (today ? '<span class="home-return-badge">Retorno hoje</span>' : (tomorrow ? '<span class="home-return-badge">Retorno amanhã</span>' : '')) + '</div>' +
           '<button type="button" data-home-rg="' + escapeHtml(military.rg) + '">Abrir ficha</button>' +
