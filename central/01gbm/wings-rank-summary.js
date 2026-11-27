@@ -10,8 +10,7 @@
   const rgOf=value=>String(value==null?'':value).replace(/\D/g,'').replace(/^0+(?=\d)/,'');
   function wingOf(value){
     if(typeof value==='number'||typeof value==='string'&&/^[1-4]$/.test(value)){const number=Number(value);return Number.isInteger(number)&&number>=1&&number<=4?number:0;}
-    const match=/^(?:CEDIDOS\s*[•-]\s*)?ALA\s*([1-4])(?:\s|[•-]|$)/.exec(text(value));
-    return match?Number(match[1]):0;
+    return 0;
   }
   function rankOf(value){
     const rank=text(value);
@@ -21,11 +20,9 @@
     if(/^(?:SD|SOLDADO)(?:\s+BM)?$/.test(rank))return 'sd';
     return '';
   }
-  function build(payload){
+  function context(payload){
     payload=payload&&typeof payload==='object'?payload:{};
-    const result=[1,2,3,4].map(number=>({number,subten:0,sgt:0,cb:0,sd:0,total:0}));
-    const roster=new Map(),people=new Map(),cededCells=new Set();
-    const declared=payload.militaryByRg;
+    const roster=new Map(),declared=payload.militaryByRg;
     if(declared&&typeof declared==='object')Object.keys(declared).forEach(key=>{
       const person=declared[key],rg=rgOf(person&&person.rg||key);
       if(person&&typeof person==='object'&&rg)roster.set(rg,person);
@@ -38,37 +35,45 @@
       if(person.isVacant===true||former||external||['TRANSFERIDO','OFICIAL','CIVIL','COLABORADOR','VISITANTE'].includes(activity)||person.isOfficer===true)return '';
       return rankOf(text(person.rank)||text(person.rankShort)||text(fallback.rank)||text(fallback.rankShort));
     }
-    function include(person,number,priority){
-      if(!person||typeof person!=='object')return;
-      const rg=rgOf(person.rg);if(!rg)return;
-      const previous=people.get(rg),candidate={number:wingOf(number),priority,category:category(person,rg)};
-      if(!previous||priority>previous.priority)people.set(rg,candidate);
-      else if(priority===previous.priority&&!previous.category&&candidate.category)previous.category=candidate.category;
-    }
-    // Origin is a fallback: the current draft can place the same person in a
-    // different Ala or in the Expediente without rewriting person.originWing.
-    list(payload.unassigned).forEach(person=>include(person,person&&person.originWing,10));
-    list(payload.wings).forEach(wing=>list(wing&&wing.available).forEach(person=>include(person,wingOf(person&&person.originWing)||wing&&wing.number,10)));
-    list(payload.office).forEach(sector=>list(sector&&sector.people).forEach(person=>include(person,0,20)));
-    list(payload.ceded).forEach(column=>list(column&&column.slots).forEach(slot=>{
-      if(!slot)return;
-      const row=Number(slot.sourceRow),col=Number(slot.sourceColumn);
-      if(Number.isInteger(row)&&row>0&&Number.isInteger(col)&&col>0)cededCells.add(row+':'+col);
-      include(slot.person,column.number,40);
-    }));
-    list(payload.movements).forEach(item=>{
-      if(!item||item.informational===true||item.restriction24hOnly===true)return;
-      // The dedicated ceded board is mutable in a local draft. Its original
-      // movement mirror may still name the previous occupant or an empty slot.
-      if(text(item.group).startsWith('CEDIDOS')&&cededCells.has(Number(item.sourceRow)+':'+Number(item.sourceColumn)))return;
-      include(item.person,wingOf(item.location),30);
+    return {payload,category};
+  }
+  function readyForWing(person){
+    return person&&person.available===true&&person.available24h!==false&&person.currentLeaveAffectsScale!==true;
+  }
+  function readyForOffice(person){
+    // Exact wingsAvailableForOffice contract from the Mapa UI: a DTS limited
+    // to 24h duty may still permit work in the Expediente.
+    return person&&person.availableForOffice===true&&person.currentLeaveAffectsOffice!==true;
+  }
+  function assigned(state,visit){
+    const seen=new Set();
+    list(state.payload.wings).forEach(wing=>{
+      const number=wingOf(wing&&wing.number);if(!number)return;
+      list(wing.assignments).forEach(item=>{
+        const person=item&&item.person,rg=rgOf(person&&person.rg);
+        if(!rg||seen.has(rg)||!readyForWing(person))return;
+        const category=state.category(person,rg);if(!category)return;
+        seen.add(rg);visit(number,category);
+      });
     });
-    list(payload.wings).forEach(wing=>list(wing&&wing.assignments).forEach(item=>include(item&&item.person,wing&&wing.number,50)));
-    people.forEach(person=>{
-      if(!person.number||!person.category)return;
-      const row=result[person.number-1];row[person.category]++;row.total++;
-    });
+    return seen;
+  }
+  function empty(){return {subten:0,sgt:0,cb:0,sd:0,total:0};}
+  function build(payload){
+    const state=context(payload),result=[1,2,3,4].map(number=>Object.assign({number},empty()));
+    // Effective Ala strength comes only from ready, occupied assignments.
+    // Origin links, available pool, ceded and away boards do not enter.
+    assigned(state,(number,category)=>{result[number-1][category]++;result[number-1].total++;});
     return result;
   }
-  return Object.freeze({build});
+  function buildOffice(payload){
+    const state=context(payload),result=empty(),seen=assigned(state,()=>{});
+    list(state.payload.office).forEach(sector=>list(sector&&sector.people).forEach(person=>{
+      const rg=rgOf(person&&person.rg);if(!rg||seen.has(rg)||!readyForOffice(person))return;
+      const category=state.category(person,rg);if(!category)return;
+      seen.add(rg);result[category]++;result.total++;
+    }));
+    return result;
+  }
+  return Object.freeze({build,buildOffice});
 });
