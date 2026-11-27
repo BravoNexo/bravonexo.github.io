@@ -11478,6 +11478,8 @@
       section.hidden = false;
     }
 
+    document.addEventListener('DOMContentLoaded', function() { if (state.wingsMapLoaded) renderWingsRankSummary(state.wingsMapData); }, { once: true });
+
     function renderWingsMap() {
       if (state.wingsExternalSelection && !wingsExternalContextValid()) closeWingsExternalDialog(false);
       const payload = state.wingsMapData || {};
