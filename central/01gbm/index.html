@@ -15,6 +15,7 @@
   <script src="./central-pwa.js?v=c11fef82e5ddfc01fb77" defer></script>
   <script src="./private-vehicles-report.js?v=0e56694c160f786a2e3e" defer></script>
   <script src="./vacation-annual-report.js?v=55c87076288cb60bb975" defer></script>
+  <script src="./wings-rank-summary.js?v=77b0b611aa8e9a0419fe" defer></script>
   <style data-central-pwa-style>[data-central-pwa-install][hidden],[data-central-pwa-status][hidden],#central-pwa-help[hidden]{display:none!important}.central-pwa-login-actions{margin-top:14px}.central-access-card .central-pwa-install{padding:8px 10px;border:1px solid #c7d5e1;background:#eef4f8;color:#234b67;font-size:13px}.central-pwa-session-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.central-pwa-session-actions .central-pwa-install{padding:6px 9px;border:1px solid #fff8;border-radius:7px;background:transparent;color:inherit;font:inherit;cursor:pointer}.central-pwa-install:disabled{opacity:.6;cursor:wait}.central-pwa-status{display:block;max-width:360px;margin-top:6px;font-size:12px;line-height:1.4}#central-pwa-help{max-width:420px;width:calc(100% - 48px);padding:24px;border:1px solid #c7d5e1;border-radius:14px;color:#16324b;font:15px Arial,sans-serif;line-height:1.6}#central-pwa-help::backdrop{background:#16324b66}#central-pwa-help h2{margin:0 0 12px;font-size:20px}#central-pwa-help button{padding:8px 14px;border:1px solid #c7d5e1;border-radius:8px;background:#eef4f8;color:#16324b;font:inherit;cursor:pointer}@media print{.central-pwa-login-actions,.central-pwa-session-actions [data-central-pwa-install],.central-pwa-status,#central-pwa-help{display:none!important}}</style>
   <style data-scale-opening>#scale-opening{display:none}html[data-scale-opening] #central-access{visibility:hidden!important}html[data-scale-opening] #scale-opening{display:grid;place-items:center;position:fixed;inset:0;z-index:2147483000;padding:24px;box-sizing:border-box;background:#f3f6f8;color:#35576b;font:400 15px Inter,Arial,sans-serif;text-align:center}#scale-opening .scale-opening-card{max-width:420px}#scale-opening p{margin:0;line-height:1.6}#scale-opening button{margin-top:16px;padding:9px 16px;border:1px solid #b8cbd6;border-radius:8px;background:#fff;color:#234d65;font:inherit;cursor:pointer}#scale-opening button[hidden]{display:none!important}</style>
   <script data-scale-opening>(function(window,document){
@@ -789,6 +790,24 @@
     #wings-map-content.swap-mode .office-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
     #wings-map-content.swap-mode[data-map-area="expediente"] #wings-office-section { grid-column: 1 / 3; }
     #wings-map-content.swap-mode[data-map-area="expediente"] .office-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+
+    .wings-rank-summary { margin: 12px 0 14px; padding: 12px 14px; border: 1px solid #d7e3eb; border-radius: 10px; background: #fff; }
+    .wings-rank-summary-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+    .wings-rank-summary h3 { margin: 0; font-size: 14px; color: #193f59; }
+    .wings-rank-context { font-size: 11px; color: #5e7382; }
+    .wings-rank-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .wings-rank-card { overflow: hidden; border: 1px solid var(--wing-head, #d7e3eb); border-radius: 7px; background: var(--wing-pale, #f5f9fb); }
+    .wings-rank-card > header { display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 6px 9px; color: var(--wing-ink, #28566e); background: var(--wing-head, #e3edf4); font-size: 12px; }
+    .wings-rank-card > header span { font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .wings-rank-card dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin: 0; padding: 8px 5px; text-align: center; color: #244153; }
+    .wings-rank-card dl > div + div { border-left: 1px solid var(--wing-head, #d7e3eb); }
+    .wings-rank-card dt { font-size: 10px; font-weight: 700; }
+    .wings-rank-card dd { margin: 3px 0 0; font-size: 18px; line-height: 1.15; font-weight: 800; }
+    .wings-rank-summary > p { margin: 8px 0 0; color: #627785; font-size: 11px; line-height: 1.4; }
+    @media (max-width: 900px) { .wings-rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 440px) { .wings-rank-summary { padding: 10px; } .wings-rank-summary-head { align-items: flex-start; flex-direction: column; gap: 3px; } .wings-rank-card > header { padding: 6px; } }
+    @media print { body.wings-map-printing #wings-rank-summary { display: none !important; } }
+
     #wings-map-content.swap-mode .wing-head { padding: 8px 8px; }
     #wings-map-content.swap-mode .wing-head strong { font-size: 12px; }
     #wings-map-content.swap-mode .wing-head span { font-size: 10.5px; font-weight: 800; }
@@ -3529,13 +3548,13 @@
 .sw-extra-service-badge{display:inline-flex;align-items:center;align-self:flex-start;gap:4px;max-width:100%;padding:3px 6px;border:1px solid #e6c171;border-radius:5px;background:#fff3d5;color:#775017;font-size:11px;font-weight:700;line-height:1.2;white-space:nowrap;box-sizing:border-box}.sw-legend .sw-extra-service-legend{background:#fff3d5;color:#775017;border:1px solid #e6c171}.sw-extra-service-help{font-size:11px;color:#687c88;margin-top:4px}.sw-extra-service-help[data-error="true"]{color:#8c5321}
 </style>
 </head>
-<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.94.10</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><label class="central-remember-session" for="central-remember-session"><input id="central-remember-session" name="remember-session" type="checkbox" autocomplete="off" aria-describedby="central-remember-session-hint"><span>Manter minha sessão neste navegador</span></label><small id="central-remember-session-hint">Em computador compartilhado, deixe desmarcado.</small><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
+<body><section id="scale-opening" aria-label="Abertura da escala"><div class="scale-opening-card"><p id="scale-opening-status" role="status" aria-live="polite">Abrindo escala…</p><button id="scale-opening-reload" type="button" hidden>Recarregar</button></div></section><section id="central-access" aria-labelledby="central-access-title"><div class="central-access-card"><div class="central-access-brand">BN</div><h1 id="central-access-title">Central BravoNexo <small class="central-app-version">v2.95.0</small></h1><p>1º GBM · Acesso administrativo</p><p id="central-access-status" data-login-stage="initializing" role="status" aria-live="polite">Preparando o acesso…</p><form id="central-login-form"><fieldset id="central-login-fields" disabled><label for="central-email">RG ou e-mail</label><input id="central-email" name="username" type="text" placeholder="RG ou e-mail cadastrado" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="254" required><label for="central-password">Senha</label><input id="central-password" name="password" type="password" autocomplete="current-password" required maxlength="1024"><label class="central-remember-session" for="central-remember-session"><input id="central-remember-session" name="remember-session" type="checkbox" autocomplete="off" aria-describedby="central-remember-session-hint"><span>Manter minha sessão neste navegador</span></label><small id="central-remember-session-hint">Em computador compartilhado, deixe desmarcado.</small><button type="submit">Entrar</button></fieldset></form><div class="central-pwa-login-actions"><button id="central-pwa-install-login" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span></div></div></section><div id="central-session-bar" hidden><span><span id="central-session-compact-identity" hidden></span><span class="central-session-main-label">Central BravoNexo · Conta autorizada</span></span><div class="central-pwa-session-actions"><button id="central-pwa-install-session" class="central-pwa-install" type="button" data-central-pwa-install aria-controls="central-pwa-help" hidden>Instalar Central</button><span class="central-pwa-status" data-central-pwa-status role="status" aria-live="polite" hidden></span><button id="central-sign-out" type="button">Sair</button></div></div><dialog id="central-pwa-help" aria-labelledby="central-pwa-help-title" hidden><h2 id="central-pwa-help-title">Instalar Central</h2><p id="central-pwa-help-text"></p><p>A Central continua usando a internet e o seu acesso pessoal normalmente.</p><button id="central-pwa-help-close" type="button">Fechar</button></dialog><div id="central-workspace" hidden inert>
   <div class="app">
     <aside class="sidebar">
       <header class="central-sidebar-heading">
         <div class="brand">
           <div class="brand-mark">BN</div>
-          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.94.10">v2.94.10</small></strong><span>1º GBM • Gestão de efetivo</span></div>
+          <div><strong>BravoNexo <small id="app-version" class="central-app-version" aria-label="Versão 2.95.0">v2.95.0</small></strong><span>1º GBM • Gestão de efetivo</span></div>
         </div>
         <div id="central-sidebar-identity-card" role="group" aria-labelledby="central-sidebar-identity-label" hidden>
           <span id="central-sidebar-identity-label">Conectado como</span>
@@ -5204,6 +5223,12 @@
           <div class="stat"><span>Expediente</span><strong id="wings-stat-office">—</strong><small>militares distribuídos por setor</small></div>
           <div class="stat"><span>Cedidos e apoio</span><strong id="wings-stat-ceded">—</strong><small>por ala no mapa oficial</small></div>
           <div class="stat"><span>Fora da escala</span><strong id="wings-stat-unavailable">—</strong><small>entre Alas e Expediente</small></div>
+        </section>
+
+        <section id="wings-rank-summary" class="wings-rank-summary" aria-labelledby="wings-rank-title" hidden>
+          <div class="wings-rank-summary-head"><h3 id="wings-rank-title">Praças por ala</h3><span id="wings-rank-context" class="wings-rank-context"></span></div>
+          <div id="wings-rank-grid" class="wings-rank-grid"></div>
+          <p>Inclui os vinculados em prontidão, disponíveis, cedidos e afastados. Cada RG é contado uma vez; SGT reúne 1º, 2º e 3º Sargentos.</p>
         </section>
 
         <div class="vacation-help">Conectado diretamente ao “Mapa das Alas - 1º GBM”. O mapa já abre em edição direta: arraste os cartões entre Alas, Cedidos, Expediente e “Sem função”; as mudanças só são gravadas ao clicar em “Aplicar alterações”. Cedidos de cada Ala ficam fora da escala e não têm limite fixo de vagas. “Incluir DBM 1/1” considera a OBM atual, e “Mostrar Oficiais” considera a classificação do cadastro. Ao iniciar um afastamento vigente que retira da escala, o militar libera a função e vai para “Afastados do efetivo”; no retorno, volta a “Disponíveis da Ala” de origem, sem substituir militares nem escolher uma função automaticamente. A DTS com restrição de 24h permite permanecer ou ser alocado no Expediente, se não houver outro afastamento impeditivo, sem liberar o serviço de 24h. Para devolver ao 1º GBM um militar cedido ao DBM 1/1, use o comando próprio da faixa superior.</div>
@@ -10421,6 +10446,7 @@
       elements.wingsPlanningMonth.value = month;
       state.wingsMapLoaded = false;
       state.wingsMapData = null;
+      document.getElementById('wings-rank-summary').hidden = true;
       state.wingsOriginalMapData = null;
       state.wingsSwapFirst = state.wingsSwapSecond = state.wingsDragSlot = state.wingsAwayDrag = null;
       elements.wingsSwapDialog.hidden = elements.wingsReturnDialog.hidden = elements.wingsAwayMoveDialog.hidden = true;
@@ -11437,10 +11463,26 @@
       return Object.keys(seen).length;
     }
 
+    function renderWingsRankSummary(payload) {
+      const section = document.getElementById('wings-rank-summary');
+      const grid = document.getElementById('wings-rank-grid');
+      const counter = window.BNXWingsRankSummary;
+      if (!section || !grid) return;
+      if (!state.wingsMapLoaded || !payload || !Array.isArray(payload.wings) || !counter || typeof counter.build !== 'function') { section.hidden = true; return; }
+      const counts = counter.build(payload);
+      grid.innerHTML = counts.map(function(item) {
+        const columns = [['SUBTEN', item.subten], ['SGT', item.sgt], ['CB', item.cb], ['SD', item.sd]];
+        return '<article class="wings-rank-card" data-map-wing="' + item.number + '" aria-label="Praças da Ala ' + item.number + '"><header><strong>Ala ' + item.number + '</strong><span>' + item.total + ' praças</span></header><dl>' + columns.map(function(column) { return '<div><dt>' + column[0] + '</dt><dd>' + column[1] + '</dd></div>'; }).join('') + '</dl></article>';
+      }).join('');
+      document.getElementById('wings-rank-context').textContent = state.wingsPendingMoves.length ? 'Prévia das alterações' : wingsPlanningMode() ? 'Planejamento em exibição' : 'Mapa vigente';
+      section.hidden = false;
+    }
+
     function renderWingsMap() {
       if (state.wingsExternalSelection && !wingsExternalContextValid()) closeWingsExternalDialog(false);
       const payload = state.wingsMapData || {};
       const summary = payload.summary || {};
+      renderWingsRankSummary(payload);
       const term = normalize(elements.wingsMapSearch.value);
       const area = elements.wingsMapArea.value || 'all';
       let visiblePeople = 0;
@@ -20323,6 +20365,7 @@
       state.leaveLoaded = false;
       state.wingsMapLoaded = false;
       state.wingsMapData = null;
+      document.getElementById('wings-rank-summary').hidden = true;
       markScalePreviewStaleForDates_(rows.flatMap(leaveChangeAffectedDates_));
       window.setTimeout(function() {
         loadData(true, undefined, 'O lote de férias foi confirmado no sistema.');
@@ -20758,6 +20801,7 @@
       state.leaveLoaded = false;
       state.wingsMapLoaded = false;
       state.wingsMapData = null;
+      document.getElementById('wings-rank-summary').hidden = true;
       markScalePreviewStaleForDates_(leaveChangeAffectedDates_(details));
       if (!keepDialogOpen) closeLaunchDialog({ force: true });
       if (state.page === 'vacations') renderVacations();
